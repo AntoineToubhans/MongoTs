@@ -24,15 +24,15 @@ class Insert():
         }, {
             '$inc': {
                 'count': 1,
-                'value': document['value'],
+                'sum': document['value'],
                 'days.%s.count' % day: 1,
-                'days.%s.value' % day: document['value'],
+                'days.%s.sum' % day: document['value'],
                 'days.%s.hours.%s.count' % (day, hour): 1,
-                'days.%s.hours.%s.value' % (day, hour): document['value'],
+                'days.%s.hours.%s.sum' % (day, hour): document['value'],
                 'days.%s.hours.%s.minutes.%s.count' % (day, hour, minute): 1,
-                'days.%s.hours.%s.minutes.%s.value' % (day, hour, minute): document['value'],
+                'days.%s.hours.%s.minutes.%s.sum' % (day, hour, minute): document['value'],
                 'days.%s.hours.%s.minutes.%s.seconds.%s.count' % (day, hour, minute, second): 1,
-                'days.%s.hours.%s.minutes.%s.seconds.%s.value' % (day, hour, minute, second): document['value'],
+                'days.%s.hours.%s.minutes.%s.seconds.%s.sum' % (day, hour, minute, second): document['value'],
             },
             '$set': {
                 'days.%s.datetime' % day: dayDate,

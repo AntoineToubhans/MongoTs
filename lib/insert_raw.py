@@ -6,4 +6,4 @@ class Insert():
         self._collection = self._db[collectionName]
 
     def insert(self, document):
-        return self._collection.insert(document)
+        return self._collection.insert_one(document)
