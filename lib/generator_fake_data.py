@@ -1,4 +1,4 @@
-import datetime, pymongo, random, time
+import datetime, random, time
 
 class FakeDataGenerator():
 

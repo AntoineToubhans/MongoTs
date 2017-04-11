@@ -1,4 +1,4 @@
-import math, pymongo, unittest, sys
+import math, unittest, sys
 from functools import reduce
 
 # Temporary hack to import lib files
@@ -12,18 +12,18 @@ class FixedRangeTests(unittest.TestCase):
     def __init__(self, testName):
         super().__init__(testName)
 
-        mongoURI = 'mongodb://localhost:27017/TestDb'
-        mongoDbName = 'TestDb'
+        config = {
+            'uri': 'localhost',
+            'port': 27017,
+            'dbName': 'TestDb',
+            'collectionName': 'documents__test',
+        }
 
-        rawDocumentCollectionName = 'rawDocuments__test'
-        fixedRangeDocumentCollectionName = 'fixedRangeDocuments__test'
+        self._rawConnector = RawConnector(config)
+        self._fixedRangeConnector = FixedRangeConnector(config)
 
-        db = pymongo.MongoClient(mongoURI + '/' + mongoDbName)[mongoDbName]
-        self._rawDocumentCollection = db[rawDocumentCollectionName]
-        self._fixedRangeDocumentCollection = db[fixedRangeDocumentCollectionName]
-
-        self._rawConnector = RawConnector(mongoURI, mongoDbName, rawDocumentCollectionName)
-        self._fixedRangeConnector = FixedRangeConnector(mongoURI, mongoDbName, fixedRangeDocumentCollectionName)
+        self._rawDocumentCollection = self._rawConnector.getCollection('raw')
+        self._fixedRangeDocumentCollection = self._fixedRangeConnector.getCollection('fixed_range')
 
         self._fakeDataGenerator = FakeDataGenerator()
 

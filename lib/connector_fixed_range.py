@@ -15,7 +15,9 @@ class FixedRangeConnector(BaseConnector):
         minuteDate = datetime.datetime(year, month, day, hour, minute)
         secondDate = datetime.datetime(year, month, day, hour, minute, second)
 
-        return self._collection.update_one({
+        collection = self.getCollection('fixed_range')
+
+        return collection.update_one({
             'param_foo': document['param_foo'],
             'param_bar': document['param_bar'],
         }, {
