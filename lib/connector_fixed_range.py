@@ -1,10 +1,7 @@
-import datetime, pymongo
+from connector_base import BaseConnector
+import datetime
 
-class FixedRangeConnector():
-    def __init__(self, mongoURI, dbName, collectionName):
-        self._db = pymongo.MongoClient(mongoURI + '/' + dbName)[dbName]
-        self._collection = self._db[collectionName]
-
+class FixedRangeConnector(BaseConnector):
     def push(self, document):
         year = document['datetime'].year
         month = document['datetime'].month

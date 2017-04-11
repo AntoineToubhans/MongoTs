@@ -1,9 +1,5 @@
-import pymongo
+from connector_base import BaseConnector
 
-class RawConnector():
-    def __init__(self, mongoURI, dbName, collectionName):
-        self._db = pymongo.MongoClient(mongoURI + '/' + dbName)[dbName]
-        self._collection = self._db[collectionName]
-
+class RawConnector(BaseConnector):
     def push(self, document):
         return self._collection.insert_one(document)
