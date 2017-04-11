@@ -22,12 +22,12 @@ class FakeDataGenerator():
             'datetime': datetime.datetime.fromtimestamp(self._time),
         }
 
-    def insert(self, number, insertionModules=[], debug=False):
+    def pushMany(self, number, connectors=[], debug=False):
         for index in range(0, number):
             document = self.generateDocument()
 
-            for module in insertionModules:
-                module.insert(document)
+            for connector in connectors:
+                connector.push(document)
 
             if debug and index % 1000 == 999:
                 print('%i document inserted ...' % index, flush=True)

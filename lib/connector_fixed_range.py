@@ -1,11 +1,11 @@
 import datetime, pymongo
 
-class Insert():
+class FixedRangeConnector():
     def __init__(self, mongoURI, dbName, collectionName):
         self._db = pymongo.MongoClient(mongoURI + '/' + dbName)[dbName]
         self._collection = self._db[collectionName]
 
-    def insert(self, document):
+    def push(self, document):
         year = document['datetime'].year
         month = document['datetime'].month
         day = document['datetime'].day

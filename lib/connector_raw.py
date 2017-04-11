@@ -1,9 +1,9 @@
 import pymongo
 
-class Insert():
+class RawConnector():
     def __init__(self, mongoURI, dbName, collectionName):
         self._db = pymongo.MongoClient(mongoURI + '/' + dbName)[dbName]
         self._collection = self._db[collectionName]
 
-    def insert(self, document):
+    def push(self, document):
         return self._collection.insert_one(document)

@@ -4,11 +4,11 @@ from functools import reduce
 # Temporary hack to import lib files
 sys.path.append('./lib/')
 
-from generate_fake_data import FakeDataGenerator
-from insert_raw import Insert as InsertRaw
-from insert_fixed_range import Insert as InsertFixedRange
+from generator_fake_data import FakeDataGenerator
+from connector_raw import RawConnector
+from connector_fixed_range import FixedRangeConnector
 
-class TestInsertion(unittest.TestCase):
+class FixedRangeTests(unittest.TestCase):
     def __init__(self, testName):
         super().__init__(testName)
 
@@ -22,23 +22,23 @@ class TestInsertion(unittest.TestCase):
         self._rawDocumentCollection = db[rawDocumentCollectionName]
         self._fixedRangeDocumentCollection = db[fixedRangeDocumentCollectionName]
 
-        self._insertRaw = InsertRaw(mongoURI, mongoDbName, rawDocumentCollectionName)
-        self._insertFixedRange = InsertFixedRange(mongoURI, mongoDbName, fixedRangeDocumentCollectionName)
+        self._rawConnector = RawConnector(mongoURI, mongoDbName, rawDocumentCollectionName)
+        self._fixedRangeConnector = FixedRangeConnector(mongoURI, mongoDbName, fixedRangeDocumentCollectionName)
 
         self._fakeDataGenerator = FakeDataGenerator()
 
     def assertAlmostEqual(self, value1, value2):
         self.assertEqual(math.floor(100000 * value1), math.floor(100000 * value2))
 
-    def test_0_insert(self):
-        """ It should insert 10000 documents """
+    def test_0_push(self):
+        """ It should push 10000 documents """
         # Removing all documents from test collection
         self._rawDocumentCollection.delete_many({})
         self._fixedRangeDocumentCollection.delete_many({})
 
-        result = self._fakeDataGenerator.insert(10000, [
-            self._insertRaw,
-            self._insertFixedRange,
+        result = self._fakeDataGenerator.pushMany(10000, [
+            self._rawConnector,
+            self._fixedRangeConnector,
         ])
 
         self.assertEqual('OK', result)
