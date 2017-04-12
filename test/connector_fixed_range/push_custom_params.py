@@ -9,14 +9,29 @@ class FixedRangeCustomParamsTest(BaseTest):
     def __init__(self, testName):
         super().__init__(testName)
 
-        self._rawConnector = RawConnector(self._mongoConfig, timeParamName='time_yo')
-        self._fixedRangeConnector = FixedRangeConnector(self._mongoConfig, timeParamName='time_yo')
+        timeParamName='time_yo'
+        aggregateParams = ['value_foo', 'value_bar']
+        groupbyParams = ['param_foo', 'param_bar']
+
+        self._rawConnector = RawConnector(
+            self._mongoConfig,
+            timeParamName=timeParamName,
+            aggregateParams=aggregateParams,
+            groupbyParams=groupbyParams
+        )
+
+        self._fixedRangeConnector = FixedRangeConnector(
+            self._mongoConfig,
+            timeParamName=timeParamName,
+            aggregateParams=aggregateParams,
+            groupbyParams=groupbyParams
+        )
 
         self._rawDocumentCollection = self._rawConnector.getCollection('raw')
         self._fixedRangeDocumentCollection = self._fixedRangeConnector.getCollection('fixed_range')
 
         # Use fake data with custom field names
-        self._fakeDataGenerator.setTimeParamName('time_yo')
+        self._fakeDataGenerator.setTimeParamName(timeParamName)
         self._fakeDataGenerator.setParams([{
             'name': 'param_foo',
             'generator': lambda: random.randint(0, 10),
@@ -26,6 +41,9 @@ class FixedRangeCustomParamsTest(BaseTest):
         }, {
             'name': 'value',
             'generator': lambda: random.gauss(1, 1),
+        }, {
+            'name': 'value_bar',
+            'generator': lambda: random.gauss(2, -1),
         }])
 
     def test_00_push(self):

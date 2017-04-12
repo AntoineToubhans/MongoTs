@@ -1,7 +1,7 @@
 from lib.utils import getKeyFromConfig, getMongoDbFromConfig
 
 class BaseConnector():
-    def __init__(self, config, timeParamName='datetime'):
+    def __init__(self, config, timeParamName='datetime', aggregateParams=[], groupbyParams=[]):
         self._db = getMongoDbFromConfig(config)
         self._collectionName = getKeyFromConfig('collectionName', config)
 
