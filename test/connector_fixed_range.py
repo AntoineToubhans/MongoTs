@@ -1,4 +1,4 @@
-import math, unittest, sys
+import math, random, sys, unittest
 from functools import reduce
 
 # Temporary hack to import lib files
@@ -25,7 +25,16 @@ class FixedRangeTests(unittest.TestCase):
         self._rawDocumentCollection = self._rawConnector.getCollection('raw')
         self._fixedRangeDocumentCollection = self._fixedRangeConnector.getCollection('fixed_range')
 
-        self._fakeDataGenerator = FakeDataGenerator()
+        self._fakeDataGenerator = FakeDataGenerator(params=[{
+            'name': 'param_foo',
+            'generator': lambda: random.randint(0, 10),
+        }, {
+            'name': 'param_bar',
+            'generator': lambda: random.randint(0, 10),
+        }, {
+            'name': 'value',
+            'generator': lambda: random.gauss(1, 1),
+        }])
 
     def assertAlmostEqual(self, value1, value2):
         self.assertEqual(math.floor(100000 * value1), math.floor(100000 * value2))
