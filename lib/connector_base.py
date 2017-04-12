@@ -6,6 +6,8 @@ class BaseConnector():
         self._collectionName = getKeyFromConfig('collectionName', config)
 
         self._timeParamName = timeParamName
+        self._aggregateParams = aggregateParams
+        self._groupbyParams = groupbyParams
 
     def getCollection(self, suffix=""):
         return self._db["%s__%s" % (self._collectionName, suffix)]

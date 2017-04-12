@@ -1,8 +1,10 @@
 fixed_range
 
+- fully filled document
 - getAggregate
 - missing aggregateParams (default value)
 - missing groupbyParams (default value)
 - missing aggregateParams (ignore)
 - missing groupbyParams (ignore)
 - custom aggregation (instead of hard-coded count + sum)
+- custom aggregation range (years, day, milisecond, whatever)
