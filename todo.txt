@@ -1,0 +1,8 @@
+fixed_range
+
+- getAggregate
+- missing aggregateParams (default value)
+- missing groupbyParams (default value)
+- missing aggregateParams (ignore)
+- missing groupbyParams (ignore)
+- custom aggregation (instead of hard-coded count + sum)
