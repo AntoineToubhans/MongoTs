@@ -3,12 +3,15 @@ import datetime
 
 class FixedRangeConnector(BaseConnector):
     def push(self, document):
-        year = document['datetime'].year
-        month = document['datetime'].month
-        day = document['datetime'].day
-        hour = document['datetime'].hour
-        minute = document['datetime'].minute
-        second = document['datetime'].second
+        # the document MUST contain a time param, for now
+        docDatetime = document[self._timeParamName]
+
+        year = docDatetime.year
+        month = docDatetime.month
+        day = docDatetime.day
+        hour = docDatetime.hour
+        minute = docDatetime.minute
+        second = docDatetime.second
 
         dayDate = datetime.datetime(year, month, day)
         hourDate = datetime.datetime(year, month, day, hour)

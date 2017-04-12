@@ -12,34 +12,25 @@ class FixedRangeTests(unittest.TestCase):
     def __init__(self, testName):
         super().__init__(testName)
 
-        config = {
+        self._mongoConfig = {
             'uri': 'localhost',
             'port': 27017,
             'dbName': 'TestDb',
             'collectionName': 'documents__test',
         }
 
-        self._rawConnector = RawConnector(config)
-        self._fixedRangeConnector = FixedRangeConnector(config)
+        self._rawConnector = RawConnector(self._mongoConfig)
+        self._fixedRangeConnector = FixedRangeConnector(self._mongoConfig)
 
         self._rawDocumentCollection = self._rawConnector.getCollection('raw')
         self._fixedRangeDocumentCollection = self._fixedRangeConnector.getCollection('fixed_range')
 
-        self._fakeDataGenerator = FakeDataGenerator(params=[{
-            'name': 'param_foo',
-            'generator': lambda: random.randint(0, 10),
-        }, {
-            'name': 'param_bar',
-            'generator': lambda: random.randint(0, 10),
-        }, {
-            'name': 'value',
-            'generator': lambda: random.gauss(1, 1),
-        }])
+        self._fakeDataGenerator = FakeDataGenerator()
 
     def assertAlmostEqual(self, value1, value2):
         self.assertEqual(math.floor(100000 * value1), math.floor(100000 * value2))
 
-    def test_0_push(self):
+    def test_00_push(self):
         """ It should push 10000 documents """
         # Removing all documents from test collection
         self._rawDocumentCollection.delete_many({})
@@ -52,14 +43,14 @@ class FixedRangeTests(unittest.TestCase):
 
         self.assertEqual('OK', result)
 
-    def test_1_count(self):
+    def test_01_count(self):
         """ Fixex-range total count should be 10000 """
         fixedRangeAggregates = self._fixedRangeDocumentCollection.find({})
         totalCount = reduce(lambda count, doc: count + doc['count'], fixedRangeAggregates, 0)
 
         self.assertEqual(totalCount, 10000)
 
-    def test_2_aggregate(self):
+    def test_02_aggregate(self):
         """ Fixex-range collection should be retrieved by aggregating the 10000 raw documents """
         rawAggregates = self._rawDocumentCollection.aggregate([{
             '$group': {
