@@ -1,34 +1,19 @@
-import math, random, sys, unittest
+import math, random, unittest
 from functools import reduce
 
-# Temporary hack to import lib files
-sys.path.append('./lib/')
+from test.base_test import BaseTest
+from lib.connector_raw import RawConnector
+from lib.connector_fixed_range import FixedRangeConnector
 
-from generator_fake_data import FakeDataGenerator
-from connector_raw import RawConnector
-from connector_fixed_range import FixedRangeConnector
-
-class FixedRangeTests(unittest.TestCase):
+class FixedRangeDefaultParamTest(BaseTest):
     def __init__(self, testName):
         super().__init__(testName)
-
-        self._mongoConfig = {
-            'uri': 'localhost',
-            'port': 27017,
-            'dbName': 'TestDb',
-            'collectionName': 'documents__test',
-        }
 
         self._rawConnector = RawConnector(self._mongoConfig)
         self._fixedRangeConnector = FixedRangeConnector(self._mongoConfig)
 
         self._rawDocumentCollection = self._rawConnector.getCollection('raw')
         self._fixedRangeDocumentCollection = self._fixedRangeConnector.getCollection('fixed_range')
-
-        self._fakeDataGenerator = FakeDataGenerator()
-
-    def assertAlmostEqual(self, value1, value2):
-        self.assertEqual(math.floor(100000 * value1), math.floor(100000 * value2))
 
     def test_00_push(self):
         """ It should push 10000 documents """

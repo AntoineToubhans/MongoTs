@@ -1,4 +1,4 @@
-from utils import getKeyFromConfig, getMongoDbFromConfig
+from lib.utils import getKeyFromConfig, getMongoDbFromConfig
 
 class BaseConnector():
     def __init__(self, config, timeParamName='datetime'):

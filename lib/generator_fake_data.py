@@ -25,6 +25,12 @@ class FakeDataGenerator():
         self._timeIncrement = timeIncrement
         self._params = params
 
+    def setTimeParamName(self, timeParamName):
+        self._timeParamName = timeParamName
+
+    def setParams(self, params):
+        self._params = params
+
     def generateDocument(self):
         self._time += random.randint(0, self._timeIncrement)
 

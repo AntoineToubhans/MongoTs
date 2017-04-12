@@ -1,4 +1,4 @@
-from connector_base import BaseConnector
+from lib.connector_base import BaseConnector
 
 class RawConnector(BaseConnector):
     def push(self, document):
