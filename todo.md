@@ -22,6 +22,7 @@
 - add "getAggregate" to connectors
 - add "pushMany" to connectors (bulk)
 - missing time => infer now()
+- pep8 => snake_case
 
 # Done
 
