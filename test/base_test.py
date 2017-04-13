@@ -20,6 +20,11 @@ class BaseTest(unittest.TestCase):
     def assertAlmostEqual(self, value1, value2):
         self.assertEqual(math.floor(100000 * value1), math.floor(100000 * value2))
 
+    def assertPushOneDocument(self, document, connector):
+        nInserted = connector.push(document)
+
+        self.assertEqual(nInserted, 1)
+
     def assertInsertCount(self, documents, connector):
         nInserted = 0
         for document in documents:
