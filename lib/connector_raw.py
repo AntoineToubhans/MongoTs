@@ -2,6 +2,6 @@ from lib.connector_base import BaseConnector
 
 class RawConnector(BaseConnector):
     def push(self, document):
-        collection = self.getCollection('raw')
+        result = self.getCollection('raw').insert_one(document)
 
-        return collection.insert_one(document)
+        return 1 if result.acknowledged else 0

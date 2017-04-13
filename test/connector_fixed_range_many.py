@@ -46,33 +46,33 @@ class FixedRangeCustomParamsTest(BaseTest):
             'generator': lambda: random.gauss(2, -1),
         }])
 
+        self._number = 10000
+
     def test_00_push(self):
-        """ It should push 10000 documents """
+        """ It should push many documents """
         # Removing all documents from test collection
         self._rawDocumentCollection.delete_many({})
         self._fixedRangeDocumentCollection.delete_many({})
 
-        result = self._fakeDataGenerator.pushMany(10000, [
-            self._rawConnector,
-            self._fixedRangeConnector,
-        ])
+        documents = self._fakeDataGenerator.generateDocuments(self._number)
 
-        self.assertEqual('OK', result)
+        self.assertInsertCount(documents, self._rawConnector)
+        self.assertInsertCount(documents, self._fixedRangeConnector)
 
     def test_01_foo_count(self):
-        """ Fixex-range value_foo total count should be 10000 """
+        """ Fixex-range value_foo total count should be right """
         fixedRangeAggregates = self._fixedRangeDocumentCollection.find({})
         fooTotalCount = reduce(lambda count, doc: count + doc['value_foo__count'], fixedRangeAggregates, 0)
-        self.assertEqual(fooTotalCount, 10000)
+        self.assertEqual(fooTotalCount, self._number)
 
     def test_02_bar_count(self):
-        """ Fixex-range value_bar total count should be 10000 """
+        """ Fixex-range value_bar total count should be right """
         fixedRangeAggregates = self._fixedRangeDocumentCollection.find({})
         barTotalCount = reduce(lambda count, doc: count + doc['value_bar__count'], fixedRangeAggregates, 0)
-        self.assertEqual(barTotalCount, 10000)
+        self.assertEqual(barTotalCount, self._number)
 
     def test_03_aggregate(self):
-        """ Fixex-range collection should be retrieved by aggregating the 10000 raw documents """
+        """ Fixex-range collection should be retrieved by aggregating the raw documents """
         rawAggregates = self._rawDocumentCollection.aggregate([{
             '$group': {
                 '_id': {

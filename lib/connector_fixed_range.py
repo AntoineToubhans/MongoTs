@@ -52,7 +52,9 @@ class FixedRangeConnector(BaseConnector):
         }
 
         # 5. do the update in mongo
-        self.getCollection('fixed_range').update_one(query, {
+        result = self.getCollection('fixed_range').update_one(query, {
             '$inc': incUpdate,
             '$set': setUpdate,
         }, True)
+
+        return 1 if result.acknowledged else 0

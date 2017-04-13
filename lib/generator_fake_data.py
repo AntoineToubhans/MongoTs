@@ -42,14 +42,5 @@ class FakeDataGenerator():
 
         return document
 
-    def pushMany(self, number, connectors=[], debug=False):
-        for index in range(0, number):
-            document = self.generateDocument()
-
-            for connector in connectors:
-                connector.push(document)
-
-            if debug and index % 1000 == 999:
-                print('%i document inserted ...' % index, flush=True)
-
-        return 'OK'
+    def generateDocuments(self, number):
+        return [ self.generateDocument() for i in range(0, number) ]
