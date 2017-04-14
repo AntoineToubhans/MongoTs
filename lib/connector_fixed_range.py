@@ -9,10 +9,7 @@ class FixedRangeConnector(BaseConnector):
         }
 
     def push(self, document):
-        # 1. build the query
-        query = self._get_query(document)
-
-        # 2. parse datetime
+        # 1. parse datetime
         docDatetime = document[self._timeParamName]
 
         year = docDatetime.year
@@ -29,25 +26,27 @@ class FixedRangeConnector(BaseConnector):
         minuteDate = datetime.datetime(year, month, day, hour, minute)
         secondDate = datetime.datetime(year, month, day, hour, minute, second)
 
+        # 2. build the query
+        query = self._get_query(document)
+        query['year'] = yearDate
+
         # 3. build the $set update
         setUpdate = {
-            'year.%s.datetime' % year: yearDate,
-            'year.%s.month.%s.datetime' % (year, month): monthDate,
-            'year.%s.month.%s.days.%s.datetime' % (year, month, day): dayDate,
-            'year.%s.month.%s.days.%s.hours.%s.datetime' % (year, month, day, hour): hourDate,
-            'year.%s.month.%s.days.%s.hours.%s.minutes.%s.datetime' % (year, month, day, hour, minute): minuteDate,
-            'year.%s.month.%s.days.%s.hours.%s.minutes.%s.seconds.%s.datetime' % (year, month, day, hour, minute, second): secondDate,
+            'months.%s.datetime' % month: monthDate,
+            'months.%s.days.%s.datetime' % (month, day): dayDate,
+            'months.%s.days.%s.hours.%s.datetime' % (month, day, hour): hourDate,
+            'months.%s.days.%s.hours.%s.minutes.%s.datetime' % (month, day, hour, minute): minuteDate,
+            'months.%s.days.%s.hours.%s.minutes.%s.seconds.%s.datetime' % (month, day, hour, minute, second): secondDate,
         }
 
         # 4. build the $inc update
         baseIncKeys = [
             '',
-            'year.%s.' % year,
-            'year.%s.month.%s.' % (year, month),
-            'year.%s.month.%s.days.%s.' % (year, month, day),
-            'year.%s.month.%s.days.%s.hours.%s.' % (year, month, day, hour),
-            'year.%s.month.%s.days.%s.hours.%s.minutes.%s.' % (year, month, day, hour, minute),
-            'year.%s.month.%s.days.%s.hours.%s.minutes.%s.seconds.%s.' % (year, month, day, hour, minute, second),
+            'months.%s.' % month,
+            'months.%s.days.%s.' % (month, day),
+            'months.%s.days.%s.hours.%s.' % (month, day, hour),
+            'months.%s.days.%s.hours.%s.minutes.%s.' % (month, day, hour, minute),
+            'months.%s.days.%s.hours.%s.minutes.%s.seconds.%s.' % (month, day, hour, minute, second),
         ]
 
         incUpdate = {
