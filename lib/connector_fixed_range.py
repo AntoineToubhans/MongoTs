@@ -2,7 +2,7 @@ from lib.connector_base import BaseConnector
 import datetime
 
 class FixedRangeConnector(BaseConnector):
-    def _getQuery(self, document):
+    def _get_query(self, document):
         return {
             paramName: document[paramName]
             for paramName in self._groupbyParams
@@ -10,7 +10,7 @@ class FixedRangeConnector(BaseConnector):
 
     def push(self, document):
         # 1. build the query
-        query = self._getQuery(document)
+        query = self._get_query(document)
 
         # 2. parse datetime
         docDatetime = document[self._timeParamName]
@@ -58,7 +58,7 @@ class FixedRangeConnector(BaseConnector):
         }
 
         # 5. do the update in mongo
-        result = self.getCollection('fixed_range').update_one(query, {
+        result = self.get_collection('fixed_range').update_one(query, {
             '$inc': incUpdate,
             '$set': setUpdate,
         }, True)

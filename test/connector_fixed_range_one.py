@@ -19,14 +19,14 @@ class FixedRangeCustomParamsTest(BaseTest):
             groupbyParams=groupbyParams
         )
 
-        self._fixedRangeDocumentCollection = self._fixedRangeConnector.getCollection('fixed_range')
+        self._fixedRangeDocumentCollection = self._fixedRangeConnector.get_collection('fixed_range')
 
     def test_00_push(self):
         """ It should push one document """
         # Removing all documents from test collection
         self._fixedRangeDocumentCollection.delete_many({})
 
-        self.assertPushOneDocument({
+        self.assert_push_one_document({
             'time': datetime.datetime(2017, 4, 12, 18, 55, 33),
             'goal': 1,
             'yellow_card': 0,
@@ -35,7 +35,7 @@ class FixedRangeCustomParamsTest(BaseTest):
 
     def test_01_push(self):
         """ It should push a second document """
-        self.assertPushOneDocument({
+        self.assert_push_one_document({
             'time': datetime.datetime(2017, 4, 12, 19, 1, 3),
             'goal': 1,
             'yellow_card': 0,
@@ -44,7 +44,7 @@ class FixedRangeCustomParamsTest(BaseTest):
 
     def test_02_push(self):
         """ It should push a third document """
-        self.assertPushOneDocument({
+        self.assert_push_one_document({
             'time': datetime.datetime(2017, 4, 12, 19, 7, 42),
             'goal': 0,
             'yellow_card': 1,

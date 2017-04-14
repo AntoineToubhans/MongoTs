@@ -27,12 +27,12 @@ class FixedRangeCustomParamsTest(BaseTest):
             groupbyParams=groupbyParams
         )
 
-        self._rawDocumentCollection = self._rawConnector.getCollection('raw')
-        self._fixedRangeDocumentCollection = self._fixedRangeConnector.getCollection('fixed_range')
+        self._rawDocumentCollection = self._rawConnector.get_collection('raw')
+        self._fixedRangeDocumentCollection = self._fixedRangeConnector.get_collection('fixed_range')
 
         # Use fake data with custom field names
-        self._fakeDataGenerator.setTimeParamName(timeParamName)
-        self._fakeDataGenerator.setParams([{
+        self._fakeDataGenerator.set_time_param_name(timeParamName)
+        self._fakeDataGenerator.set_params([{
             'name': 'param_foo',
             'generator': lambda: random.randint(0, 10),
         }, {
@@ -54,10 +54,10 @@ class FixedRangeCustomParamsTest(BaseTest):
         self._rawDocumentCollection.delete_many({})
         self._fixedRangeDocumentCollection.delete_many({})
 
-        documents = self._fakeDataGenerator.generateDocuments(self._number)
+        documents = self._fakeDataGenerator.generate_documents(self._number)
 
-        self.assertInsertCount(documents, self._rawConnector)
-        self.assertInsertCount(documents, self._fixedRangeConnector)
+        self.assert_insert_count(documents, self._rawConnector)
+        self.assert_insert_count(documents, self._fixedRangeConnector)
 
     def test_01_foo_count(self):
         """ Fixex-range value_foo total count should be right """
@@ -90,7 +90,7 @@ class FixedRangeCustomParamsTest(BaseTest):
             fixedRangeDocument = self._fixedRangeDocumentCollection.find_one(aggregate['_id'])
 
             self.assertEqual(fixedRangeDocument['value_foo__count'], aggregate['value_foo__count'])
-            self.assertAlmostEqual(fixedRangeDocument['value_foo__sum'], aggregate['value_foo__sum'])
+            self.assert_almost_equal(fixedRangeDocument['value_foo__sum'], aggregate['value_foo__sum'])
 
             self.assertEqual(fixedRangeDocument['value_bar__count'], aggregate['value_bar__count'])
-            self.assertAlmostEqual(fixedRangeDocument['value_bar__sum'], aggregate['value_bar__sum'])
+            self.assert_almost_equal(fixedRangeDocument['value_bar__sum'], aggregate['value_bar__sum'])

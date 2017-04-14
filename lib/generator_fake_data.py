@@ -25,13 +25,13 @@ class FakeDataGenerator():
         self._timeIncrement = timeIncrement
         self._params = params
 
-    def setTimeParamName(self, timeParamName):
+    def set_time_param_name(self, timeParamName):
         self._timeParamName = timeParamName
 
-    def setParams(self, params):
+    def set_params(self, params):
         self._params = params
 
-    def generateDocument(self):
+    def generate_document(self):
         self._time += random.randint(0, self._timeIncrement)
 
         document = {
@@ -42,5 +42,5 @@ class FakeDataGenerator():
 
         return document
 
-    def generateDocuments(self, number):
-        return [ self.generateDocument() for i in range(0, number) ]
+    def generate_documents(self, number):
+        return [ self.generate_document() for i in range(0, number) ]

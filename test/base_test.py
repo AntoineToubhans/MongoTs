@@ -17,15 +17,15 @@ class BaseTest(unittest.TestCase):
         # Use fake data with custom field names
         self._fakeDataGenerator = FakeDataGenerator()
 
-    def assertAlmostEqual(self, value1, value2):
+    def assert_almost_equal(self, value1, value2):
         self.assertEqual(math.floor(100000 * value1), math.floor(100000 * value2))
 
-    def assertPushOneDocument(self, document, connector):
+    def assert_push_one_document(self, document, connector):
         nInserted = connector.push(document)
 
         self.assertEqual(nInserted, 1)
 
-    def assertInsertCount(self, documents, connector):
+    def assert_insert_count(self, documents, connector):
         nInserted = 0
         for document in documents:
             nInserted += connector.push(document)
