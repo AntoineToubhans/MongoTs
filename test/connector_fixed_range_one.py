@@ -8,15 +8,15 @@ class FixedRangeCustomParamsTest(BaseTest):
     def __init__(self, testName):
         super().__init__(testName)
 
-        timeParamName='time'
-        aggregateParams = ['goal', 'yellow_card', 'red_card']
-        groupbyParams = []
+        time_key='time'
+        value_keys = ['goal', 'yellow_card', 'red_card']
+        tag_keys = []
 
         self._fixedRangeConnector = FixedRangeConnector(
             self._mongoConfig,
-            timeParamName=timeParamName,
-            aggregateParams=aggregateParams,
-            groupbyParams=groupbyParams
+            time_key=time_key,
+            value_keys=value_keys,
+            tag_keys=tag_keys
         )
 
         self._fixedRangeDocumentCollection = self._fixedRangeConnector.get_collection('fixed_range')

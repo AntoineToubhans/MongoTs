@@ -9,10 +9,10 @@
 
 # Fixed_range connector
 
-- missing aggregateParams (default value)
-- missing groupbyParams (default value)
-- missing aggregateParams (ignore)
-- missing groupbyParams (ignore)
+- missing value (default value)
+- missing tag (default value)
+- missing value (ignore)
+- missing tag (ignore)
 - custom aggregation (instead of hard-coded count + sum)
 - custom aggregation range (years, day, milisecond, whatever)
 - perf: improve first insert time => too long to create fully filled document
@@ -20,7 +20,6 @@
 
 # connectors
 
-- wording : groupbyParams => tags
 - add "getAggregate" to connectors
 - add "pushMany" to connectors (bulk)
 - missing time => infer now()
@@ -28,6 +27,7 @@
 
 # Done
 
+- wording : tag_keys => tag_keys
 - Connector's "push" return a standardized response (nInserted)
 - pep8 => snake_case
 - fully filled document

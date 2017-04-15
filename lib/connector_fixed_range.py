@@ -4,15 +4,15 @@ import datetime
 class FixedRangeConnector(BaseConnector):
     def _get_query(self, document):
         return {
-            paramName: document[paramName]
-            for paramName in self._groupbyParams
+            tag_key: document[tag_key]
+            for tag_key in self._tag_keys
         }
 
-    def _create_empty_aggregate_params_document(self):
+    def _create_empty_aggregate_document(self):
         return {
-            '%s__%s' % (paramName, aggregateType): 0
-            for aggregateType in ['count', 'sum']
-            for paramName in self._aggregateParams
+            '%s__%s' % (value_key, aggregate_type): 0
+            for aggregate_type in ['count', 'sum']
+            for value_key in self._value_keys
         }
 
     def _get_day_count(self, year, month):
@@ -32,13 +32,13 @@ class FixedRangeConnector(BaseConnector):
         }[month]
 
     def _create_empty_one_hour_document(self, year, month, day, hour):
-        base = self._create_empty_aggregate_params_document()
+        base = self._create_empty_aggregate_document()
         base['datetime'] = datetime.datetime(year, month, day, hour)
 
         return base
 
     def _create_empty_one_day_document(self, year, month, day):
-        base = self._create_empty_aggregate_params_document()
+        base = self._create_empty_aggregate_document()
         base['datetime'] = datetime.datetime(year, month, day)
         base['hours'] = [
             self._create_empty_one_hour_document(year, month, day, hour)
@@ -50,7 +50,7 @@ class FixedRangeConnector(BaseConnector):
     def _create_empty_one_month_document(self, year, month):
         day_count = self._get_day_count(year, month)
 
-        base = self._create_empty_aggregate_params_document()
+        base = self._create_empty_aggregate_document()
         base['datetime'] = datetime.datetime(year, month, 1)
         base['days'] = [
             self._create_empty_one_day_document(year, month, day)
@@ -60,7 +60,7 @@ class FixedRangeConnector(BaseConnector):
         return base
 
     def _create_empty_one_year_document(self, year, base={}):
-        base.update(self._create_empty_aggregate_params_document())
+        base.update(self._create_empty_aggregate_document())
         base['datetime'] = datetime.datetime(year, 1, 1)
         base['months'] = [
             self._create_empty_one_month_document(year, month)
@@ -71,7 +71,7 @@ class FixedRangeConnector(BaseConnector):
 
     def push(self, document):
         # 1. parse datetime
-        docDatetime = document[self._timeParamName]
+        docDatetime = document[self._time_key]
 
         year = docDatetime.year
         month = docDatetime.month - 1 # Array index: range from 0 to 11
@@ -82,23 +82,23 @@ class FixedRangeConnector(BaseConnector):
         query = self._get_query(document)
 
         # 3. build the $inc update
-        baseIncKeys = [
+        base_inc_keys = [
             '',
             'months.%s.' % month,
             'months.%s.days.%s.' % (month, day),
             'months.%s.days.%s.hours.%s.' % (month, day, hour),
         ]
 
-        incUpdate = {
-            '%s%s__%s' % (baseIncKey, paramName, aggregateType): document[paramName] if aggregateType is "sum" else 1
-            for baseIncKey in baseIncKeys
-            for paramName in self._aggregateParams
-            for aggregateType in ['count', 'sum']
+        inc_update = {
+            '%s%s__%s' % (base_inc_key, value_key, aggregate_type): document[value_key] if aggregate_type is "sum" else 1
+            for base_inc_key in base_inc_keys
+            for value_key in self._value_keys
+            for aggregate_type in ['count', 'sum']
         }
 
         # 4. do the update in mongo
         result = self.get_collection('fixed_range').update_one(query, {
-            '$inc': incUpdate,
+            '$inc': inc_update,
         }, False)
 
         if result.modified_count == 0:
@@ -108,7 +108,7 @@ class FixedRangeConnector(BaseConnector):
 
             # 6. do the update in mongo (again)
             result = self.get_collection('fixed_range').update_one(query, {
-                '$inc': incUpdate,
+                '$inc': inc_update,
             }, False)
 
         return result.modified_count
