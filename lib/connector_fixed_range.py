@@ -1,5 +1,5 @@
 from lib.connector_base import BaseConnector
-import datetime
+from datetime import datetime
 
 class FixedRangeConnector(BaseConnector):
     def _get_query(self, document):
@@ -10,8 +10,7 @@ class FixedRangeConnector(BaseConnector):
 
     def _create_empty_aggregate_document(self):
         return {
-            '%s__%s' % (value_key, aggregate_type): 0
-            for aggregate_type in ['count', 'sum']
+            value_key: { 'count': 0, 'sum': 0 }
             for value_key in self._value_keys
         }
 
@@ -33,14 +32,14 @@ class FixedRangeConnector(BaseConnector):
 
     def _create_empty_one_hour_document(self, year, month, day, hour):
         base = self._create_empty_aggregate_document()
-        base['datetime'] = datetime.datetime(year, month, day, hour)
+        base['datetime'] = datetime(year, month, day, hour)
 
         return base
 
     def _create_empty_one_day_document(self, year, month, day):
         base = self._create_empty_aggregate_document()
-        base['datetime'] = datetime.datetime(year, month, day)
-        base['hours'] = [
+        base['datetime'] = datetime(year, month, day)
+        base['__hours'] = [
             self._create_empty_one_hour_document(year, month, day, hour)
             for hour in range(0, 24)
         ]
@@ -51,18 +50,18 @@ class FixedRangeConnector(BaseConnector):
         day_count = self._get_day_count(year, month)
 
         base = self._create_empty_aggregate_document()
-        base['datetime'] = datetime.datetime(year, month, 1)
-        base['days'] = [
+        base['datetime'] = datetime(year, month, 1)
+        base['__days'] = [
             self._create_empty_one_day_document(year, month, day)
             for day in range(1, day_count+1)
         ]
 
         return base
 
-    def _create_empty_one_year_document(self, year, base={}):
-        base.update(self._create_empty_aggregate_document())
-        base['datetime'] = datetime.datetime(year, 1, 1)
-        base['months'] = [
+    def _create_empty_one_year_document(self, year):
+        base = self._create_empty_aggregate_document()
+        base['datetime'] = datetime(year, 1, 1)
+        base['__months'] = [
             self._create_empty_one_month_document(year, month)
             for month in range(1, 13)
         ]
@@ -84,13 +83,13 @@ class FixedRangeConnector(BaseConnector):
         # 3. build the $inc update
         base_inc_keys = [
             '',
-            'months.%s.' % month,
-            'months.%s.days.%s.' % (month, day),
-            'months.%s.days.%s.hours.%s.' % (month, day, hour),
+            '__months.%s.' % month,
+            '__months.%s.days.%s.' % (month, day),
+            '__months.%s.days.%s.hours.%s.' % (month, day, hour),
         ]
 
         inc_update = {
-            '%s%s__%s' % (base_inc_key, value_key, aggregate_type): document[value_key] if aggregate_type is "sum" else 1
+            '%s%s.%s' % (base_inc_key, value_key, aggregate_type): document[value_key] if aggregate_type is "sum" else 1
             for base_inc_key in base_inc_keys
             for value_key in self._value_keys
             for aggregate_type in ['count', 'sum']
@@ -103,7 +102,8 @@ class FixedRangeConnector(BaseConnector):
 
         if result.modified_count == 0:
             # 5. insert empty document
-            empty_document = self._create_empty_one_year_document(year, base=query)
+            empty_document = self._create_empty_one_year_document(year)
+            empty_document.update(query)
             self.get_collection('fixed_range').insert_one(empty_document)
 
             # 6. do the update in mongo (again)

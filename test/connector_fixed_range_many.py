@@ -62,13 +62,13 @@ class FixedRangeCustomParamsTest(BaseTest):
     def test_01_foo_count(self):
         """ Fixex-range value_foo total count should be right """
         fixedRangeAggregates = self._fixedRangeDocumentCollection.find({})
-        fooTotalCount = reduce(lambda count, doc: count + doc['value_foo__count'], fixedRangeAggregates, 0)
+        fooTotalCount = reduce(lambda count, doc: count + doc['value_foo']['count'], fixedRangeAggregates, 0)
         self.assertEqual(fooTotalCount, self._number)
 
     def test_02_bar_count(self):
         """ Fixex-range value_bar total count should be right """
         fixedRangeAggregates = self._fixedRangeDocumentCollection.find({})
-        barTotalCount = reduce(lambda count, doc: count + doc['value_bar__count'], fixedRangeAggregates, 0)
+        barTotalCount = reduce(lambda count, doc: count + doc['value_bar']['count'], fixedRangeAggregates, 0)
         self.assertEqual(barTotalCount, self._number)
 
     def test_03_aggregate(self):
@@ -89,8 +89,8 @@ class FixedRangeCustomParamsTest(BaseTest):
         for aggregate in rawAggregates:
             fixedRangeDocument = self._fixedRangeDocumentCollection.find_one(aggregate['_id'])
 
-            self.assertEqual(fixedRangeDocument['value_foo__count'], aggregate['value_foo__count'])
-            self.assert_almost_equal(fixedRangeDocument['value_foo__sum'], aggregate['value_foo__sum'])
+            self.assertEqual(fixedRangeDocument['value_foo']['count'], aggregate['value_foo__count'])
+            self.assert_almost_equal(fixedRangeDocument['value_foo']['sum'], aggregate['value_foo__sum'])
 
-            self.assertEqual(fixedRangeDocument['value_bar__count'], aggregate['value_bar__count'])
-            self.assert_almost_equal(fixedRangeDocument['value_bar__sum'], aggregate['value_bar__sum'])
+            self.assertEqual(fixedRangeDocument['value_bar']['count'], aggregate['value_bar__count'])
+            self.assert_almost_equal(fixedRangeDocument['value_bar']['sum'], aggregate['value_bar__sum'])
