@@ -100,3 +100,101 @@ class FixedRangeConnector(BaseConnector):
             }, False)
 
         return result.modified_count
+
+    def _get_range_from_interval(self, interval):
+        try:
+            int_interval = {
+                '1y': 0,
+                'year': 0,
+                '1m': 1,
+                'month': 1,
+                '1d': 2,
+                'd': 2,
+                '1h': 3,
+                'hour': 3,
+            }[interval]
+
+            return [AGGR_MONTH_KEY, AGGR_DAY_KEY, AGGR_HOUR_KEY][0:int_interval]
+        except Exception as e:
+            raise Exception('Bad interval %s: %s' % (interval, e))
+
+    def _get_floor_datetime(self, interval, dt):
+        if interval == AGGR_MONTH_KEY:
+            return datetime(dt.year, dt.month, 1)
+        elif interval == AGGR_DAY_KEY:
+            return datetime(dt.year, dt.month, dt.day)
+        elif interval == AGGR_HOUR_KEY:
+            return datetime(dt.year, dt.month, dt.day, dt.hour)
+        else:
+            raise Exception('Bad interval %s' % interval)
+
+    def getData(self, start, end, interval, tag_query, value_queries):
+        # 1. build pipeline: $match stage for tag query
+        pipeline = [{
+            '$match': tag_query,
+        }]
+
+        # 2. build pipeline: $unwind + $match stages for time range and interval
+        interval_range = self._get_range_from_interval(interval)
+
+        interval_mongo_path = ''
+
+        for interval in interval_range:
+            pipeline.extend([{
+                '$unwind': '$%s%s' % (interval_mongo_path, interval)
+            }, {
+                '$match': {
+                    '%s%s.datetime' % (interval_mongo_path, interval): {
+                        '$gte': self._get_floor_datetime(interval, start),
+                        '$lte': self._get_floor_datetime(interval, end),
+                    }
+                }
+            }])
+
+            interval_mongo_path = '%s%s.' % (interval_mongo_path, interval)
+
+        # 3. Add $sort stage
+        pipeline.append({
+            '$sort': {
+                '%sdatetime' % interval_mongo_path: 1
+            }
+        })
+
+        # 4. Add group by tag stage
+        group_stage = {
+            value_query['name']: {
+                '$push': '$%s%s.%s' % (interval_mongo_path, value_query['key'], value_query['type']),
+            }
+            for value_query in value_queries
+        }
+
+        group_stage.update({
+            '_id': {
+                tag_key: '$%s' % tag_key
+                for tag_key in self._tag_keys
+            },
+            'datetimes': {
+                '$push': '$%sdatetime' % interval_mongo_path,
+            },
+        })
+
+        pipeline.append({
+            '$group': group_stage,
+        })
+
+        # 5. Add final projection stage
+        data_project_stage = {
+            value_query['name']: '$%s' % value_query['name']
+            for value_query in value_queries
+        }
+        data_project_stage['datetimes'] = '$datetimes'
+
+        pipeline.append({
+            '$project': {
+                '_id': 0,
+                'metadata': '$_id',
+                'data': data_project_stage,
+            },
+        })
+
+        return self.get_collection('fixed_range').aggregate(pipeline)
