@@ -128,6 +128,23 @@ class FixedRangeConnector(BaseConnector):
         else:
             raise Exception('Bad interval %s' % interval)
 
+    def _format_value_query_type(self, mongo_path, value_query):
+        if value_query['type'] in ['sum', 'count']:
+            return '$%s%s.%s' % (mongo_path, value_query['key'], value_query['type'])
+        elif value_query['type'] == 'average':
+            return {
+                '$cond': [{
+                    '$eq': [ '$%s%s.count' % (mongo_path, value_query['key']), 0 ],
+                }, None, {
+                    '$divide': [
+                        '$%s%s.sum' % (mongo_path, value_query['key']), 
+                        '$%s%s.count' % (mongo_path, value_query['key']),
+                    ]
+                }]
+            }
+        else:
+            raise Exception('Bad value query type: %s' % value_query['type'])
+
     def getData(self, start, end, interval, tag_query, value_queries):
         # 1. build pipeline: $match stage for tag query
         pipeline = [{
@@ -163,7 +180,7 @@ class FixedRangeConnector(BaseConnector):
         # 4. Add group by tag stage
         group_stage = {
             value_query['name']: {
-                '$push': '$%s%s.%s' % (interval_mongo_path, value_query['key'], value_query['type']),
+                '$push': self._format_value_query_type(interval_mongo_path, value_query),
             }
             for value_query in value_queries
         }

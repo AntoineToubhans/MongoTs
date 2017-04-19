@@ -15,14 +15,14 @@ class FakeDataGenerator():
 
     def __init__(
         self,
-        startTime=time.time(),
+        start_time=time.time(),
         time_key='datetime',
-        timeIncrement=3,
+        time_increment=3,
         params=defaultParams
     ):
-        self._time = startTime
+        self._time = start_time
         self._time_key = time_key
-        self._timeIncrement = timeIncrement
+        self._time_increment = time_increment
         self._params = params
 
     def set_time_param_name(self, time_key):
@@ -32,7 +32,7 @@ class FakeDataGenerator():
         self._params = params
 
     def generate_document(self):
-        self._time += random.randint(0, self._timeIncrement)
+        self._time += random.randint(0, self._time_increment)
 
         document = {
             param['name']: param['generator']()
