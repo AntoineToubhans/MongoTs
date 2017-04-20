@@ -20,14 +20,15 @@
 
 # connectors
 
-- add "getAggregate" to connectors
 - add logging
+- add "getData" to raw connector
 - add "pushMany" to connectors (bulk)
 - missing time => infer now()
 - interpolation ? instead of aggregation
 
 # Done
 
+- add "getData" to fixed_range connector
 - wording : tag_keys => tag_keys
 - Connector's "push" return a standardized response (nInserted)
 - pep8 => snake_case

@@ -63,6 +63,7 @@ class FixedRangeConnector(BaseConnector):
 
         # 2. build the query
         query = self._get_query(document)
+        query['datetime'] = datetime(docDatetime.year, 1, 1)
 
         # 3. build the $inc update
         month = str(docDatetime.month - 1) # Array index: range from 0 to 11
@@ -137,7 +138,7 @@ class FixedRangeConnector(BaseConnector):
                     '$eq': [ '$%s%s.count' % (mongo_path, value_query['key']), 0 ],
                 }, None, {
                     '$divide': [
-                        '$%s%s.sum' % (mongo_path, value_query['key']), 
+                        '$%s%s.sum' % (mongo_path, value_query['key']),
                         '$%s%s.count' % (mongo_path, value_query['key']),
                     ]
                 }]
