@@ -146,7 +146,7 @@ class FixedRangeConnector(BaseConnector):
         else:
             raise Exception('Bad value query type: %s' % value_query['type'])
 
-    def getData(self, start, end, interval, tag_query, value_queries):
+    def get_data(self, start, end, interval, tag_query, value_queries):
         # 1. build pipeline: $match stage for tag query
         pipeline = [{
             '$match': tag_query,
