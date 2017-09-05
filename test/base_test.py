@@ -1,7 +1,7 @@
 import math, random, sys, unittest
 from functools import reduce
 
-from lib.generator_fake_data import FakeDataGenerator
+from tools.generator_fake_data import FakeDataGenerator
 
 class BaseTest(unittest.TestCase):
     def __init__(self, testName):

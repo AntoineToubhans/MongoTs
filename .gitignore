@@ -1,5 +1,5 @@
 lib/__pycache__
 test/__pycache__
-test/*/__pycache__
+**/__pycache__
 demo/node_modules
 .ipynb_checkpoints
