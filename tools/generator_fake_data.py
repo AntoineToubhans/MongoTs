@@ -1,4 +1,5 @@
 import datetime, random, time
+from csv import DictWriter
 
 defaultParams = [{
     'name': 'param_foo',
@@ -44,3 +45,15 @@ class FakeDataGenerator():
 
     def generate_documents(self, number):
         return [ self.generate_document() for i in range(0, number) ]
+
+
+    def generate_documents_in_csv(self, number, file_path):
+        fieldnames = [self._time_key]
+        fieldnames.extend([ param['name'] for param in self._params ])
+
+        with open(file_path, 'w') as file:
+            writer = DictWriter(file, delimiter=';', fieldnames=fieldnames)
+            writer.writeheader()
+
+            for i in range(0, number):
+                writer.writerow(self.generate_document())
