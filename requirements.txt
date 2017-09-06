@@ -1,1 +1,2 @@
 pymongo
+unittest-data-provider
