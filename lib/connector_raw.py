@@ -1,6 +1,6 @@
-from lib.connector_base import BaseConnector
+from lib.connector_base import Connector as Base_connector
 
-class RawConnector(BaseConnector):
+class Connector(Base_connector):
     def push(self, document):
         result = self.get_collection('raw').insert_one(document)
 

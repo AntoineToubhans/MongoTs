@@ -1,4 +1,4 @@
-from lib.connector_base import BaseConnector
+from lib.connector_base import Connector as Base_connector
 from lib.helpers_datetime import get_day_count
 from datetime import datetime
 
@@ -6,7 +6,7 @@ AGGR_MONTH_KEY='__months'
 AGGR_DAY_KEY='__days'
 AGGR_HOUR_KEY='__hours'
 
-class FixedRangeConnector(BaseConnector):
+class Connector(Base_connector):
     def _get_query(self, document):
         return {
             tag_key: document[tag_key]

@@ -1,6 +1,7 @@
-from lib.utils import get_key_from_config, get_mongo_db_from_config
+from lib.utils import get_key_from_config
+from lib.utils import get_mongo_db_from_config
 
-class BaseConnector():
+class Connector():
     def __init__(self, config, time_key='datetime', value_keys=[], tag_keys=[]):
         self._db = get_mongo_db_from_config(config)
         self._collectionName = get_key_from_config('collectionName', config)

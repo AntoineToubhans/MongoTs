@@ -2,9 +2,9 @@ import datetime, math, random, unittest
 from functools import reduce
 
 from test.base_test import BaseTest
-from lib.connector_fixed_range import FixedRangeConnector
+from lib.connector_fixed_range import Connector as Fixed_range_connector
 
-class FixedRangeCustomParamsTest(BaseTest):
+class Insert_one_test(BaseTest):
     def __init__(self, testName):
         super().__init__(testName)
 
@@ -12,7 +12,7 @@ class FixedRangeCustomParamsTest(BaseTest):
         value_keys = ['goal', 'yellow_card', 'red_card']
         tag_keys = []
 
-        self._fixedRangeConnector = FixedRangeConnector(
+        self._fixedRangeConnector = Fixed_range_connector(
             self._mongoConfig,
             time_key=time_key,
             value_keys=value_keys,
