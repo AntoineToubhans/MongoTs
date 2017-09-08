@@ -1,30 +1,35 @@
 import unittest
-import pymongo
-from unittest.mock import patch
+import mongomock
 from unittest.mock import MagicMock
 
 import lib.mongots as mongots
 
 class MongoTSClientTest(unittest.TestCase):
-    def setUp(self):
-        mongots.MongoClient = MagicMock(pymongo.MongoClient)
 
     def test_mongots_client_init_succeeds_when_mongo_client_is_provided(self):
-        mocked_mongo_client = MagicMock(pymongo.MongoClient)
+        mongots.MongoClient = MagicMock()
+        mocked_mongo_client = mongomock.MongoClient()
 
         mongots_client = mongots.MongoTSClient(mongo_client=mocked_mongo_client)
 
+        self.assertIsInstance(mongots_client._client, mongomock.MongoClient)
         self.assertEqual(mongots_client._client, mocked_mongo_client)
         mongots.MongoClient.assert_not_called()
 
     def test_mongots_client_init_succeeds_when_mongo_config_is_provided(self):
+        mongots.MongoClient = mongomock.MongoClient
+
         mongots_client = mongots.MongoTSClient(host='toto.fr', port=66666)
 
-        mongots.MongoClient.assert_called_with(host='toto.fr', port=66666)
+        self.assertIsInstance(mongots_client._client, mongomock.MongoClient)
+        self.assertEqual(mongots_client._client.address, ('toto.fr', 66666))
 
     def test_get_database_returns_a_database(self):
-        mongots_client = mongots.MongoTSClient(host='toto.fr', port=66666)
+        mongots.MongoClient = mongomock.MongoClient
 
+        mongots_client = mongots.MongoTSClient(host='toto.fr', port=66666)
         mongots_database = mongots_client.get_database('TestDb')
 
-        self.assertNotEqual(mongots_database, None)
+        self.assertIsNotNone(mongots_database)
+        self.assertIsInstance(mongots_database._database, mongomock.Database)
+        self.assertEqual(mongots_database._database.name, 'TestDb')
