@@ -7,3 +7,13 @@ class MongoTSClient():
             self._client = mongo_client
         else:
             self._client = MongoClient(*args, **kwargs)
+
+    def get_database(self, database_name):
+        mongo_database = self._client.get_database(database_name)
+
+        return MongoTSDatabase(mongo_database)
+
+
+class MongoTSDatabase():
+    def __init__(self, mongo_database):
+        self._database = mongo_database

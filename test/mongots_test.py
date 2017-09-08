@@ -21,3 +21,10 @@ class MongoTSClientTest(unittest.TestCase):
         mongots_client = mongots.MongoTSClient(host='toto.fr', port=66666)
 
         mongots.MongoClient.assert_called_with(host='toto.fr', port=66666)
+
+    def test_get_database_returns_a_database(self):
+        mongots_client = mongots.MongoTSClient(host='toto.fr', port=66666)
+
+        mongots_database = mongots_client.get_database('TestDb')
+
+        self.assertNotEqual(mongots_database, None)
