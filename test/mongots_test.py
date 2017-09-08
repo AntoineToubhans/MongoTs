@@ -12,7 +12,7 @@ class MongoTSClientTest(unittest.TestCase):
     def test_mongots_client_init_succeeds_when_mongo_client_is_provided(self):
         mocked_mongo_client = MagicMock(pymongo.MongoClient)
 
-        mongots_client = mongots.MongoTSClient(mongoClient=mocked_mongo_client)
+        mongots_client = mongots.MongoTSClient(mongo_client=mocked_mongo_client)
 
         self.assertEqual(mongots_client._client, mocked_mongo_client)
         mongots.MongoClient.assert_not_called()
