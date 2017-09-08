@@ -16,6 +16,20 @@ class MongoTSClient():
     def __getattr__(self, key):
         return self.get_database(key)
 
+
 class MongoTSDatabase():
     def __init__(self, mongo_database):
         self._database = mongo_database
+
+    def get_collection(self, collection_name):
+        mongo_collection = self._database.get_collection(collection_name)
+
+        return MongoTSCollection(mongo_collection)
+
+    def __getattr__(self, key):
+        return self.get_collection(key)
+
+
+class MongoTSCollection():
+    def __init__(self, mongo_collection):
+        self._collection = mongo_collection

@@ -43,3 +43,23 @@ class MongoTSClientTest(unittest.TestCase):
         self.assertIsNotNone(mongots_database)
         self.assertIsInstance(mongots_database._database, mongomock.Database)
         self.assertEqual(mongots_database._database.name, 'TestDb')
+
+    def test_get_collection_returns_a_collection(self):
+        mongots.MongoClient = mongomock.MongoClient
+
+        mongots_client = mongots.MongoTSClient(host='toto.fr', port=66666)
+        mongots_database = mongots_client.get_database('TestDb')
+        mongots_collection = mongots_database.get_collection('temperature')
+
+        self.assertIsNotNone(mongots_collection)
+        self.assertIsInstance(mongots_collection._collection, mongomock.Collection)
+        self.assertEqual(mongots_collection._collection.name, 'temperature')
+
+    def test_magic_get_collection_returns_a_collection(self):
+        mongots.MongoClient = mongomock.MongoClient
+
+        mongots_collection = mongots.MongoTSClient(host='toto.fr', port=66666).TestDb.temperature
+
+        self.assertIsNotNone(mongots_collection)
+        self.assertIsInstance(mongots_collection._collection, mongomock.Collection)
+        self.assertEqual(mongots_collection._collection.name, 'temperature')
