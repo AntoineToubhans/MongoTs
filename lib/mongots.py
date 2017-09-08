@@ -13,6 +13,8 @@ class MongoTSClient():
 
         return MongoTSDatabase(mongo_database)
 
+    def __getattr__(self, key):
+        return self.get_database(key)
 
 class MongoTSDatabase():
     def __init__(self, mongo_database):

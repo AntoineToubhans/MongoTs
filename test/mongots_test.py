@@ -33,3 +33,13 @@ class MongoTSClientTest(unittest.TestCase):
         self.assertIsNotNone(mongots_database)
         self.assertIsInstance(mongots_database._database, mongomock.Database)
         self.assertEqual(mongots_database._database.name, 'TestDb')
+
+    def test_magic_get_database_returns_a_database(self):
+        mongots.MongoClient = mongomock.MongoClient
+
+        mongots_client = mongots.MongoTSClient(host='toto.fr', port=66666)
+        mongots_database = mongots_client.TestDb
+
+        self.assertIsNotNone(mongots_database)
+        self.assertIsInstance(mongots_database._database, mongomock.Database)
+        self.assertEqual(mongots_database._database.name, 'TestDb')
