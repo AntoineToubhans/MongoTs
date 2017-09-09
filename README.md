@@ -1,8 +1,17 @@
 MongoTS
 ======
 
-# Run tests
+A fast API for time series storage in MongoDb
+
+## Usage
+
+```python
+import mongots
+client = mongots.MongoTSClient()
+```
+
+## Run tests
 
 ```bash
-python -m unittest -v test.connector_fixed_range_one test.connector_fixed_range_many
+python -m unittest -v test
 ```
