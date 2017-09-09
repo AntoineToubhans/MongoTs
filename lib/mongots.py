@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-
+from lib.utils import is_name_valid
 
 class MongoTSClient():
     def __init__(self, mongo_client=None, *args, **kwargs):
@@ -14,7 +14,10 @@ class MongoTSClient():
         return MongoTSDatabase(mongo_database)
 
     def __getattr__(self, key):
-        return self.get_database(key)
+        if is_name_valid(key):
+            return self.get_database(key)
+        else:
+            raise AttributeError
 
 
 class MongoTSDatabase():
@@ -27,7 +30,10 @@ class MongoTSDatabase():
         return MongoTSCollection(mongo_collection)
 
     def __getattr__(self, key):
-        return self.get_collection(key)
+        if is_name_valid(key):
+            return self.get_collection(key)
+        else:
+            raise AttributeError
 
 
 class MongoTSCollection():
