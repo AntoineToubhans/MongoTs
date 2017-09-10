@@ -1,1 +1,1 @@
-from test.mongots_client_test import MongoTSClientTest
+from test.client_test import MongoTSClientTest

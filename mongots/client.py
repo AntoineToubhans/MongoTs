@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 
 from mongots.utils import is_name_valid
-from mongots import mongots_database
+from mongots.database import MongoTSDatabase
 
 class MongoTSClient():
     def __init__(self, mongo_client=None, *args, **kwargs):
@@ -13,7 +13,7 @@ class MongoTSClient():
     def get_database(self, database_name):
         mongo_database = self._client.get_database(database_name)
 
-        return mongots_database.MongoTSDatabase(mongo_database)
+        return MongoTSDatabase(mongo_database)
 
     def __getattr__(self, key):
         if is_name_valid(key):

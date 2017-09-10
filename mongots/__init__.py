@@ -1,5 +1,5 @@
 __version__ = '0.1'
 
-from mongots.mongots_client import MongoTSClient
-from mongots.mongots_database import MongoTSDatabase
-from mongots.mongots_collection import MongoTSCollection
+from mongots.client import MongoTSClient
+from mongots.database import MongoTSDatabase
+from mongots.collection import MongoTSCollection

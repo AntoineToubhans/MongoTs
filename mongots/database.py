@@ -1,5 +1,5 @@
 from mongots.utils import is_name_valid
-from mongots import mongots_collection
+from mongots.collection import MongoTSCollection
 
 
 class MongoTSDatabase():
@@ -9,7 +9,7 @@ class MongoTSDatabase():
     def get_collection(self, collection_name):
         mongo_collection = self._database.get_collection(collection_name)
 
-        return mongots_collection.MongoTSCollection(mongo_collection)
+        return MongoTSCollection(mongo_collection)
 
     def __getattr__(self, key):
         if is_name_valid(key):
