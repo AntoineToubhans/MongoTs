@@ -27,7 +27,7 @@ def build_update_query(value, timestamp):
     ]
 
     inc_update = {
-        '%s.%s' % (base_inc_key, aggregate_type): value if aggregate_type is "sum" else 1
+        '%s%s' % (base_inc_key, aggregate_type): value if aggregate_type is "sum" else 1
         for base_inc_key in base_inc_keys
         for aggregate_type in ['count', 'sum']
     }
