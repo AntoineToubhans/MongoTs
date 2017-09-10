@@ -8,4 +8,4 @@ class MongoTSCollection(MongoTSQueryBuilder):
     def insert_one(self, value, datetime, tags=None):
         filters = self.build_filters(datetime, tags)
 
-        return 0
+        return 1
