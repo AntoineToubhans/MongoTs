@@ -6,11 +6,15 @@ AGGR_DAY_KEY = 'days'
 AGGR_HOUR_KEY = 'hours'
 
 
-class MongoTSQueryBuilder:
-    @staticmethod
-    def build_filters(timestamp, tags=None):
-        filters = tags or {}
+def build_filter_query(timestamp, tags=None):
+    filters = tags or {}
 
-        filters[DATETIME_KEY] = datetime(timestamp.year, 1, 1)
+    filters[DATETIME_KEY] = datetime(timestamp.year, 1, 1)
 
-        return filters
+    return filters
+
+
+def build_update_query():
+    return {
+        '$inc': {},
+    }

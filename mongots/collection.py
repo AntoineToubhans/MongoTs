@@ -1,11 +1,11 @@
-from mongots.query import MongoTSQueryBuilder
+from mongots.query import build_filter_query
 
 
-class MongoTSCollection(MongoTSQueryBuilder):
+class MongoTSCollection():
     def __init__(self, mongo_collection):
         self._collection = mongo_collection
 
     def insert_one(self, value, datetime, tags=None):
-        filters = self.build_filters(datetime, tags)
+        filters = build_filter_query(datetime, tags)
 
         return 1

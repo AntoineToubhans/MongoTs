@@ -22,12 +22,15 @@ class MongoTSCollectionTest(unittest.TestCase):
 
         self.assertEqual(result, 1)
 
-    @patch('mongots.query.MongoTSQueryBuilder.build_filters')
-    def test_insert_one_call_build_filters(self, build_filters):
+    @patch('mongots.collection.build_filter_query')
+    def test_insert_one_call_build_filters(self, build_filter_query):
         result = self.mongots_collection.insert_one(
             42.66,
             datetime(2001, 11, 23, 13, 45),
             tags={'city': 'Paris'},
         )
 
-        build_filters.assert_called()
+        build_filter_query.assert_called_with(
+            datetime(2001, 11, 23, 13, 45),
+            { 'city': 'Paris' },
+        )
