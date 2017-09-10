@@ -18,6 +18,11 @@ def build_filter_query(timestamp, tags=None):
 
 
 def build_update_query(value, timestamp):
+    inc_values = {
+        'count': 1,
+        'sum': value,
+    }
+
     datetime_args = {
         'month': str(timestamp.month - 1), # Array index: range from 0 to 11
         'day': str(timestamp.day - 1),     # Array index: range from 0 to 27 / 28 / 29 or 30
@@ -30,9 +35,9 @@ def build_update_query(value, timestamp):
     ]
 
     inc_update = {
-        '%s%s' % (inc_key, aggregate_type): value if aggregate_type is "sum" else 1
+        '%s%s' % (inc_key, aggregate_type): inc_values[aggregate_type]
         for inc_key in inc_keys
-        for aggregate_type in ['count', 'sum']
+        for aggregate_type in inc_values
     }
 
     return {
