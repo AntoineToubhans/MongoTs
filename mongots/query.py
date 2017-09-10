@@ -21,6 +21,7 @@ def build_update_query(value, timestamp):
     inc_values = {
         'count': 1,
         'sum': value,
+        'sum2': value**2,
     }
 
     datetime_args = {

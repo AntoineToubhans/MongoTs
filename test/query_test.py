@@ -34,7 +34,7 @@ class MongoTSQueryBuilderTest(unittest.TestCase):
         self.assertIsNotNone(update)
 
     def test_build_update_query_returns_correct_inc_update(self):
-        update = query.build_update_query(42.666, datetime(2019, 7, 2, 15, 12))
+        update = query.build_update_query(42.6, datetime(2019, 7, 2, 15, 12))
 
         self.assertIn('$inc', update)
 
@@ -42,11 +42,15 @@ class MongoTSQueryBuilderTest(unittest.TestCase):
 
         self.assertEqual(inc_update, {
             'count': 1,
-            'sum': 42.666,
+            'sum': 42.6,
+            'sum2': 1814.7600000000002,
             'months.6.count': 1,
-            'months.6.sum': 42.666,
+            'months.6.sum': 42.6,
+            'months.6.sum2': 1814.7600000000002,
             'months.6.days.1.count': 1,
-            'months.6.days.1.sum': 42.666,
+            'months.6.days.1.sum': 42.6,
+            'months.6.days.1.sum2': 1814.7600000000002,
             'months.6.days.1.hours.15.count': 1,
-            'months.6.days.1.hours.15.sum': 42.666,
+            'months.6.days.1.hours.15.sum': 42.6,
+            'months.6.days.1.hours.15.sum2': 1814.7600000000002,
         })
