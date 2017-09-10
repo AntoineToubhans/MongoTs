@@ -34,3 +34,16 @@ class MongoTSCollectionTest(unittest.TestCase):
             datetime(2001, 11, 23, 13, 45),
             { 'city': 'Paris' },
         )
+
+    @patch('mongots.collection.build_update_query')
+    def test_insert_one_call_build_update(self, build_update_query):
+        result = self.mongots_collection.insert_one(
+            42.66,
+            datetime(2001, 11, 23, 13, 45),
+            tags={'city': 'Paris'},
+        )
+
+        build_update_query.assert_called_with(
+            42.66,
+            datetime(2001, 11, 23, 13, 45),
+        )

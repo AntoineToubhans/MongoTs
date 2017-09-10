@@ -1,4 +1,5 @@
 from mongots.query import build_filter_query
+from mongots.query import build_update_query
 
 
 class MongoTSCollection():
@@ -7,5 +8,6 @@ class MongoTSCollection():
 
     def insert_one(self, value, timestamp, tags=None):
         filters = build_filter_query(timestamp, tags)
+        update = build_update_query(value, timestamp)
 
         return 1
