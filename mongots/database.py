@@ -16,8 +16,3 @@ class MongoTSDatabase():
             return self.get_collection(key)
         else:
             raise AttributeError
-
-
-class MongoTSCollection():
-    def __init__(self, mongo_collection):
-        self._collection = mongo_collection

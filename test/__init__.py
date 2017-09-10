@@ -1,1 +1,3 @@
 from test.client_test import MongoTSClientTest
+from test.collection_test import MongoTSCollectionTest
+from test.query_test import MongoTSQueryBuilderTest
