@@ -27,3 +27,9 @@ class MongoTSQueryBuilderTest(unittest.TestCase):
         self.assertEqual(filters, {
             query.DATETIME_KEY: datetime(2003, 1, 1, 0, 0)},
         )
+
+    def test_build_update_query_succeeds(self):
+        update = query.build_update_query(42.666, datetime(2019, 7, 2, 15, 12))
+
+        self.assertIsNotNone(update)
+        self.assertIsNotNone(update.get('$inc'))
