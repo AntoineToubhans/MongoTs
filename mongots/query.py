@@ -1,5 +1,10 @@
 from datetime import datetime
 
+from mongots.utils import get_day_count
+
+AGGREGATION_MONTH_KEY = 'months'
+AGGREGATION_DAY_KEY = 'days'
+AGGREGATION_HOUR_KEY = 'hours'
 AGGREGATION_KEYS = [
     '',
     'months.{month}.',
@@ -8,6 +13,54 @@ AGGREGATION_KEYS = [
 ]
 DATETIME_KEY = 'datetime'
 
+
+def _build_empty_aggregate_document():
+    return {
+        'count': 0,
+        'sum': 0,
+        'sum2': 0,
+    }
+
+def _build_empty_one_hour_document(year, month, day, hour):
+    base = _build_empty_aggregate_document()
+    base[DATETIME_KEY] = datetime(year, month, day, hour)
+
+    return base
+
+def _build_empty_one_day_document(year, month, day):
+    base = _build_empty_aggregate_document()
+    base[DATETIME_KEY] = datetime(year, month, day)
+    base[AGGREGATION_HOUR_KEY] = [
+        _build_empty_one_hour_document(year, month, day, hour)
+        for hour in range(0, 24)
+    ]
+
+    return base
+
+def _build_empty_one_month_document(year, month):
+    day_count = get_day_count(year, month)
+
+    base = _build_empty_aggregate_document()
+    base[DATETIME_KEY] = datetime(year, month, 1)
+    base[AGGREGATION_DAY_KEY] = [
+        _build_empty_one_day_document(year, month, day)
+        for day in range(1, day_count+1)
+    ]
+
+    return base
+
+def _build_empty_one_year_document(year):
+    base = _build_empty_aggregate_document()
+    base[DATETIME_KEY] = datetime(year, 1, 1)
+    base[AGGREGATION_MONTH_KEY] = [
+        _build_empty_one_month_document(year, month)
+        for month in range(1, 13)
+    ]
+
+    return base
+
+def build_empty_document(timestamp):
+    return _build_empty_one_year_document(timestamp.year)
 
 def build_filter_query(timestamp, tags=None):
     filters = tags or {}

@@ -24,6 +24,7 @@ class MongoTSCollectionTest(unittest.TestCase):
 
     @patch('mongots.collection.build_filter_query')
     def test_insert_one_call_build_filters(self, build_filter_query):
+        build_filter_query.return_value = {}
         result = self.mongots_collection.insert_one(
             42.66,
             datetime(2001, 11, 23, 13, 45),
@@ -37,6 +38,7 @@ class MongoTSCollectionTest(unittest.TestCase):
 
     @patch('mongots.collection.build_update_query')
     def test_insert_one_call_build_update(self, build_update_query):
+        build_update_query.return_value = { '$inc': {}}
         result = self.mongots_collection.insert_one(
             42.66,
             datetime(2001, 11, 23, 13, 45),
