@@ -31,7 +31,6 @@ class QueryTest(unittest.TestCase):
         with self.assertRaises(Exception):
             query._get_keys_from_interval(invalid_interval)
 
-
     def test_build_initial_match_succeeds(self):
         self.assertEqual(query.build_initial_match(
             datetime(2001, 10, 2, 12),
@@ -46,3 +45,77 @@ class QueryTest(unittest.TestCase):
                 }
             }
         })
+
+    def build_unwind_and_match_data():
+        years_pipeline = []
+
+        months_pipeline = [{
+          "$unwind": "$months",
+        }, {
+          "$match": {
+            "months.datetime": {
+              "$gte": datetime(2001, 3, 1),
+              "$lte": datetime(2001, 4, 1),
+            }
+          }
+        }]
+
+        days_pipeline = [{
+          "$unwind": "$months",
+        }, {
+          "$match": {
+            "months.datetime": {
+              "$gte": datetime(2001, 3, 1),
+              "$lte": datetime(2001, 4, 1),
+            }
+          }
+        }, {
+          "$unwind": "$months.days",
+        }, {
+          "$match": {
+            "months.days.datetime": {
+              "$gte": datetime(2001, 3, 22),
+              "$lte": datetime(2001, 4, 2),
+            }
+          }
+        }]
+
+        hours_pipeline = [{
+          "$unwind": "$months",
+        }, {
+          "$match": {
+            "months.datetime": {
+              "$gte": datetime(2001, 3, 1),
+              "$lte": datetime(2001, 4, 1),
+            }
+          }
+        }, {
+          "$unwind": "$months.days",
+        }, {
+          "$match": {
+            "months.days.datetime": {
+              "$gte": datetime(2001, 3, 22),
+              "$lte": datetime(2001, 4, 2),
+            }
+          }
+        }, {
+          "$unwind": "$months.days.hours",
+        }, {
+          "$match": {
+            "months.days.hours.datetime": {
+              "$gte": datetime(2001, 3, 22, 12),
+              "$lte": datetime(2001, 4, 2, 0),
+            }
+          }
+        }]
+
+        return [
+            (datetime(2001, 3, 22, 12), datetime(2001, 4, 2), '1y', years_pipeline),
+            (datetime(2001, 3, 22, 12), datetime(2001, 4, 2), '1m', months_pipeline),
+            (datetime(2001, 3, 22, 12), datetime(2001, 4, 2), '1d', days_pipeline),
+            (datetime(2001, 3, 22, 12), datetime(2001, 4, 2), '1h', hours_pipeline),
+        ]
+
+    @data_provider(build_unwind_and_match_data)
+    def test_build_unwind_and_match_succeeds(self, start, end, interval, pipeline):
+        self.assertEqual(query.build_unwind_and_match(start, end, interval), pipeline)

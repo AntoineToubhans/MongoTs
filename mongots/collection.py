@@ -4,6 +4,7 @@ from mongots.insert import build_empty_document
 from mongots.insert import build_filter
 from mongots.insert import build_update
 from mongots.query import build_initial_match
+from mongots.query import build_unwind_and_match
 
 
 class MongoTSCollection():
@@ -51,6 +52,7 @@ class MongoTSCollection():
         pipeline = []
 
         pipeline.append(build_initial_match(start, end, tags))
+        pipeline.extend(build_unwind_and_match(start, end, interval))
 
         raw_result = list(self._collection.aggregate(pipeline))
 

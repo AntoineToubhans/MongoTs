@@ -61,7 +61,7 @@ class MongoTSCollectionTest(unittest.TestCase):
         self.assertIsInstance(df, pd.DataFrame)
 
     @patch('mongots.collection.build_initial_match')
-    def test_insert_one_call_build_update(self, build_initial_match):
+    def test_query_calls_build_update(self, build_initial_match):
         build_initial_match.return_value = { '$match': {} }
         self.mongots_collection.query(
             datetime(2001, 10, 2, 12),
@@ -75,4 +75,21 @@ class MongoTSCollectionTest(unittest.TestCase):
             datetime(2001, 10, 2, 12),
             datetime(2002, 2, 3),
             {'city': 'Paris'},
+        )
+
+    @patch('mongots.collection.build_unwind_and_match')
+    def test_query_calls_build_unwind_and_match(self, build_unwind_and_match):
+        build_unwind_and_match.return_value = []
+        self.mongots_collection.query(
+            datetime(2001, 10, 2, 12),
+            datetime(2002, 2, 3),
+            interval='1m',
+            tags={'city': 'Paris'},
+            groupby=[],
+        )
+
+        build_unwind_and_match.assert_called_with(
+            datetime(2001, 10, 2, 12),
+            datetime(2002, 2, 3),
+            '1m',
         )
