@@ -12,6 +12,14 @@ client = mongots.MongoTSClient()
 
 ## Run tests
 
+Launch all tests:
+
+```bash
+pytest
+```
+
+Launch only unit test:
+
 ```bash
 python -m unittest -v test
 ```
