@@ -93,3 +93,16 @@ class MongoTSCollectionTest(unittest.TestCase):
             datetime(2002, 2, 3),
             '1m',
         )
+
+    @patch('mongots.collection.build_project')
+    def test_query_calls_build_project(self, build_project):
+        build_project.return_value = { '$project': {} }
+        self.mongots_collection.query(
+            datetime(2001, 10, 2, 12),
+            datetime(2002, 2, 3),
+            interval='1m',
+            tags={'city': 'Paris'},
+            groupby=[],
+        )
+
+        build_project.assert_called_with('1m')
