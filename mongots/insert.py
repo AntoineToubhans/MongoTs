@@ -62,7 +62,7 @@ def _build_empty_one_year_document(year):
 def build_empty_document(timestamp):
     return _build_empty_one_year_document(timestamp.year)
 
-def build_filter_query(timestamp, tags=None):
+def build_filter(timestamp, tags=None):
     filters = tags or {}
 
     filters[DATETIME_KEY] = datetime(timestamp.year, 1, 1)
@@ -70,7 +70,7 @@ def build_filter_query(timestamp, tags=None):
     return filters
 
 
-def build_update_query(value, timestamp):
+def build_update(value, timestamp):
     inc_values = {
         'count': 1,
         'sum': value,

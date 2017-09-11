@@ -1,8 +1,8 @@
 import pandas as pd
 
-from mongots.query import build_empty_document
-from mongots.query import build_filter_query
-from mongots.query import build_update_query
+from mongots.insert import build_empty_document
+from mongots.insert import build_filter
+from mongots.insert import build_update
 
 
 class MongoTSCollection():
@@ -19,8 +19,8 @@ class MongoTSCollection():
 
         Return (bool): True if the insertion succeeded, False otherwise.
         """
-        filters = build_filter_query(timestamp, tags)
-        update = build_update_query(value, timestamp)
+        filters = build_filter(timestamp, tags)
+        update = build_update(value, timestamp)
 
         result = self._collection.update_one(filters, update, upsert=False)
 

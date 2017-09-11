@@ -3,13 +3,13 @@ import mongomock
 from datetime import datetime
 from unittest_data_provider import data_provider
 
-from mongots import query
+from mongots import insert
 
 
-class MongoTSQueryBuilderTest(unittest.TestCase):
+class InsertTest(unittest.TestCase):
 
     def test_build_filter_add_a_timestamp_to_tags(self):
-        filters = query.build_filter_query(
+        filters = insert.build_filter(
             datetime(2003, 12, 31, 12, 33, 15),
             tags={ 'city': 'Paris', 'station': 2 },
         )
@@ -17,25 +17,25 @@ class MongoTSQueryBuilderTest(unittest.TestCase):
         self.assertEqual(filters, {
             'city': 'Paris',
             'station': 2,
-            query.DATETIME_KEY: datetime(2003, 1, 1, 0, 0)},
+            insert.DATETIME_KEY: datetime(2003, 1, 1, 0, 0)},
         )
 
     def test_build_filter_add_a_timestamp_when_no_tags_are_provided(self):
-        filters = query.build_filter_query(
+        filters = insert.build_filter(
             datetime(2003, 12, 31, 12, 33, 15),
         )
 
         self.assertEqual(filters, {
-            query.DATETIME_KEY: datetime(2003, 1, 1, 0, 0)},
+            insert.DATETIME_KEY: datetime(2003, 1, 1, 0, 0)},
         )
 
-    def test_build_update_query_succeeds(self):
-        update = query.build_update_query(42.666, datetime(2019, 7, 2, 15, 12))
+    def test_build_update_succeeds(self):
+        update = insert.build_update(42.666, datetime(2019, 7, 2, 15, 12))
 
         self.assertIsNotNone(update)
 
-    def test_build_update_query_returns_correct_inc_update(self):
-        update = query.build_update_query(42.6, datetime(2019, 7, 2, 15, 12))
+    def test_build_update_returns_correct_inc_update(self):
+        update = insert.build_update(42.6, datetime(2019, 7, 2, 15, 12))
 
         self.assertIn('$inc', update)
 
@@ -65,7 +65,7 @@ class MongoTSQueryBuilderTest(unittest.TestCase):
 
     @data_provider(empty_document_data)
     def test_empty_document(self, timestamp, year_timestamp, month_day_count):
-        empty_document = query.build_empty_document(timestamp)
+        empty_document = insert.build_empty_document(timestamp)
 
         self.assertEqual(empty_document['count'], 0)
         self.assertEqual(empty_document['sum'], 0)
@@ -99,7 +99,7 @@ class MongoTSQueryBuilderTest(unittest.TestCase):
 
     @data_provider(valid_intervals)
     def test_get_keys_from_interval_returns_correct_keys(self, interval, keys):
-        self.assertEqual(query._get_keys_from_interval(interval), keys)
+        self.assertEqual(insert._get_keys_from_interval(interval), keys)
 
     def invalid_intervals():
         return [('t'), ('d'), ('m'), ('1')]
@@ -107,4 +107,4 @@ class MongoTSQueryBuilderTest(unittest.TestCase):
     @data_provider(invalid_intervals)
     def test_get_keys_from_interval_fails_for_invalid_interval(self, invalid_interval):
         with self.assertRaises(Exception):
-            query._get_keys_from_interval(invalid_interval)
+            insert._get_keys_from_interval(invalid_interval)

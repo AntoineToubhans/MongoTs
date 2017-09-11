@@ -23,30 +23,30 @@ class MongoTSCollectionTest(unittest.TestCase):
 
         self.assertEqual(result, True)
 
-    @patch('mongots.collection.build_filter_query')
-    def test_insert_one_call_build_filters(self, build_filter_query):
-        build_filter_query.return_value = {}
+    @patch('mongots.collection.build_filter')
+    def test_insert_one_call_build_filters(self, build_filter):
+        build_filter.return_value = {}
         self.mongots_collection.insert_one(
             42.66,
             datetime(2001, 11, 23, 13, 45),
             tags={'city': 'Paris'},
         )
 
-        build_filter_query.assert_called_with(
+        build_filter.assert_called_with(
             datetime(2001, 11, 23, 13, 45),
             { 'city': 'Paris' },
         )
 
-    @patch('mongots.collection.build_update_query')
-    def test_insert_one_call_build_update(self, build_update_query):
-        build_update_query.return_value = { '$inc': {}}
+    @patch('mongots.collection.build_update')
+    def test_insert_one_call_build_update(self, build_update):
+        build_update.return_value = { '$inc': {}}
         self.mongots_collection.insert_one(
             42.66,
             datetime(2001, 11, 23, 13, 45),
             tags={'city': 'Paris'},
         )
 
-        build_update_query.assert_called_with(
+        build_update.assert_called_with(
             42.66,
             datetime(2001, 11, 23, 13, 45),
         )
