@@ -40,7 +40,7 @@ temperatures_in_paris = [
 
 @pytest.mark.parametrize('value, timestamp, tags', temperatures_in_paris)
 def test_insert_temperatures_in_paris_one_by_one(collection, value, timestamp, tags):
-    assert 1 == collection.insert_one(value, timestamp, tags=tags)
+    assert collection.insert_one(value, timestamp, tags=tags)
 
 def test_right_number_of_documents_were_inserted(collection):
     assert 1 == collection._collection.count({})
