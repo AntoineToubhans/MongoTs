@@ -50,61 +50,61 @@ class QueryTest(unittest.TestCase):
         years_pipeline = []
 
         months_pipeline = [{
-          "$unwind": "$months",
+          '$unwind': '$months',
         }, {
-          "$match": {
-            "months.datetime": {
-              "$gte": datetime(2001, 3, 1),
-              "$lte": datetime(2001, 4, 1),
+          '$match': {
+            'months.datetime': {
+              '$gte': datetime(2001, 3, 1),
+              '$lte': datetime(2001, 4, 1),
             }
           }
         }]
 
         days_pipeline = [{
-          "$unwind": "$months",
+          '$unwind': '$months',
         }, {
-          "$match": {
-            "months.datetime": {
-              "$gte": datetime(2001, 3, 1),
-              "$lte": datetime(2001, 4, 1),
+          '$match': {
+            'months.datetime': {
+              '$gte': datetime(2001, 3, 1),
+              '$lte': datetime(2001, 4, 1),
             }
           }
         }, {
-          "$unwind": "$months.days",
+          '$unwind': '$months.days',
         }, {
-          "$match": {
-            "months.days.datetime": {
-              "$gte": datetime(2001, 3, 22),
-              "$lte": datetime(2001, 4, 2),
+          '$match': {
+            'months.days.datetime': {
+              '$gte': datetime(2001, 3, 22),
+              '$lte': datetime(2001, 4, 2),
             }
           }
         }]
 
         hours_pipeline = [{
-          "$unwind": "$months",
+          '$unwind': '$months',
         }, {
-          "$match": {
-            "months.datetime": {
-              "$gte": datetime(2001, 3, 1),
-              "$lte": datetime(2001, 4, 1),
+          '$match': {
+            'months.datetime': {
+              '$gte': datetime(2001, 3, 1),
+              '$lte': datetime(2001, 4, 1),
             }
           }
         }, {
-          "$unwind": "$months.days",
+          '$unwind': '$months.days',
         }, {
-          "$match": {
-            "months.days.datetime": {
-              "$gte": datetime(2001, 3, 22),
-              "$lte": datetime(2001, 4, 2),
+          '$match': {
+            'months.days.datetime': {
+              '$gte': datetime(2001, 3, 22),
+              '$lte': datetime(2001, 4, 2),
             }
           }
         }, {
-          "$unwind": "$months.days.hours",
+          '$unwind': '$months.days.hours',
         }, {
-          "$match": {
-            "months.days.hours.datetime": {
-              "$gte": datetime(2001, 3, 22, 12),
-              "$lte": datetime(2001, 4, 2, 0),
+          '$match': {
+            'months.days.hours.datetime': {
+              '$gte': datetime(2001, 3, 22, 12),
+              '$lte': datetime(2001, 4, 2, 0),
             }
           }
         }]
@@ -119,3 +119,52 @@ class QueryTest(unittest.TestCase):
     @data_provider(build_unwind_and_match_data)
     def test_build_unwind_and_match_succeeds(self, start, end, interval, pipeline):
         self.assertEqual(query.build_unwind_and_match(start, end, interval), pipeline)
+
+
+    def build_project_data():
+        years = {
+            '$project': {
+                'datetime': '$datetime',
+                'count': '$count',
+                'sum': '$sum',
+                'sum2': '$sum2',
+            }
+        }
+
+        months = {
+            '$project': {
+                'datetime': '$months.datetime',
+                'count': '$months.count',
+                'sum': '$months.sum',
+                'sum2': '$months.sum2',
+            }
+        }
+
+        days = {
+            '$project': {
+                'datetime': '$months.days.datetime',
+                'count': '$months.days.count',
+                'sum': '$months.days.sum',
+                'sum2': '$months.days.sum2',
+            }
+        }
+
+        hours = {
+            '$project': {
+                'datetime': '$months.days.hours.datetime',
+                'count': '$months.days.hours.count',
+                'sum': '$months.days.hours.sum',
+                'sum2': '$months.days.hours.sum2',
+            }
+        }
+
+        return [
+            ('1y', years),
+            ('1m', months),
+            ('1d', days),
+            ('1h', hours),
+        ]
+
+    @data_provider(build_project_data)
+    def test_build_project_succeeds(self, interval, project_stage):
+        self.assertEqual(query.build_project(interval), project_stage)

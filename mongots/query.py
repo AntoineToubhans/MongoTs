@@ -61,3 +61,15 @@ def build_unwind_and_match(start, end, interval):
         }])
 
     return pipeline
+
+def build_project(interval):
+    interval_keys = _get_keys_from_interval(interval)
+
+    return {
+        '$project': {
+            DATETIME_KEY: '${}'.format('.'.join(interval_keys+[DATETIME_KEY])),
+            'count': '${}'.format('.'.join(interval_keys+['count'])),
+            'sum': '${}'.format('.'.join(interval_keys+['sum'])),
+            'sum2': '${}'.format('.'.join(interval_keys+['sum2'])),
+        }
+    }
