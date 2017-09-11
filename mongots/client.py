@@ -4,7 +4,7 @@ from mongots.utils import is_name_valid
 from mongots.database import MongoTSDatabase
 
 class MongoTSClient():
-    def __init__(self, mongo_client=None, *args, **kwargs):
+    def __init__(self, *args, mongo_client=None, **kwargs):
         if mongo_client:
             self._client = mongo_client
         else:

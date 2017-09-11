@@ -25,6 +25,14 @@ class MongoTSClientTest(unittest.TestCase):
         self.assertIsInstance(mongots_client._client, mongomock.MongoClient)
         self.assertEqual(mongots_client._client.address, ('toto.fr', 66666))
 
+    def test_mongots_client_init_succeeds_when_mongo_config_is_provided(self):
+        mongots.client.MongoClient = mongomock.MongoClient
+
+        mongots_client = mongots.MongoTSClient('toto.fr', 66666)
+
+        self.assertIsInstance(mongots_client._client, mongomock.MongoClient)
+        self.assertEqual(mongots_client._client.address, ('toto.fr', 66666))
+
     def test_get_database_returns_a_database(self):
         mongots_client = mongots.MongoTSClient(mongo_client=mongomock.MongoClient())
         mongots_database = mongots_client.get_database('TestDb')
