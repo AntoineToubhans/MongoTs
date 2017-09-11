@@ -39,7 +39,7 @@ class MongoTSCollectionTest(unittest.TestCase):
 
     @patch('mongots.collection.build_update')
     def test_insert_one_call_build_update(self, build_update):
-        build_update.return_value = { '$inc': {}}
+        build_update.return_value = { '$inc': {} }
         self.mongots_collection.insert_one(
             42.66,
             datetime(2001, 11, 23, 13, 45),
@@ -59,3 +59,20 @@ class MongoTSCollectionTest(unittest.TestCase):
         )
 
         self.assertIsInstance(df, pd.DataFrame)
+
+    @patch('mongots.collection.build_initial_match')
+    def test_insert_one_call_build_update(self, build_initial_match):
+        build_initial_match.return_value = { '$match': {} }
+        self.mongots_collection.query(
+            datetime(2001, 10, 2, 12),
+            datetime(2002, 2, 3),
+            interval='1m',
+            tags={'city': 'Paris'},
+            groupby=[],
+        )
+
+        build_initial_match.assert_called_with(
+            datetime(2001, 10, 2, 12),
+            datetime(2002, 2, 3),
+            {'city': 'Paris'},
+        )

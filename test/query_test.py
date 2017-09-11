@@ -30,3 +30,19 @@ class QueryTest(unittest.TestCase):
     def test_get_keys_from_interval_fails_for_invalid_interval(self, invalid_interval):
         with self.assertRaises(Exception):
             query._get_keys_from_interval(invalid_interval)
+
+
+    def test_build_initial_match_succeeds(self):
+        self.assertEqual(query.build_initial_match(
+            datetime(2001, 10, 2, 12),
+            datetime(2002, 2, 3),
+            {'Derrick': 'contre Superman'},
+        ), {
+            '$match': {
+                'Derrick': 'contre Superman',
+                'datetime': {
+                    '$gte': datetime(2001, 1, 1, 0, 0),
+                    '$lte': datetime(2002, 1, 1, 0, 0),
+                }
+            }
+        })

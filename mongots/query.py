@@ -1,4 +1,17 @@
+from datetime import datetime
+
 from mongots.constants import *
+
+
+def build_initial_match(start, end, tags):
+    filters = tags or {}
+
+    filters[DATETIME_KEY] = {
+        '$gte': datetime(start.year, 1, 1),
+        '$lte': datetime(end.year, 1, 1),
+    }
+
+    return { '$match': filters }
 
 
 def _get_keys_from_interval(interval):

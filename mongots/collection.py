@@ -3,6 +3,7 @@ import pandas as pd
 from mongots.insert import build_empty_document
 from mongots.insert import build_filter
 from mongots.insert import build_update
+from mongots.query import build_initial_match
 
 
 class MongoTSCollection():
@@ -47,4 +48,10 @@ class MongoTSCollection():
 
         Return (pandas.DataFrame): dataframe containing the statistics and indexed by datetimes.
         """
-        return pd.DataFrame()
+        pipeline = []
+
+        pipeline.append(build_initial_match(start, end, tags))
+
+        raw_result = list(self._collection.aggregate(pipeline))
+
+        return pd.DataFrame(raw_result)
