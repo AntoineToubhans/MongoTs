@@ -1,5 +1,10 @@
 import pandas as pd
 
+from mongots.constants import DATETIME_KEY
+from mongots.constants import COUNT_KEY
+from mongots.constants import SUM_KEY
+from mongots.constants import SUM2_KEY
+
 from mongots.insert import build_empty_document
 from mongots.insert import build_filter
 from mongots.insert import build_update
@@ -60,4 +65,15 @@ class MongoTSCollection():
 
         raw_result = list(self._collection.aggregate(pipeline))
 
-        return pd.DataFrame(raw_result)
+        base_columns = [DATETIME_KEY, COUNT_KEY, SUM_KEY, SUM2_KEY]
+        columns = base_columns + (groupby or [])
+
+        df = pd.DataFrame(data=raw_result, columns=columns).groupby(DATETIME_KEY).sum()
+
+        df['mean'] = df['sum'] / df['count']
+        df['std'] = pd.np.sqrt((df.sum2 / df['count']) - df['mean']**2)
+
+        del df[SUM_KEY]
+        del df[SUM2_KEY]
+
+        return df

@@ -51,15 +51,6 @@ class MongoTSCollectionTest(unittest.TestCase):
             datetime(2001, 11, 23, 13, 45),
         )
 
-    def test_query_returns_a_pandas_dataframe(self):
-        df = self.mongots_collection.query(
-            datetime(2001, 6, 23, 13, 45),
-            datetime(2001, 9, 2),
-            interval='1d',
-        )
-
-        self.assertIsInstance(df, pd.DataFrame)
-
     @patch('mongots.collection.build_initial_match')
     def test_query_calls_build_update(self, build_initial_match):
         build_initial_match.return_value = { '$match': {} }
@@ -119,3 +110,21 @@ class MongoTSCollectionTest(unittest.TestCase):
         )
 
         build_sort.assert_called_with()
+
+    def test_query_returns_a_pandas_dataframe(self):
+        df = self.mongots_collection.query(
+            datetime(2001, 6, 23, 13, 45),
+            datetime(2001, 9, 2),
+            interval='1d',
+        )
+
+        self.assertIsInstance(df, pd.DataFrame)
+
+    def test_query_returns_a_pandas_dataframe_with_the_expected_columns(self):
+        df = self.mongots_collection.query(
+            datetime(2001, 6, 23, 13, 45),
+            datetime(2001, 9, 2),
+            interval='1d',
+        )
+
+        self.assertListEqual(list(df.columns), ['count', 'mean', 'std'])
