@@ -106,3 +106,16 @@ class MongoTSCollectionTest(unittest.TestCase):
         )
 
         build_project.assert_called_with('1m')
+
+    @patch('mongots.collection.build_sort')
+    def test_query_calls_build_sort(self, build_sort):
+        build_sort.return_value = { '$sort': { 'toto': 1 } }
+        self.mongots_collection.query(
+            datetime(2001, 10, 2, 12),
+            datetime(2002, 2, 3),
+            interval='1m',
+            tags={'city': 'Paris'},
+            groupby=[],
+        )
+
+        build_sort.assert_called_with()

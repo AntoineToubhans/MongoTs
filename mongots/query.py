@@ -73,3 +73,10 @@ def build_project(interval):
             SUM2_KEY: '${}'.format('.'.join(interval_keys+[SUM2_KEY])),
         }
     }
+
+def build_sort():
+    return {
+        '$sort': {
+            'datetime': 1,
+        },
+    }
