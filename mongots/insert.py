@@ -6,9 +6,9 @@ from mongots.constants import *
 
 def _build_empty_aggregate_document():
     return {
-        'count': 0,
-        'sum': 0,
-        'sum2': 0,
+        COUNT_KEY: 0,
+        SUM_KEY: 0,
+        SUM2_KEY: 0,
     }
 
 def _build_empty_one_hour_document(year, month, day, hour):
@@ -62,9 +62,9 @@ def build_filter(timestamp, tags=None):
 
 def build_update(value, timestamp):
     inc_values = {
-        'count': 1,
-        'sum': value,
-        'sum2': value**2,
+        COUNT_KEY: 1,
+        SUM_KEY: value,
+        SUM2_KEY: value**2,
     }
 
     datetime_args = {

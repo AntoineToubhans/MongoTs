@@ -10,3 +10,7 @@ AGGREGATION_KEYS = [
 ]
 
 DATETIME_KEY = 'datetime'
+
+COUNT_KEY = 'count'
+SUM_KEY = 'sum'
+SUM2_KEY = 'sum2'

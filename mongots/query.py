@@ -68,8 +68,8 @@ def build_project(interval):
     return {
         '$project': {
             DATETIME_KEY: '${}'.format('.'.join(interval_keys+[DATETIME_KEY])),
-            'count': '${}'.format('.'.join(interval_keys+['count'])),
-            'sum': '${}'.format('.'.join(interval_keys+['sum'])),
-            'sum2': '${}'.format('.'.join(interval_keys+['sum2'])),
+            COUNT_KEY: '${}'.format('.'.join(interval_keys+[COUNT_KEY])),
+            SUM_KEY: '${}'.format('.'.join(interval_keys+[SUM_KEY])),
+            SUM2_KEY: '${}'.format('.'.join(interval_keys+[SUM2_KEY])),
         }
     }
