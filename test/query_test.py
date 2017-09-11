@@ -1,6 +1,7 @@
 import unittest
 import mongomock
 from datetime import datetime
+from unittest_data_provider import data_provider
 
 from mongots import query
 
@@ -54,3 +55,32 @@ class MongoTSQueryBuilderTest(unittest.TestCase):
             'months.6.days.1.hours.15.sum': 42.6,
             'months.6.days.1.hours.15.sum2': 1814.7600000000002,
         })
+
+    def empty_document_data():
+        return [
+            (datetime(1966, 3, 2, 13), datetime(1966, 1, 1), [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]),
+            (datetime(1964, 12, 31, 23, 59), datetime(1964, 1, 1), [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]),
+            (datetime(2000, 1, 1), datetime(2000, 1, 1), [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]),
+        ]
+
+    @data_provider(empty_document_data)
+    def test_empty_document(self, timestamp, year_timestamp, month_day_count):
+        empty_document = query.build_empty_document(timestamp)
+
+        self.assertEqual(empty_document['count'], 0)
+        self.assertEqual(empty_document['sum'], 0)
+        self.assertEqual(empty_document['sum2'], 0)
+        self.assertEqual(len(empty_document['months']), 12)
+        self.assertEqual(year_timestamp, empty_document['datetime'])
+
+        for month_index, month in enumerate(empty_document['months']):
+            self.assertEqual(month['count'], 0)
+            self.assertEqual(month['sum'], 0)
+            self.assertEqual(month['sum2'], 0)
+            self.assertEqual(len(month['days']), month_day_count[month_index])
+
+            for day in month['days']:
+                self.assertEqual(day['count'], 0)
+                self.assertEqual(day['sum'], 0)
+                self.assertEqual(day['sum2'], 0)
+                self.assertEqual(len(day['hours']), 24)
