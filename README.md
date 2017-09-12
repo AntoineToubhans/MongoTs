@@ -12,6 +12,8 @@ client = mongots.MongoTSClient()
 
 ## Run tests
 
+Integration test requires a MongoDb to be up (run docker-compose up).
+
 Launch all tests:
 
 ```bash

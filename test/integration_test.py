@@ -1,11 +1,12 @@
 import pytest
-import mongomock
-from datetime import datetime
+import pymongo
+from datetime import datetime, timedelta
 
 import mongots
 
-mongo_client = mongomock.MongoClient()
-
+mongo_client = pymongo.MongoClient()
+mongo_client.TestDb.temperatures.remove({})
+mongo_client.TestDb.lotOfValues.remove({})
 
 @pytest.fixture
 def client():
@@ -25,9 +26,9 @@ def test_are_mongots_instances(client, db, collection):
     assert isinstance(collection, mongots.MongoTSCollection)
 
 def test_contains_mongo_instances(client, db, collection):
-    assert isinstance(client._client, mongomock.MongoClient)
-    assert isinstance(db._database, mongomock.Database)
-    assert isinstance(collection._collection, mongomock.Collection)
+    assert isinstance(client._client, pymongo.MongoClient)
+    assert isinstance(db._database, pymongo.database.Database)
+    assert isinstance(collection._collection, pymongo.collection.Collection)
 
 
 temperatures_in_paris = [
@@ -109,3 +110,28 @@ def test_hourly_temperatures_in_paris_were_correctly_inserted(collection):
             assert 0 == hour_document['count']
             assert 0 == hour_document['sum']
             assert 0 == hour_document['sum2']
+
+@pytest.fixture
+def big_collection(db):
+    return db.lotOfValues
+
+def test_insert_many_succeeds(big_collection):
+    ts = datetime(2010, 1, 1)
+    while ts < datetime(2010, 9, 1):
+        value = (ts.month-1) * 5
+        assert big_collection.insert_one(value, ts)
+        ts += timedelta(days=1)
+
+def test_query_retrieve_expected_result(big_collection):
+    df = big_collection.query(
+        datetime(2010, 1, 1),
+        datetime(2010, 9, 1),
+        interval='1m',
+    )
+
+    assert (9, 3) == df.shape
+    assert 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 == df['count'].sum()
+
+    for month in range(1, 9):
+        assert (month-1) * 5 == df.loc[datetime(2010, month, 1)]['mean']
+        assert 0 == df.loc[datetime(2010, month, 1)]['std']
