@@ -56,6 +56,9 @@ class MongoTSCollection():
 
         Return (pandas.DataFrame): dataframe containing the statistics and indexed by datetimes.
         """
+        if interval is None:
+            raise NotImplementedError('Queries without interval are not supported yet.')
+
         pipeline = []
 
         pipeline.append(build_initial_match(start, end, tags))
