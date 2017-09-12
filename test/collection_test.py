@@ -96,7 +96,7 @@ class MongoTSCollectionTest(unittest.TestCase):
             groupby=[],
         )
 
-        build_project.assert_called_with('1m')
+        build_project.assert_called_with('1m', [])
 
     @patch('mongots.collection.build_sort')
     def test_query_calls_build_sort(self, build_sort):
@@ -125,6 +125,16 @@ class MongoTSCollectionTest(unittest.TestCase):
             datetime(2001, 6, 23, 13, 45),
             datetime(2001, 9, 2),
             interval='1d',
+        )
+
+        self.assertListEqual(list(df.columns), ['count', 'mean', 'std'])
+
+    def test_query_with_groupby_returns_a_pandas_dataframe_with_the_expected_columns(self):
+        df = self.mongots_collection.query(
+            datetime(2001, 6, 23, 13, 45),
+            datetime(2001, 9, 2),
+            interval='1d',
+            groupby=['city'],
         )
 
         self.assertListEqual(list(df.columns), ['count', 'mean', 'std'])

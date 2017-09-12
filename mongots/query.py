@@ -62,17 +62,22 @@ def build_unwind_and_match(start, end, interval):
 
     return pipeline
 
-def build_project(interval):
+def build_project(interval, groupby):
     interval_keys = _get_keys_from_interval(interval)
 
-    return {
-        '$project': {
-            DATETIME_KEY: '${}'.format('.'.join(interval_keys+[DATETIME_KEY])),
-            COUNT_KEY: '${}'.format('.'.join(interval_keys+[COUNT_KEY])),
-            SUM_KEY: '${}'.format('.'.join(interval_keys+[SUM_KEY])),
-            SUM2_KEY: '${}'.format('.'.join(interval_keys+[SUM2_KEY])),
-        }
+    projection = {
+        DATETIME_KEY: '${}'.format('.'.join(interval_keys+[DATETIME_KEY])),
+        COUNT_KEY: '${}'.format('.'.join(interval_keys+[COUNT_KEY])),
+        SUM_KEY: '${}'.format('.'.join(interval_keys+[SUM_KEY])),
+        SUM2_KEY: '${}'.format('.'.join(interval_keys+[SUM2_KEY])),
     }
+
+    projection.update({
+        groupby_key: '${}'.format(groupby_key)
+        for groupby_key in groupby
+    })
+
+    return { '$project': projection }
 
 def build_sort():
     return {

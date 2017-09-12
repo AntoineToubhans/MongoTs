@@ -167,4 +167,4 @@ class QueryTest(unittest.TestCase):
 
     @data_provider(build_project_data)
     def test_build_project_succeeds(self, interval, project_stage):
-        self.assertEqual(query.build_project(interval), project_stage)
+        self.assertEqual(query.build_project(interval, []), project_stage)

@@ -59,19 +59,25 @@ class MongoTSCollection():
         if interval is None:
             raise NotImplementedError('Queries without interval are not supported yet.')
 
+        if groupby is None:
+            groupby = []
+
         pipeline = []
 
         pipeline.append(build_initial_match(start, end, tags))
         pipeline.extend(build_unwind_and_match(start, end, interval))
-        pipeline.append(build_project(interval))
+        pipeline.append(build_project(interval, groupby))
         pipeline.append(build_sort())
 
         raw_result = list(self._collection.aggregate(pipeline))
 
-        base_columns = [DATETIME_KEY, COUNT_KEY, SUM_KEY, SUM2_KEY]
-        columns = base_columns + (groupby or [])
+        if 0 == len(raw_result):
+            return pd.DataFrame(data=[], columns=[COUNT_KEY, 'mean', 'std'])
 
-        df = pd.DataFrame(data=raw_result, columns=columns).groupby(DATETIME_KEY).sum()
+        base_columns = [DATETIME_KEY, COUNT_KEY, SUM_KEY, SUM2_KEY]
+        columns = base_columns + groupby
+
+        df = pd.DataFrame(data=raw_result, columns=columns).groupby([DATETIME_KEY] + groupby).sum()
 
         df['mean'] = df['sum'] / df['count']
         df['std'] = pd.np.sqrt((df.sum2 / df['count']) - df['mean']**2)
