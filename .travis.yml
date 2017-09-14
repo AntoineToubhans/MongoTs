@@ -1,0 +1,7 @@
+sudo: false
+language: python
+before_script:
+- pip install -r requirements.txt
+script:
+- python -m flake8 test/integration_test.py
+- python -m unittest test
