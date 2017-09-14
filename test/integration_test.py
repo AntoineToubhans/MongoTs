@@ -8,22 +8,27 @@ mongo_client = pymongo.MongoClient()
 mongo_client.TestDb.temperatures.remove({})
 mongo_client.TestDb.lotOfValues.remove({})
 
+
 @pytest.fixture
 def client():
     return mongots.MongoTSClient(mongo_client=mongo_client)
+
 
 @pytest.fixture
 def db(client):
     return client.TestDb
 
+
 @pytest.fixture
 def collection(db):
     return db.temperatures
+
 
 def test_are_mongots_instances(client, db, collection):
     assert isinstance(client, mongots.MongoTSClient)
     assert isinstance(db, mongots.MongoTSDatabase)
     assert isinstance(collection, mongots.MongoTSCollection)
+
 
 def test_contains_mongo_instances(client, db, collection):
     assert isinstance(client._client, pymongo.MongoClient)
@@ -40,22 +45,40 @@ temperatures_in_paris = [
 
 
 @pytest.mark.parametrize('value, timestamp, tags', temperatures_in_paris)
-def test_insert_temperatures_in_paris_one_by_one(collection, value, timestamp, tags):
+def test_insert_temperatures_in_paris_one_by_one(
+    collection,
+    value,
+    timestamp,
+    tags
+):
     assert collection.insert_one(value, timestamp, tags=tags)
+
 
 def test_right_number_of_documents_were_inserted(collection):
     assert 1 == collection._collection.count({})
     assert 1 == collection._collection.count({'city': 'Paris'})
 
+
 def test_yearly_temperatures_in_paris_were_correctly_inserted(collection):
-    year_document = collection._collection.find_one({'city': 'Paris'}, {'count': 1, 'sum': 1, 'sum2': 1})
+    year_document = collection._collection.find_one({
+        'city': 'Paris',
+    }, {
+        'count': 1,
+        'sum': 1,
+        'sum2': 1,
+    })
 
     assert 4 == year_document['count']
     assert 35.6 + 36.8 + 29 + 18 == year_document['sum']
     assert 35.6**2 + 36.8**2 + 29**2 + 18**2 == year_document['sum2']
 
+
 def test_monthly_temperatures_in_paris_were_correctly_inserted(collection):
-    months_document = collection._collection.find_one({'city': 'Paris'}, {'months': 1})['months']
+    months_document = collection._collection.find_one({
+        'city': 'Paris',
+    }, {
+        'months': 1,
+    })['months']
 
     assert 12 == len(months_document)
 
@@ -69,8 +92,13 @@ def test_monthly_temperatures_in_paris_were_correctly_inserted(collection):
             assert 0 == month_document['sum']
             assert 0 == month_document['sum2']
 
+
 def test_daily_temperatures_in_paris_were_correctly_inserted(collection):
-    days_document = collection._collection.find_one({'city': 'Paris'}, {'months': 1})['months'][6]['days']
+    days_document = collection._collection.find_one({
+        'city': 'Paris',
+    }, {
+        'months': 1,
+    })['months'][6]['days']
 
     assert 31 == len(days_document)
 
@@ -88,8 +116,13 @@ def test_daily_temperatures_in_paris_were_correctly_inserted(collection):
             assert 0 == day_document['sum']
             assert 0 == day_document['sum2']
 
+
 def test_hourly_temperatures_in_paris_were_correctly_inserted(collection):
-    hours_document = collection._collection.find_one({'city': 'Paris'}, {'months': 1})['months'][6]['days'][22]['hours']
+    hours_document = collection._collection.find_one({
+        'city': 'Paris',
+    }, {
+        'months': 1,
+    })['months'][6]['days'][22]['hours']
 
     assert 24 == len(hours_document)
 
@@ -111,9 +144,11 @@ def test_hourly_temperatures_in_paris_were_correctly_inserted(collection):
             assert 0 == hour_document['sum']
             assert 0 == hour_document['sum2']
 
+
 @pytest.fixture
 def big_collection(db):
     return db.lotOfValues
+
 
 def test_insert_many_succeeds(big_collection):
     ts = datetime(2010, 1, 1)
@@ -121,6 +156,7 @@ def test_insert_many_succeeds(big_collection):
         value = (ts.month-1) * 5
         assert big_collection.insert_one(value, ts)
         ts += timedelta(days=1)
+
 
 def test_query_retrieve_expected_result(big_collection):
     df = big_collection.query(
