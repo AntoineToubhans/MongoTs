@@ -24,7 +24,9 @@ class MongoTSCollection():
         Args:
             value (float): the value to be inserted
             timestamp (datetime): the timestamp for the value
-            tags (dict, default=None): tags for the value; can be use the search/filter the value later on.
+            tags (dict, default=None):
+                tags for the value;
+                can be use the search/filter the value later.
 
         Return (bool): True if the insertion succeeded, False otherwise.
         """
@@ -44,17 +46,21 @@ class MongoTSCollection():
         return 1 == result.modified_count
 
     def query(self, start, end, interval=None, tags=None, groupby=None):
-        """Query the MongoDb collections and returns various statistics (count, mean, std) for each
-        interval between the start and the end datetime.
+        """Query the MongoDb collections and returns various statistics
+        (mean, std) for each interval between the start and the end datetime.
 
         Args:
             start (datetime): filters values after the start datetime
             end (datetime): filters values before the end datetime
-            interval (str): compute statistics for each year ('1y'), month ('1m'), day ('1d') or hour ('1h')
+            interval (str):
+                compute statistics for each year ('1y'), month ('1m'),
+                day ('1d') or hour ('1h')
             tags (dict, default=None): similar to a mongo filter
-            groupby (array): return statistics grouped by a list of tags (string)
+            groupby (array): return statistics grouped by tags (string)
 
-        Return (pandas.DataFrame): dataframe containing the statistics and indexed by datetimes.
+        Return (pandas.DataFrame):
+            dataframe containing the statistics and indexed by datetimes
+            and groupby tags (if any)
         """
         if interval is None:
             raise NotImplementedError('Queries without interval are not supported yet.')
@@ -77,7 +83,10 @@ class MongoTSCollection():
         base_columns = [DATETIME_KEY, COUNT_KEY, SUM_KEY, SUM2_KEY]
         columns = base_columns + groupby
 
-        df = pd.DataFrame(data=raw_result, columns=columns).groupby([DATETIME_KEY] + groupby).sum()
+        df = pd.DataFrame(
+            data=raw_result,
+            columns=columns
+        ).groupby([DATETIME_KEY] + groupby).sum()
 
         df['mean'] = df['sum'] / df['count']
         df['std'] = pd.np.sqrt((df.sum2 / df['count']) - df['mean']**2)
