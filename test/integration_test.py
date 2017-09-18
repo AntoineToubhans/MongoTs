@@ -1,5 +1,7 @@
+import numpy as np
 import pytest
 import pymongo
+from csv import DictReader
 from datetime import datetime, timedelta
 
 import mongots
@@ -7,6 +9,7 @@ import mongots
 mongo_client = pymongo.MongoClient()
 mongo_client.TestDb.temperatures.remove({})
 mongo_client.TestDb.lotOfValues.remove({})
+mongo_client.TestDb.atmosphericPressure.remove({})
 
 
 @pytest.fixture
@@ -171,3 +174,173 @@ def test_query_retrieve_expected_result(big_collection):
     for month in range(1, 9):
         assert (month-1) * 5 == df.loc[datetime(2010, month, 1)]['mean']
         assert 0 == df.loc[datetime(2010, month, 1)]['std']
+
+
+@pytest.fixture
+def weather_data_pressure():
+    with open('test/data/weather_data.csv') as file:
+        reader = DictReader(file, delimiter=';')
+
+        result = []
+
+        for row in reader:
+            try:
+                timestamp = datetime.strptime(
+                    row['datetime'],
+                    '%Y-%m-%d %H:%M:%S'
+                )
+                pressure = float(row['atmospheric pressure'])
+                city = row['city']
+
+                result.append((pressure, timestamp, {'city': city}))
+            except Exception as e:
+                pass
+
+        return result
+
+
+@pytest.fixture
+def pressure_collection(db):
+    return db.atmosphericPressure
+
+
+def test_insert_pressure_succeeds(pressure_collection, weather_data_pressure):
+    assert 6348 == len(weather_data_pressure)
+    for pressure, timestamp, tags in weather_data_pressure:
+        assert pressure_collection.insert_one(pressure, timestamp, tags=tags)
+
+
+def test_query_pressure_per_year_is_correct(pressure_collection):
+    df = pressure_collection.query(
+        datetime(1996, 1, 1),
+        datetime(1996, 12, 31),
+        interval='1y',
+    )
+
+    assert ['count', 'mean', 'std'] == list(df.columns)
+    assert 1 == len(df)
+
+    timestamp = df.index.values[0]
+    count, mean, std = df.values[0]
+
+    assert np.datetime64('1996-01-01T00:00:00.000000000') == timestamp
+    assert 6348 == count
+    assert np.isclose(mean, 1.015427520478e+03)
+    assert np.isclose(std, 5.8321529378)
+
+
+def test_query_pressure_per_month_is_correct(pressure_collection):
+    df = pressure_collection.query(
+        datetime(1996, 1, 1),
+        datetime(1996, 12, 31),
+        interval='1m',
+    )
+
+    assert ['count', 'mean', 'std'] == list(df.columns)
+    assert 12 == len(df)
+
+    expected_pressure_per_month = [
+        (
+            np.datetime64('1996-01-01T00:00:00.000000000'),
+            0, np.nan, np.nan,
+        ), (
+            np.datetime64('1996-02-01T00:00:00.000000000'),
+            0, np.nan, np.nan,
+        ), (
+            np.datetime64('1996-03-01T00:00:00.000000000'),
+            0, np.nan, np.nan,
+        ), (
+            np.datetime64('1996-04-01T00:00:00.000000000'),
+            0, np.nan, np.nan,
+        ), (
+            np.datetime64('1996-05-01T00:00:00.000000000'),
+            0, np.nan, np.nan,
+        ), (
+            np.datetime64('1996-06-01T00:00:00.000000000'),
+            0, np.nan, np.nan,
+        ), (
+            np.datetime64('1996-07-01T00:00:00.000000000'),
+            3431, 1016.739872, 6.253782,
+        ), (
+            np.datetime64('1996-08-01T00:00:00.000000000'),
+            2917, 1013.883922, 4.859204,
+        ), (
+            np.datetime64('1996-09-01T00:00:00.000000000'),
+            0, np.nan, np.nan,
+        ), (
+            np.datetime64('1996-10-01T00:00:00.000000000'),
+            0, np.nan, np.nan,
+        ), (
+            np.datetime64('1996-11-01T00:00:00.000000000'),
+            0, np.nan, np.nan,
+        ), (
+            np.datetime64('1996-12-01T00:00:00.000000000'),
+            0, np.nan, np.nan,
+        ),
+    ]
+
+    for (
+            (expected_timestamp, expected_count, expected_mean, expected_std),
+            actual_timestamp,
+            (actual_count, actual_mean, actual_std),
+    ) in zip(expected_pressure_per_month, df.index.values, df.values):
+        assert expected_timestamp == actual_timestamp
+        assert expected_count == actual_count
+
+        if np.isnan(expected_mean):
+            assert np.isnan(actual_mean)
+        else:
+            assert np.isclose(expected_mean, actual_mean)
+
+        if np.isnan(expected_std):
+            assert np.isnan(actual_std)
+        else:
+            assert np.isclose(expected_std, actual_std)
+
+
+def test_query_pressure_per_month_groupby_city_is_correct(pressure_collection):
+    df = pressure_collection.query(
+        datetime(1996, 7, 15),
+        datetime(1996, 9, 15),
+        interval='1m',
+        groupby=['city'],
+    )
+
+    assert ['count', 'mean', 'std'] == list(df.columns)
+    assert 9 == len(df)
+
+    expected_pressure_per_month = [
+        (datetime(1996, 7, 1), 'istanbul', 1244, 1014.047186, 4.207450),
+        (datetime(1996, 7, 1), 'london', 780, 1017.958462, 7.899298),
+        (datetime(1996, 7, 1), 'paris', 1407, 1018.445060, 5.914784),
+        (datetime(1996, 8, 1), 'istanbul', 1063, 1012.393979, 2.477956),
+        (datetime(1996, 8, 1), 'london', 639, 1014.007668, 6.711384),
+        (datetime(1996, 8, 1), 'paris', 1215, 1015.122387, 4.913515),
+        (datetime(1996, 9, 1), 'istanbul', 0, np.nan, np.nan),
+        (datetime(1996, 9, 1), 'london', 0, np.nan, np.nan),
+        (datetime(1996, 9, 1), 'paris', 0, np.nan, np.nan),
+    ]
+
+    for (
+            (
+                expected_timestamp,
+                expected_city,
+                expected_count,
+                expected_mean,
+                expected_std
+            ),
+            (actual_timestamp, actual_city),
+            (actual_count, actual_mean, actual_std),
+    ) in zip(expected_pressure_per_month, df.index.values, df.values):
+        assert expected_timestamp == actual_timestamp
+        assert expected_count == actual_count
+
+        if np.isnan(expected_mean):
+            assert np.isnan(actual_mean)
+        else:
+            assert np.isclose(expected_mean, actual_mean)
+
+        if np.isnan(expected_std):
+            assert np.isnan(actual_std)
+        else:
+            assert np.isclose(expected_std, actual_std)
