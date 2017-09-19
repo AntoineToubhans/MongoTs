@@ -3,6 +3,8 @@ MongoTS
 
 A fast API for storing time series in MongoDb
 
+[![Build Status](https://travis-ci.org/AntoineToubhans/MongoTs.svg?branch=master)](https://travis-ci.org/AntoineToubhans/MongoTs)
+
 ## Install
 
 - 1. Clone this repo
