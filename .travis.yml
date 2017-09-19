@@ -1,7 +1,11 @@
 sudo: false
 language: python
-before_script:
+python:
+- "3.6"
+install:
 - pip install -r requirements.txt
+services:
+- mongodb
 script:
 - python -m flake8 test/integration_test.py
-- python -m unittest test
+- pytest

@@ -1,3 +1,4 @@
+flake8
 pymongo
 mongomock
 unittest-data-provider
