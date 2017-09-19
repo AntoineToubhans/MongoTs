@@ -52,7 +52,7 @@ def test_insert_temperatures_in_paris_one_by_one(
     collection,
     value,
     timestamp,
-    tags
+    tags,
 ):
     assert collection.insert_one(value, timestamp, tags=tags)
 
@@ -344,3 +344,79 @@ def test_query_pressure_per_month_groupby_city_is_correct(pressure_collection):
             assert np.isnan(actual_std)
         else:
             assert np.isclose(expected_std, actual_std)
+
+
+def test_query_pressure_per_day_groupby_city_is_correct(pressure_collection):
+    df = pressure_collection.query(
+        datetime(1996, 7, 15),
+        datetime(1996, 7, 20),
+        interval='1d',
+        groupby=['city'],
+    )
+
+    assert ['count', 'mean', 'std'] == list(df.columns)
+    assert 18 == len(df)
+
+    expected_pressure_per_day = [
+        (datetime(1996, 7, 15), 'istanbul', 43, 1015.558140, 1.259980),
+        (datetime(1996, 7, 15), 'london', 23, 1029.286957, 1.153936),
+        (datetime(1996, 7, 15), 'paris', 48, 1025.845833, 0.640949),
+        (datetime(1996, 7, 16), 'istanbul', 37, 1013.621622, 10.251780),
+        (datetime(1996, 7, 16), 'london', 25, 1032.356000, 0.975738),
+        (datetime(1996, 7, 16), 'paris', 47, 1026.695745, 1.044939),
+        (datetime(1996, 7, 17), 'istanbul', 43, 1012.974419, 1.654043),
+        (datetime(1996, 7, 17), 'london', 27, 1029.459259, 2.167138),
+        (datetime(1996, 7, 17), 'paris', 45, 1024.371111, 1.340584),
+        (datetime(1996, 7, 18), 'istanbul', 43, 1015.993023, 0.493396),
+        (datetime(1996, 7, 18), 'london', 29, 1026.893103, 0.713385),
+        (datetime(1996, 7, 18), 'paris', 48, 1023.729167, 0.444390),
+        (datetime(1996, 7, 19), 'istanbul', 42, 1016.776190, 0.499433),
+        (datetime(1996, 7, 19), 'london', 24, 1026.350000, 0.968246),
+        (datetime(1996, 7, 19), 'paris', 44, 1023.938636, 0.911596),
+        (datetime(1996, 7, 20), 'istanbul', 41, 1018.141463, 0.693515),
+        (datetime(1996, 7, 20), 'london', 25, 1024.372000, 0.831153),
+        (datetime(1996, 7, 20), 'paris', 45, 1023.022222, 0.614234),
+    ]
+
+    for (
+            (
+                expected_timestamp,
+                expected_city,
+                expected_count,
+                expected_mean,
+                expected_std
+            ),
+            (actual_timestamp, actual_city),
+            (actual_count, actual_mean, actual_std),
+    ) in zip(expected_pressure_per_day, df.index.values, df.values):
+        assert expected_timestamp == actual_timestamp
+        assert expected_count == actual_count
+
+        if np.isnan(expected_mean):
+            assert np.isnan(actual_mean)
+        else:
+            assert np.isclose(expected_mean, actual_mean)
+
+        if np.isnan(expected_std):
+            assert np.isnan(actual_std)
+        else:
+            assert np.isclose(expected_std, actual_std)
+
+
+@pytest.mark.parametrize('start, end', [
+    (datetime(1996, 7, 10), datetime(1996, 7, 9)),  # end before start
+    (datetime(1995, 7, 10), datetime(1995, 8, 10)),  # no data
+])
+def test_query_pressure_returns_empty_dataframe(
+    pressure_collection,
+    start,
+    end,
+):
+    df = pressure_collection.query(
+        start,
+        end,
+        interval='1d',
+        groupby=['city'],
+    )
+
+    assert 0 == len(df)
