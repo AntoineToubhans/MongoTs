@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from mongots.utils import get_day_count
-from mongots.constants import AGGREGATION_KEYS
 from mongots.constants import AGGREGATION_MONTH_KEY
 from mongots.constants import AGGREGATION_DAY_KEY
 from mongots.constants import AGGREGATION_HOUR_KEY
@@ -9,6 +8,14 @@ from mongots.constants import COUNT_KEY
 from mongots.constants import DATETIME_KEY
 from mongots.constants import SUM_KEY
 from mongots.constants import SUM2_KEY
+
+
+INC_KEY_TEMPLATE = [
+    '',
+    '{month_key}.{month}.',
+    '{month_key}.{month}.{day_key}.{day}.',
+    '{month_key}.{month}.{day_key}.{day}.{hour_key}.{hour}.',
+]
 
 
 def _build_empty_aggregate_document():
@@ -80,7 +87,10 @@ def build_update(value, timestamp):
         SUM2_KEY: value**2,
     }
 
-    datetime_args = {
+    inc_key_format_kwargs = {
+        'month_key': AGGREGATION_MONTH_KEY,
+        'day_key': AGGREGATION_DAY_KEY,
+        'hour_key': AGGREGATION_HOUR_KEY,
         # Array index: range from 0 to 11
         'month': str(timestamp.month - 1),
         # Array index: range from 0 to 27 / 28 / 29 or 30
@@ -90,8 +100,8 @@ def build_update(value, timestamp):
     }
 
     inc_keys = [
-        key.format(**datetime_args)
-        for key in AGGREGATION_KEYS
+        key.format(**inc_key_format_kwargs)
+        for key in INC_KEY_TEMPLATE
     ]
 
     inc_update = {
