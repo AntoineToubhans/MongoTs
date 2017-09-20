@@ -80,7 +80,7 @@ def build_filter(timestamp, tags=None):
     return filters
 
 
-def build_update(value, timestamp):
+def _build_inc_update(value, timestamp):
     inc_values = {
         COUNT_KEY: 1,
         SUM_KEY: value,
@@ -104,11 +104,15 @@ def build_update(value, timestamp):
         for key in INC_KEY_TEMPLATE
     ]
 
-    inc_update = {
+    return {
         '%s%s' % (inc_key, aggregate_type): inc_values[aggregate_type]
         for inc_key in inc_keys
         for aggregate_type in inc_values
     }
+
+
+def build_update(value, timestamp):
+    inc_update = _build_inc_update(value, timestamp)
 
     return {
         '$inc': inc_update,

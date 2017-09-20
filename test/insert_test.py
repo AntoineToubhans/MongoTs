@@ -33,12 +33,11 @@ class InsertTest(unittest.TestCase):
 
         self.assertIsNotNone(update)
 
-    def test_build_update_returns_correct_inc_update(self):
-        update = insert.build_update(42.6, datetime(2019, 7, 2, 15, 12))
-
-        self.assertIn('$inc', update)
-
-        inc_update = update['$inc']
+    def test_build_inc_update_returns_correct_result(self):
+        inc_update = insert._build_inc_update(
+            42.6,
+            datetime(2019, 7, 2, 15, 12),
+        )
 
         self.assertEqual(inc_update, {
             'count': 1,
@@ -54,6 +53,17 @@ class InsertTest(unittest.TestCase):
             'months.6.days.1.hours.15.sum': 42.6,
             'months.6.days.1.hours.15.sum2': 1814.7600000000002,
         })
+
+    @unittest.mock.patch('mongots.insert._build_inc_update')
+    def test_build_update_calls_build_inc_update(self, _build_inc_update):
+        update = insert.build_update(42.6, datetime(2019, 7, 2, 15, 12))
+
+        self.assertIn('$inc', update)
+
+        _build_inc_update.assert_called_with(
+            42.6,
+            datetime(2019, 7, 2, 15, 12),
+        )
 
     def empty_document_data():
         return [
