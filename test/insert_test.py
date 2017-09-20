@@ -44,10 +44,12 @@ class InsertTest(unittest.TestCase):
         ])
 
     def test_build_inc_update_returns_correct_result(self):
-        inc_update = insert._build_inc_update(
-            42.6,
-            datetime(2019, 7, 2, 15, 12),
-        )
+        inc_update = insert._build_inc_update(42.6, [
+            '',
+            'months.6.',
+            'months.6.days.1.',
+            'months.6.days.1.hours.15.',
+        ])
 
         self.assertEqual(inc_update, {
             'count': 1,
@@ -65,23 +67,25 @@ class InsertTest(unittest.TestCase):
         })
 
     def test_build_min_max_update_returns_correct_result(self):
-        min_update, max_update = insert._build_min_max_update(
-            42.6,
-            datetime(2019, 7, 2, 15, 12),
-        )
+        min_update, max_update = insert._build_min_max_update(42.6, [
+            '',
+            'months.3.',
+            'months.3.days.1.',
+            'months.3.days.1.hours.15.',
+        ])
 
         self.assertEqual(min_update, {
             'min': 42.6,
-            'months.6.min': 42.6,
-            'months.6.days.1.min': 42.6,
-            'months.6.days.1.hours.15.min': 42.6,
+            'months.3.min': 42.6,
+            'months.3.days.1.min': 42.6,
+            'months.3.days.1.hours.15.min': 42.6,
         })
 
         self.assertEqual(max_update, {
             'max': 42.6,
-            'months.6.max': 42.6,
-            'months.6.days.1.max': 42.6,
-            'months.6.days.1.hours.15.max': 42.6,
+            'months.3.max': 42.6,
+            'months.3.days.1.max': 42.6,
+            'months.3.days.1.hours.15.max': 42.6,
         })
 
     @unittest.mock.patch('mongots.insert._build_inc_update')
@@ -90,10 +94,12 @@ class InsertTest(unittest.TestCase):
 
         self.assertIn('$inc', update)
 
-        _build_inc_update.assert_called_with(
-            42.6,
-            datetime(2019, 7, 2, 15, 12),
-        )
+        _build_inc_update.assert_called_with(42.6, [
+            '',
+            'months.6.',
+            'months.6.days.1.',
+            'months.6.days.1.hours.15.',
+        ])
 
     def empty_document_data():
         return [

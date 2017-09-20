@@ -99,40 +99,38 @@ def _build_update_keys(timestamp):
     ]
 
 
-def _build_inc_update(value, timestamp):
+def _build_inc_update(value, update_keys):
     inc_values = {
         COUNT_KEY: 1,
         SUM_KEY: value,
         SUM2_KEY: value**2,
     }
 
-    inc_keys = _build_update_keys(timestamp)
-
     return {
         '{}{}'.format(inc_key, aggregate_type): inc_values[aggregate_type]
-        for inc_key in inc_keys
+        for inc_key in update_keys
         for aggregate_type in inc_values
     }
 
 
-def _build_min_max_update(value, timestamp):
-    min_max_keys = _build_update_keys(timestamp)
-
+def _build_min_max_update(value, update_keys):
     min_update = {
         '{}min'.format(min_max_key): value
-        for min_max_key in min_max_keys
+        for min_max_key in update_keys
     }
 
     max_update = {
         '{}max'.format(min_max_key): value
-        for min_max_key in min_max_keys
+        for min_max_key in update_keys
     }
 
     return min_update, max_update
 
 
 def build_update(value, timestamp):
-    inc_update = _build_inc_update(value, timestamp)
+    update_keys = _build_update_keys(timestamp)
+
+    inc_update = _build_inc_update(value, update_keys)
 
     return {
         '$inc': inc_update,
