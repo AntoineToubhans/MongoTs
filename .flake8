@@ -1,0 +1,5 @@
+[flake8]
+exclude =
+    mongots,
+    test/__init__.py,
+    tools

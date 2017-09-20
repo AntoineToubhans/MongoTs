@@ -10,7 +10,7 @@ class InsertTest(unittest.TestCase):
     def test_build_filter_add_a_timestamp_to_tags(self):
         filters = insert.build_filter(
             datetime(2003, 12, 31, 12, 33, 15),
-            tags={ 'city': 'Paris', 'station': 2 },
+            tags={'city': 'Paris', 'station': 2},
         )
 
         self.assertEqual(filters, {
@@ -57,9 +57,19 @@ class InsertTest(unittest.TestCase):
 
     def empty_document_data():
         return [
-            (datetime(1966, 3, 2, 13), datetime(1966, 1, 1), [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]),
-            (datetime(1964, 12, 31, 23, 59), datetime(1964, 1, 1), [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]),
-            (datetime(2000, 1, 1), datetime(2000, 1, 1), [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]),
+            (
+                datetime(1966, 3, 2, 13),
+                datetime(1966, 1, 1),
+                [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
+            ), (
+                datetime(1964, 12, 31, 23, 59),
+                datetime(1964, 1, 1),
+                [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
+            ), (
+                datetime(2000, 1, 1),
+                datetime(2000, 1, 1),
+                [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
+            ),
         ]
 
     @data_provider(empty_document_data)

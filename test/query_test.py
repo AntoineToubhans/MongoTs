@@ -27,7 +27,10 @@ class QueryTest(unittest.TestCase):
         return [('t'), ('d'), ('m'), ('1')]
 
     @data_provider(invalid_intervals)
-    def test_get_keys_from_interval_fails_for_invalid_interval(self, invalid_interval):
+    def test_get_keys_from_interval_fails_for_invalid_interval(
+        self,
+        invalid_interval,
+    ):
         with self.assertRaises(Exception):
             query._get_keys_from_interval(invalid_interval)
 
@@ -50,76 +53,87 @@ class QueryTest(unittest.TestCase):
         years_pipeline = []
 
         months_pipeline = [{
-          '$unwind': '$months',
+            '$unwind': '$months',
         }, {
-          '$match': {
-            'months.datetime': {
-              '$gte': datetime(2001, 3, 1),
-              '$lte': datetime(2001, 4, 1),
-            }
-          }
-        }]
+            '$match': {
+                'months.datetime': {
+                    '$gte': datetime(2001, 3, 1),
+                    '$lte': datetime(2001, 4, 1),
+                  }
+              }
+          }]
 
         days_pipeline = [{
-          '$unwind': '$months',
+            '$unwind': '$months',
         }, {
-          '$match': {
-            'months.datetime': {
-              '$gte': datetime(2001, 3, 1),
-              '$lte': datetime(2001, 4, 1),
+            '$match': {
+                'months.datetime': {
+                    '$gte': datetime(2001, 3, 1),
+                    '$lte': datetime(2001, 4, 1),
+                }
             }
-          }
         }, {
-          '$unwind': '$months.days',
+            '$unwind': '$months.days',
         }, {
-          '$match': {
-            'months.days.datetime': {
-              '$gte': datetime(2001, 3, 22),
-              '$lte': datetime(2001, 4, 2),
+            '$match': {
+                'months.days.datetime': {
+                    '$gte': datetime(2001, 3, 22),
+                    '$lte': datetime(2001, 4, 2),
+                }
             }
-          }
         }]
 
         hours_pipeline = [{
-          '$unwind': '$months',
+            '$unwind': '$months',
         }, {
-          '$match': {
-            'months.datetime': {
-              '$gte': datetime(2001, 3, 1),
-              '$lte': datetime(2001, 4, 1),
+            '$match': {
+                'months.datetime': {
+                    '$gte': datetime(2001, 3, 1),
+                    '$lte': datetime(2001, 4, 1),
+                }
             }
-          }
         }, {
-          '$unwind': '$months.days',
+            '$unwind': '$months.days',
         }, {
-          '$match': {
-            'months.days.datetime': {
-              '$gte': datetime(2001, 3, 22),
-              '$lte': datetime(2001, 4, 2),
+            '$match': {
+                'months.days.datetime': {
+                    '$gte': datetime(2001, 3, 22),
+                    '$lte': datetime(2001, 4, 2),
+                }
             }
-          }
         }, {
-          '$unwind': '$months.days.hours',
+            '$unwind': '$months.days.hours',
         }, {
-          '$match': {
-            'months.days.hours.datetime': {
-              '$gte': datetime(2001, 3, 22, 12),
-              '$lte': datetime(2001, 4, 2, 0),
-            }
-          }
-        }]
+            '$match': {
+                'months.days.hours.datetime': {
+                    '$gte': datetime(2001, 3, 22, 12),
+                    '$lte': datetime(2001, 4, 2, 0),
+                }
+              }
+          }]
+
+        start = datetime(2001, 3, 22, 12)
+        end = datetime(2001, 4, 2)
 
         return [
-            (datetime(2001, 3, 22, 12), datetime(2001, 4, 2), '1y', years_pipeline),
-            (datetime(2001, 3, 22, 12), datetime(2001, 4, 2), '1m', months_pipeline),
-            (datetime(2001, 3, 22, 12), datetime(2001, 4, 2), '1d', days_pipeline),
-            (datetime(2001, 3, 22, 12), datetime(2001, 4, 2), '1h', hours_pipeline),
+            (start, end, '1y', years_pipeline),
+            (start, end, '1m', months_pipeline),
+            (start, end, '1d', days_pipeline),
+            (start, end, '1h', hours_pipeline),
         ]
 
     @data_provider(build_unwind_and_match_data)
-    def test_build_unwind_and_match_succeeds(self, start, end, interval, pipeline):
-        self.assertEqual(query.build_unwind_and_match(start, end, interval), pipeline)
-
+    def test_build_unwind_and_match_succeeds(
+        self,
+        start,
+        end,
+        interval,
+        pipeline,
+    ):
+        self.assertEqual(
+            query.build_unwind_and_match(start, end, interval),
+            pipeline,
+        )
 
     def build_project_data():
         years = {

@@ -7,8 +7,8 @@ A fast API for storing time series in MongoDb
 
 ## Install
 
-- 1. Clone this repo
-- 2. install dependencies: `pip install -r requirements.txt`
+1. Clone this repo
+2. install dependencies: `pip install -r requirements.txt`
 
 ## Usage
 

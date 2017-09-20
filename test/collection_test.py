@@ -34,12 +34,12 @@ class MongoTSCollectionTest(unittest.TestCase):
 
         build_filter.assert_called_with(
             datetime(2001, 11, 23, 13, 45),
-            { 'city': 'Paris' },
+            {'city': 'Paris'},
         )
 
     @patch('mongots.collection.build_update')
     def test_insert_one_call_build_update(self, build_update):
-        build_update.return_value = { '$inc': {} }
+        build_update.return_value = {'$inc': {}}
         self.mongots_collection.insert_one(
             42.66,
             datetime(2001, 11, 23, 13, 45),
@@ -53,7 +53,7 @@ class MongoTSCollectionTest(unittest.TestCase):
 
     @patch('mongots.collection.build_initial_match')
     def test_query_calls_build_update(self, build_initial_match):
-        build_initial_match.return_value = { '$match': {} }
+        build_initial_match.return_value = {'$match': {}}
         self.mongots_collection.query(
             datetime(2001, 10, 2, 12),
             datetime(2002, 2, 3),
@@ -87,7 +87,7 @@ class MongoTSCollectionTest(unittest.TestCase):
 
     @patch('mongots.collection.build_project')
     def test_query_calls_build_project(self, build_project):
-        build_project.return_value = { '$project': {} }
+        build_project.return_value = {'$project': {}}
         self.mongots_collection.query(
             datetime(2001, 10, 2, 12),
             datetime(2002, 2, 3),
@@ -100,7 +100,7 @@ class MongoTSCollectionTest(unittest.TestCase):
 
     @patch('mongots.collection.build_sort')
     def test_query_calls_build_sort(self, build_sort):
-        build_sort.return_value = { '$sort': { 'toto': 1 } }
+        build_sort.return_value = {'$sort': {'toto': 1}}
         self.mongots_collection.query(
             datetime(2001, 10, 2, 12),
             datetime(2002, 2, 3),
@@ -129,7 +129,7 @@ class MongoTSCollectionTest(unittest.TestCase):
 
         self.assertListEqual(list(df.columns), ['count', 'mean', 'std'])
 
-    def test_query_with_groupby_returns_a_pandas_dataframe_with_the_expected_columns(self):
+    def test_query_with_groupby_returns_the_expected_columns(self):
         df = self.mongots_collection.query(
             datetime(2001, 6, 23, 13, 45),
             datetime(2001, 9, 2),

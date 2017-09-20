@@ -7,5 +7,5 @@ install:
 services:
 - mongodb
 script:
-- python -m flake8 test/integration_test.py
+- flake8
 - pytest
