@@ -115,13 +115,13 @@ def _build_inc_update(value, update_keys):
 
 def _build_min_max_update(value, update_keys):
     min_update = {
-        '{}min'.format(min_max_key): value
-        for min_max_key in update_keys
+        '{}min'.format(update_key): value
+        for update_key in update_keys
     }
 
     max_update = {
-        '{}max'.format(min_max_key): value
-        for min_max_key in update_keys
+        '{}max'.format(update_key): value
+        for update_key in update_keys
     }
 
     return min_update, max_update
@@ -131,7 +131,10 @@ def build_update(value, timestamp):
     update_keys = _build_update_keys(timestamp)
 
     inc_update = _build_inc_update(value, update_keys)
+    min_update, max_update = _build_min_max_update(value, update_keys)
 
     return {
         '$inc': inc_update,
+        '$max': max_update,
+        '$min': min_update,
     }

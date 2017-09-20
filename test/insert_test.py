@@ -101,6 +101,44 @@ class InsertTest(unittest.TestCase):
             'months.6.days.1.hours.15.',
         ])
 
+    @unittest.mock.patch('mongots.insert._build_min_max_update')
+    def test_build_update_calls_build_max_update(self, _build_min_max_update):
+        _build_min_max_update.return_value = {}, {}
+        update = insert.build_update(42.6, datetime(2019, 7, 2, 15, 12))
+
+        self.assertIn('$max', update)
+        self.assertIn('$min', update)
+
+        _build_min_max_update.assert_called_with(42.6, [
+            '',
+            'months.6.',
+            'months.6.days.1.',
+            'months.6.days.1.hours.15.',
+        ])
+
+    @unittest.mock.patch('mongots.insert._build_update_keys')
+    def test_build_update_calls_build_max_update(self, _build_update_keys):
+        _build_update_keys.return_value = [
+            '',
+            'months.2.',
+        ]
+        update = insert.build_update(42.6, datetime(2022, 3, 2))
+
+        _build_update_keys.assert_called_with(datetime(2022, 3, 2))
+
+        self.assertEqual(update, {
+            '$inc': {
+                'count': 1,
+                'sum': 42.6,
+                'sum2': 1814.7600000000002,
+                'months.2.count': 1,
+                'months.2.sum': 42.6,
+                'months.2.sum2': 1814.7600000000002,
+            },
+            '$max': {'max': 42.6, 'months.2.max': 42.6},
+            '$min': {'min': 42.6, 'months.2.min': 42.6},
+        })
+
     def empty_document_data():
         return [
             (
