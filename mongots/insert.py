@@ -8,6 +8,8 @@ from mongots.constants import COUNT_KEY
 from mongots.constants import DATETIME_KEY
 from mongots.constants import SUM_KEY
 from mongots.constants import SUM2_KEY
+from mongots.constants import MIN_KEY
+from mongots.constants import MAX_KEY
 
 
 UPDATE_KEY_TEMPLATE = [
@@ -115,12 +117,12 @@ def _build_inc_update(value, update_keys):
 
 def _build_min_max_update(value, update_keys):
     min_update = {
-        '{}min'.format(update_key): value
+        '{}{}'.format(update_key, MIN_KEY): value
         for update_key in update_keys
     }
 
     max_update = {
-        '{}max'.format(update_key): value
+        '{}{}'.format(update_key, MAX_KEY): value
         for update_key in update_keys
     }
 

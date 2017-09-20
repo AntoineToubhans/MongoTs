@@ -117,7 +117,7 @@ class InsertTest(unittest.TestCase):
         ])
 
     @unittest.mock.patch('mongots.insert._build_update_keys')
-    def test_build_update_calls_build_max_update(self, _build_update_keys):
+    def test_build_update_returns_correct_result(self, _build_update_keys):
         _build_update_keys.return_value = [
             '',
             'months.2.',
