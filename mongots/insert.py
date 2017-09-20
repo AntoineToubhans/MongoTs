@@ -1,7 +1,14 @@
 from datetime import datetime
 
 from mongots.utils import get_day_count
-from mongots.constants import *
+from mongots.constants import AGGREGATION_KEYS
+from mongots.constants import AGGREGATION_MONTH_KEY
+from mongots.constants import AGGREGATION_DAY_KEY
+from mongots.constants import AGGREGATION_HOUR_KEY
+from mongots.constants import COUNT_KEY
+from mongots.constants import DATETIME_KEY
+from mongots.constants import SUM_KEY
+from mongots.constants import SUM2_KEY
 
 
 def _build_empty_aggregate_document():
@@ -11,11 +18,13 @@ def _build_empty_aggregate_document():
         SUM2_KEY: 0,
     }
 
+
 def _build_empty_one_hour_document(year, month, day, hour):
     base = _build_empty_aggregate_document()
     base[DATETIME_KEY] = datetime(year, month, day, hour)
 
     return base
+
 
 def _build_empty_one_day_document(year, month, day):
     base = _build_empty_aggregate_document()
@@ -26,6 +35,7 @@ def _build_empty_one_day_document(year, month, day):
     ]
 
     return base
+
 
 def _build_empty_one_month_document(year, month):
     day_count = get_day_count(year, month)
@@ -39,6 +49,7 @@ def _build_empty_one_month_document(year, month):
 
     return base
 
+
 def _build_empty_one_year_document(year):
     base = _build_empty_aggregate_document()
     base[DATETIME_KEY] = datetime(year, 1, 1)
@@ -49,8 +60,10 @@ def _build_empty_one_year_document(year):
 
     return base
 
+
 def build_empty_document(timestamp):
     return _build_empty_one_year_document(timestamp.year)
+
 
 def build_filter(timestamp, tags=None):
     filters = tags or {}
@@ -68,9 +81,12 @@ def build_update(value, timestamp):
     }
 
     datetime_args = {
-        'month': str(timestamp.month - 1), # Array index: range from 0 to 11
-        'day': str(timestamp.day - 1),     # Array index: range from 0 to 27 / 28 / 29 or 30
-        'hour': str(timestamp.hour),       # range from 0 to 23
+        # Array index: range from 0 to 11
+        'month': str(timestamp.month - 1),
+        # Array index: range from 0 to 27 / 28 / 29 or 30
+        'day': str(timestamp.day - 1),
+        # range from 0 to 23
+        'hour': str(timestamp.hour),
     }
 
     inc_keys = [

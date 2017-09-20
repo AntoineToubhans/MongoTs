@@ -3,6 +3,7 @@ from pymongo import MongoClient
 from mongots.utils import is_name_valid
 from mongots.database import MongoTSDatabase
 
+
 class MongoTSClient():
     def __init__(self, *args, mongo_client=None, **kwargs):
         if mongo_client:

@@ -1,6 +1,12 @@
 from datetime import datetime
 
-from mongots.constants import *
+from mongots.constants import AGGREGATION_MONTH_KEY
+from mongots.constants import AGGREGATION_DAY_KEY
+from mongots.constants import AGGREGATION_HOUR_KEY
+from mongots.constants import COUNT_KEY
+from mongots.constants import DATETIME_KEY
+from mongots.constants import SUM_KEY
+from mongots.constants import SUM2_KEY
 
 
 def build_initial_match(start, end, tags):
@@ -11,7 +17,7 @@ def build_initial_match(start, end, tags):
         '$lte': datetime(end.year, 1, 1),
     }
 
-    return { '$match': filters }
+    return {'$match': filters}
 
 
 def _get_keys_from_interval(interval):
@@ -27,7 +33,11 @@ def _get_keys_from_interval(interval):
             'hour': 3,
         }[interval]
 
-        return [AGGREGATION_MONTH_KEY, AGGREGATION_DAY_KEY, AGGREGATION_HOUR_KEY][0:int_interval]
+        return [
+            AGGREGATION_MONTH_KEY,
+            AGGREGATION_DAY_KEY,
+            AGGREGATION_HOUR_KEY,
+        ][0:int_interval]
     except Exception:
         raise Exception('Bad interval {interval}'.format(interval=interval))
 
@@ -62,6 +72,7 @@ def build_unwind_and_match(start, end, interval):
 
     return pipeline
 
+
 def build_project(interval, groupby):
     interval_keys = _get_keys_from_interval(interval)
 
@@ -77,7 +88,8 @@ def build_project(interval, groupby):
         for groupby_key in groupby
     })
 
-    return { '$project': projection }
+    return {'$project': projection}
+
 
 def build_sort():
     return {
