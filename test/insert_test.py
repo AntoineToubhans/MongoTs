@@ -33,6 +33,16 @@ class InsertTest(unittest.TestCase):
 
         self.assertIsNotNone(update)
 
+    def test_build_update_keys_return_correct_reults(self):
+        update_keys = insert._build_update_keys(datetime(1987, 5, 8, 15))
+
+        self.assertEqual(update_keys, [
+            '',
+            'months.4.',
+            'months.4.days.7.',
+            'months.4.days.7.hours.15.',
+        ])
+
     def test_build_inc_update_returns_correct_result(self):
         inc_update = insert._build_inc_update(
             42.6,
@@ -52,6 +62,26 @@ class InsertTest(unittest.TestCase):
             'months.6.days.1.hours.15.count': 1,
             'months.6.days.1.hours.15.sum': 42.6,
             'months.6.days.1.hours.15.sum2': 1814.7600000000002,
+        })
+
+    def test_build_min_max_update_returns_correct_result(self):
+        min_update, max_update = insert._build_min_max_update(
+            42.6,
+            datetime(2019, 7, 2, 15, 12),
+        )
+
+        self.assertEqual(min_update, {
+            'min': 42.6,
+            'months.6.min': 42.6,
+            'months.6.days.1.min': 42.6,
+            'months.6.days.1.hours.15.min': 42.6,
+        })
+
+        self.assertEqual(max_update, {
+            'max': 42.6,
+            'months.6.max': 42.6,
+            'months.6.days.1.max': 42.6,
+            'months.6.days.1.hours.15.max': 42.6,
         })
 
     @unittest.mock.patch('mongots.insert._build_inc_update')
