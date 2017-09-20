@@ -1,14 +1,19 @@
 MongoTS
 ======
 
-A fast API for storing time series in MongoDb
-
 [![Build Status](https://travis-ci.org/AntoineToubhans/MongoTs.svg?branch=master)](https://travis-ci.org/AntoineToubhans/MongoTs)
+
+A fast python API for storing time series in MongoDb
+
+## Requirements
+
+- python 3.6
+- MongoDb 3.4
 
 ## Install
 
-- 1. Clone this repo
-- 2. install dependencies: `pip install -r requirements.txt`
+1. Clone this repo
+2. install dependencies: `pip install -r requirements.txt`
 
 ## Usage
 

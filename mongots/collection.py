@@ -63,7 +63,9 @@ class MongoTSCollection():
             and groupby tags (if any)
         """
         if interval is None:
-            raise NotImplementedError('Queries without interval are not supported yet.')
+            raise NotImplementedError(
+                'Queries without interval are not supported yet.',
+            )
 
         if groupby is None:
             groupby = []
