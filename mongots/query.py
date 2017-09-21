@@ -7,6 +7,8 @@ from mongots.constants import COUNT_KEY
 from mongots.constants import DATETIME_KEY
 from mongots.constants import SUM_KEY
 from mongots.constants import SUM2_KEY
+from mongots.constants import MIN_KEY
+from mongots.constants import MAX_KEY
 
 
 def build_initial_match(start, end, tags):
@@ -81,6 +83,8 @@ def build_project(interval, groupby):
         COUNT_KEY: '${}'.format('.'.join(interval_keys+[COUNT_KEY])),
         SUM_KEY: '${}'.format('.'.join(interval_keys+[SUM_KEY])),
         SUM2_KEY: '${}'.format('.'.join(interval_keys+[SUM2_KEY])),
+        MIN_KEY: '${}'.format('.'.join(interval_keys+[MIN_KEY])),
+        MAX_KEY: '${}'.format('.'.join(interval_keys+[MAX_KEY])),
     }
 
     projection.update({

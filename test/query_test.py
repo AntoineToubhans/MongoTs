@@ -142,6 +142,8 @@ class QueryTest(unittest.TestCase):
                 'count': '$count',
                 'sum': '$sum',
                 'sum2': '$sum2',
+                'min': '$min',
+                'max': '$max',
             }
         }
 
@@ -151,6 +153,8 @@ class QueryTest(unittest.TestCase):
                 'count': '$months.count',
                 'sum': '$months.sum',
                 'sum2': '$months.sum2',
+                'min': '$months.min',
+                'max': '$months.max',
             }
         }
 
@@ -160,6 +164,8 @@ class QueryTest(unittest.TestCase):
                 'count': '$months.days.count',
                 'sum': '$months.days.sum',
                 'sum2': '$months.days.sum2',
+                'min': '$months.days.min',
+                'max': '$months.days.max',
             }
         }
 
@@ -169,6 +175,8 @@ class QueryTest(unittest.TestCase):
                 'count': '$months.days.hours.count',
                 'sum': '$months.days.hours.sum',
                 'sum2': '$months.days.hours.sum2',
+                'min': '$months.days.hours.min',
+                'max': '$months.days.hours.max',
             }
         }
 
