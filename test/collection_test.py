@@ -14,6 +14,15 @@ class MongoTSCollectionTest(unittest.TestCase):
             mongo_client=mongomock.MongoClient(),
         ).TestDb.temperatures
 
+    def assertDataframeColumns(self, df):
+        self.assertListEqual(list(df.columns), [
+            'count',
+            'min',
+            'max',
+            'mean',
+            'std',
+        ])
+
     @patch('mongots.collection.build_update')
     def test_insert_one_succeeds(self, build_update):
         build_update.return_value = {'$inc': {}}
@@ -131,7 +140,7 @@ class MongoTSCollectionTest(unittest.TestCase):
             interval='1d',
         )
 
-        self.assertListEqual(list(df.columns), ['count', 'mean', 'std'])
+        self.assertDataframeColumns(df)
 
     def test_query_with_groupby_returns_the_expected_columns(self):
         df = self.mongots_collection.query(
@@ -141,4 +150,4 @@ class MongoTSCollectionTest(unittest.TestCase):
             groupby=['city'],
         )
 
-        self.assertListEqual(list(df.columns), ['count', 'mean', 'std'])
+        self.assertDataframeColumns(df)

@@ -4,6 +4,10 @@ from mongots.constants import DATETIME_KEY
 from mongots.constants import COUNT_KEY
 from mongots.constants import SUM_KEY
 from mongots.constants import SUM2_KEY
+from mongots.constants import MIN_KEY
+from mongots.constants import MAX_KEY
+from mongots.constants import MEAN_KEY
+from mongots.constants import STD_KEY
 
 from mongots.insert import build_empty_document
 from mongots.insert import build_filter
@@ -46,16 +50,23 @@ class MongoTSCollection():
         return 1 == result.modified_count
 
     def query(self, start, end, interval=None, tags=None, groupby=None):
-        """Query the MongoDb collections and returns various statistics
-        (mean, std) for each interval between the start and the end datetime.
+        """Query the MongoDb database for various statistics about values
+        after `start` and before `end` timestamps.
+        Available statistics are: count / mean / std / min / max.
 
         Args:
             start (datetime): filters values after the start datetime
             end (datetime): filters values before the end datetime
             interval (str):
-                compute statistics for each year ('1y'), month ('1m'),
-                day ('1d') or hour ('1h')
-            tags (dict, default=None): similar to a mongo filter
+                bucket statistics for each interval in the time range.
+                Interval options are:
+                - '1y' or 'year': one year
+                - 'month' or '1m': one month
+                - 'day' or '1d': one day
+                - 'hour' or '1h': one hour
+            tags (dict, default=None):
+                Filters the queried values.
+                Similar to a filter when you do a find query in MongoDb.
             groupby (array): return statistics grouped by tags (string)
 
         Return (pandas.DataFrame):
@@ -80,20 +91,35 @@ class MongoTSCollection():
         raw_result = list(self._collection.aggregate(pipeline))
 
         if 0 == len(raw_result):
-            return pd.DataFrame(data=[], columns=[COUNT_KEY, 'mean', 'std'])
+            return pd.DataFrame(
+                data=[],
+                columns=[COUNT_KEY, MIN_KEY, MAX_KEY, MEAN_KEY, STD_KEY],
+            )
 
-        base_columns = [DATETIME_KEY, COUNT_KEY, SUM_KEY, SUM2_KEY]
+        base_columns = [
+            DATETIME_KEY,
+            COUNT_KEY,
+            SUM_KEY,
+            SUM2_KEY,
+            MIN_KEY,
+            MAX_KEY,
+        ]
         columns = base_columns + groupby
 
         df = pd.DataFrame(
             data=raw_result,
             columns=columns
-        ).groupby([DATETIME_KEY] + groupby).sum()
+        ).groupby([DATETIME_KEY] + groupby).aggregate({
+            COUNT_KEY: 'sum',
+            SUM_KEY: 'sum',
+            SUM2_KEY: 'sum',
+            MIN_KEY: 'min',
+            MAX_KEY: 'max',
+        })
 
-        df['mean'] = df['sum'] / df['count']
-        df['std'] = pd.np.sqrt((df.sum2 / df['count']) - df['mean']**2)
+        df[MEAN_KEY] = df[SUM_KEY] / df[COUNT_KEY]
+        df[STD_KEY] = pd.np.sqrt(
+            (df[SUM2_KEY] / df[COUNT_KEY]) - df[MEAN_KEY]**2,
+        )
 
-        del df[SUM_KEY]
-        del df[SUM2_KEY]
-
-        return df
+        return df[[COUNT_KEY, MIN_KEY, MAX_KEY, MEAN_KEY, STD_KEY]]

@@ -6,6 +6,8 @@ from datetime import datetime, timedelta
 
 import mongots
 
+from test.utils import assertDataframeHasExpectedColumns
+
 mongo_client = pymongo.MongoClient()
 mongo_client.TestDb.temperatures.remove({})
 mongo_client.TestDb.lotOfValues.remove({})
@@ -153,7 +155,7 @@ def big_collection(db):
     return db.lotOfValues
 
 
-def test_insert_many_succeeds(big_collection):
+def test_insert_constants_per_month_succeeds(big_collection):
     ts = datetime(2010, 1, 1)
     while ts < datetime(2010, 9, 1):
         value = (ts.month-1) * 5
@@ -161,19 +163,28 @@ def test_insert_many_succeeds(big_collection):
         ts += timedelta(days=1)
 
 
-def test_query_retrieve_expected_result(big_collection):
+def test_query_retrieve_expected_constant_per_month(big_collection):
     df = big_collection.query(
         datetime(2010, 1, 1),
         datetime(2010, 9, 1),
         interval='1m',
     )
 
-    assert (9, 3) == df.shape
-    assert 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 == df['count'].sum()
+    assert (9, 5) == df.shape
 
-    for month in range(1, 9):
-        assert (month-1) * 5 == df.loc[datetime(2010, month, 1)]['mean']
-        assert 0 == df.loc[datetime(2010, month, 1)]['std']
+    assert list(df['count']) == [31, 28, 31, 30, 31, 30, 31, 31, 0]
+
+    assert list(df['mean'])[:8] == [0, 5, 10, 15, 20, 25, 30, 35]
+    assert np.isnan(list(df['mean'])[8])
+
+    assert list(df['std'])[:8] == [0, 0, 0, 0, 0, 0, 0, 0]
+    assert np.isnan(list(df['std'])[8])
+
+    assert list(df['min'])[:8] == [0, 5, 10, 15, 20, 25, 30, 35]
+    assert list(df['min'])[8] == np.inf
+
+    assert list(df['max'])[:8] == [0, 5, 10, 15, 20, 25, 30, 35]
+    assert list(df['max'])[8] == -np.inf
 
 
 @pytest.fixture
@@ -217,14 +228,16 @@ def test_query_pressure_per_year_is_correct(pressure_collection):
         interval='1y',
     )
 
-    assert ['count', 'mean', 'std'] == list(df.columns)
+    assertDataframeHasExpectedColumns(df)
     assert 1 == len(df)
 
     timestamp = df.index.values[0]
-    count, mean, std = df.values[0]
+    count, min, max, mean, std = df.values[0]
 
     assert np.datetime64('1996-01-01T00:00:00.000000000') == timestamp
     assert 6348 == count
+    assert 1001 == min
+    assert 1074.2 == max
     assert np.isclose(mean, 1.015427520478e+03)
     assert np.isclose(std, 5.8321529378)
 
@@ -236,56 +249,63 @@ def test_query_pressure_per_month_is_correct(pressure_collection):
         interval='1m',
     )
 
-    assert ['count', 'mean', 'std'] == list(df.columns)
+    assertDataframeHasExpectedColumns(df)
     assert 12 == len(df)
 
-    expected_pressure_per_month = [
-        (
-            np.datetime64('1996-01-01T00:00:00.000000000'),
-            0, np.nan, np.nan,
-        ), (
-            np.datetime64('1996-02-01T00:00:00.000000000'),
-            0, np.nan, np.nan,
-        ), (
-            np.datetime64('1996-03-01T00:00:00.000000000'),
-            0, np.nan, np.nan,
-        ), (
-            np.datetime64('1996-04-01T00:00:00.000000000'),
-            0, np.nan, np.nan,
-        ), (
-            np.datetime64('1996-05-01T00:00:00.000000000'),
-            0, np.nan, np.nan,
-        ), (
-            np.datetime64('1996-06-01T00:00:00.000000000'),
-            0, np.nan, np.nan,
-        ), (
-            np.datetime64('1996-07-01T00:00:00.000000000'),
-            3431, 1016.739872, 6.253782,
-        ), (
-            np.datetime64('1996-08-01T00:00:00.000000000'),
-            2917, 1013.883922, 4.859204,
-        ), (
-            np.datetime64('1996-09-01T00:00:00.000000000'),
-            0, np.nan, np.nan,
-        ), (
-            np.datetime64('1996-10-01T00:00:00.000000000'),
-            0, np.nan, np.nan,
-        ), (
-            np.datetime64('1996-11-01T00:00:00.000000000'),
-            0, np.nan, np.nan,
-        ), (
-            np.datetime64('1996-12-01T00:00:00.000000000'),
-            0, np.nan, np.nan,
-        ),
-    ]
+    expected_pressure_per_month = [(
+        np.datetime64('1996-01-01T00:00:00.000000000'),
+        0, np.inf, -np.inf, np.nan, np.nan,
+    ), (
+        np.datetime64('1996-02-01T00:00:00.000000000'),
+        0, np.inf, -np.inf, np.nan, np.nan,
+    ), (
+        np.datetime64('1996-03-01T00:00:00.000000000'),
+        0, np.inf, -np.inf, np.nan, np.nan,
+    ), (
+        np.datetime64('1996-04-01T00:00:00.000000000'),
+        0, np.inf, -np.inf, np.nan, np.nan,
+    ), (
+        np.datetime64('1996-05-01T00:00:00.000000000'),
+        0, np.inf, -np.inf, np.nan, np.nan,
+    ), (
+        np.datetime64('1996-06-01T00:00:00.000000000'),
+        0, np.inf, -np.inf, np.nan, np.nan,
+    ), (
+        np.datetime64('1996-07-01T00:00:00.000000000'),
+        3431, 1001, 1074.2, 1016.739872, 6.253782,
+    ), (
+        np.datetime64('1996-08-01T00:00:00.000000000'),
+        2917, 1002, 1028.1, 1013.883922, 4.859204,
+    ), (
+        np.datetime64('1996-09-01T00:00:00.000000000'),
+        0, np.inf, -np.inf, np.nan, np.nan,
+    ), (
+        np.datetime64('1996-10-01T00:00:00.000000000'),
+        0, np.inf, -np.inf, np.nan, np.nan,
+    ), (
+        np.datetime64('1996-11-01T00:00:00.000000000'),
+        0, np.inf, -np.inf, np.nan, np.nan,
+    ), (
+        np.datetime64('1996-12-01T00:00:00.000000000'),
+        0, np.inf, -np.inf, np.nan, np.nan,
+    )]
 
     for (
-            (expected_timestamp, expected_count, expected_mean, expected_std),
+            (
+                expected_timestamp,
+                expected_count,
+                expected_min,
+                expected_max,
+                expected_mean,
+                expected_std
+            ),
             actual_timestamp,
-            (actual_count, actual_mean, actual_std),
+            (actual_count, actual_min, actual_max, actual_mean, actual_std),
     ) in zip(expected_pressure_per_month, df.index.values, df.values):
         assert expected_timestamp == actual_timestamp
         assert expected_count == actual_count
+        assert expected_min == actual_min
+        assert expected_max == actual_max
 
         if np.isnan(expected_mean):
             assert np.isnan(actual_mean)
@@ -306,34 +326,61 @@ def test_query_pressure_per_month_groupby_city_is_correct(pressure_collection):
         groupby=['city'],
     )
 
-    assert ['count', 'mean', 'std'] == list(df.columns)
+    assertDataframeHasExpectedColumns(df)
     assert 9 == len(df)
 
-    expected_pressure_per_month = [
-        (datetime(1996, 7, 1), 'istanbul', 1244, 1014.047186, 4.207450),
-        (datetime(1996, 7, 1), 'london', 780, 1017.958462, 7.899298),
-        (datetime(1996, 7, 1), 'paris', 1407, 1018.445060, 5.914784),
-        (datetime(1996, 8, 1), 'istanbul', 1063, 1012.393979, 2.477956),
-        (datetime(1996, 8, 1), 'london', 639, 1014.007668, 6.711384),
-        (datetime(1996, 8, 1), 'paris', 1215, 1015.122387, 4.913515),
-        (datetime(1996, 9, 1), 'istanbul', 0, np.nan, np.nan),
-        (datetime(1996, 9, 1), 'london', 0, np.nan, np.nan),
-        (datetime(1996, 9, 1), 'paris', 0, np.nan, np.nan),
-    ]
+    expected_pressure_per_month = [(
+        datetime(1996, 7, 1), 'istanbul',
+        1244, 1001, 1074.2, 1014.047186, 4.207450,
+    ), (
+        datetime(1996, 7, 1), 'london',
+        780, 1001, 1037.3, 1017.958462, 7.899298,
+    ), (
+        datetime(1996, 7, 1), 'paris',
+        1407, 1006.1, 1028.1, 1018.445060, 5.914784,
+    ), (
+        datetime(1996, 8, 1), 'istanbul',
+        1063, 1003, 1019, 1012.393979, 2.477956,
+    ), (
+        datetime(1996, 8, 1), 'london',
+        639, 1002, 1028.1, 1014.007668, 6.711384,
+    ), (
+        datetime(1996, 8, 1), 'paris',
+        1215, 1004.1, 1026.1, 1015.122387, 4.913515,
+    ), (
+        datetime(1996, 9, 1), 'istanbul',
+        0, np.inf, -np.inf, np.nan, np.nan,
+    ), (
+        datetime(1996, 9, 1), 'london',
+        0, np.inf, -np.inf, np.nan, np.nan,
+    ), (
+        datetime(1996, 9, 1), 'paris',
+        0, np.inf, -np.inf, np.nan, np.nan,
+    )]
 
     for (
             (
                 expected_timestamp,
                 expected_city,
                 expected_count,
+                expected_min,
+                expected_max,
                 expected_mean,
                 expected_std
             ),
             (actual_timestamp, actual_city),
-            (actual_count, actual_mean, actual_std),
+            (
+                actual_count,
+                actual_min,
+                actual_max,
+                actual_mean,
+                actual_std
+            ),
     ) in zip(expected_pressure_per_month, df.index.values, df.values):
         assert expected_timestamp == actual_timestamp
         assert expected_count == actual_count
+        assert expected_min == actual_min
+        assert expected_max == actual_max
 
         if np.isnan(expected_mean):
             assert np.isnan(actual_mean)
@@ -354,43 +401,88 @@ def test_query_pressure_per_day_groupby_city_is_correct(pressure_collection):
         groupby=['city'],
     )
 
-    assert ['count', 'mean', 'std'] == list(df.columns)
+    assertDataframeHasExpectedColumns(df)
     assert 18 == len(df)
 
-    expected_pressure_per_day = [
-        (datetime(1996, 7, 15), 'istanbul', 43, 1015.558140, 1.259980),
-        (datetime(1996, 7, 15), 'london', 23, 1029.286957, 1.153936),
-        (datetime(1996, 7, 15), 'paris', 48, 1025.845833, 0.640949),
-        (datetime(1996, 7, 16), 'istanbul', 37, 1013.621622, 10.251780),
-        (datetime(1996, 7, 16), 'london', 25, 1032.356000, 0.975738),
-        (datetime(1996, 7, 16), 'paris', 47, 1026.695745, 1.044939),
-        (datetime(1996, 7, 17), 'istanbul', 43, 1012.974419, 1.654043),
-        (datetime(1996, 7, 17), 'london', 27, 1029.459259, 2.167138),
-        (datetime(1996, 7, 17), 'paris', 45, 1024.371111, 1.340584),
-        (datetime(1996, 7, 18), 'istanbul', 43, 1015.993023, 0.493396),
-        (datetime(1996, 7, 18), 'london', 29, 1026.893103, 0.713385),
-        (datetime(1996, 7, 18), 'paris', 48, 1023.729167, 0.444390),
-        (datetime(1996, 7, 19), 'istanbul', 42, 1016.776190, 0.499433),
-        (datetime(1996, 7, 19), 'london', 24, 1026.350000, 0.968246),
-        (datetime(1996, 7, 19), 'paris', 44, 1023.938636, 0.911596),
-        (datetime(1996, 7, 20), 'istanbul', 41, 1018.141463, 0.693515),
-        (datetime(1996, 7, 20), 'london', 25, 1024.372000, 0.831153),
-        (datetime(1996, 7, 20), 'paris', 45, 1023.022222, 0.614234),
-    ]
+    expected_pressure_per_day = [(
+        datetime(1996, 7, 15), 'istanbul',
+        43, 1013.2, 1017.9, 1015.558140, 1.259980,
+    ), (
+        datetime(1996, 7, 15), 'london',
+        23, 1027.1, 1032.2, 1029.286957, 1.153936,
+    ), (
+        datetime(1996, 7, 15), 'paris',
+        48, 1024.0, 1027.1, 1025.845833, 0.640949,
+    ), (
+        datetime(1996, 7, 16), 'istanbul',
+        37, 1009.1, 1074.2, 1013.621622, 10.251780,
+    ), (
+        datetime(1996, 7, 16), 'london',
+        25, 1030.1, 1033.2, 1032.356000, 0.975738,
+    ), (
+        datetime(1996, 7, 16), 'paris',
+        47, 1025.1, 1028.1, 1026.695745, 1.044939,
+    ), (
+        datetime(1996, 7, 17), 'istanbul',
+        43, 1010.2, 1016.3, 1012.974419, 1.654043,
+    ), (
+        datetime(1996, 7, 17), 'london',
+        27, 1027.1, 1037.3, 1029.459259, 2.167138,
+    ), (
+        datetime(1996, 7, 17), 'paris',
+        45, 1022.0, 1026.1, 1024.371111, 1.340584,
+    ), (
+        datetime(1996, 7, 18), 'istanbul',
+        43, 1015.2, 1016.3, 1015.993023, 0.493396,
+    ), (
+        datetime(1996, 7, 18), 'london',
+        29, 1025.1, 1028.1, 1026.893103, 0.713385,
+    ), (
+        datetime(1996, 7, 18), 'paris',
+        48, 1023.0, 1024.0, 1023.729167, 0.444390,
+    ), (
+        datetime(1996, 7, 19), 'istanbul',
+        42, 1016.3, 1017.3, 1016.776190, 0.499433,
+    ), (
+        datetime(1996, 7, 19), 'london',
+        24, 1025.1, 1028.1, 1026.350000, 0.968246,
+    ), (
+        datetime(1996, 7, 19), 'paris',
+        44, 1022.0, 1025.1, 1023.938636, 0.911596,
+    ), (
+        datetime(1996, 7, 20), 'istanbul',
+        41, 1017.3, 1019, 1018.141463, 0.693515,
+    ), (
+        datetime(1996, 7, 20), 'london',
+        25, 1023.0, 1025.1, 1024.372000, 0.831153,
+    ), (
+        datetime(1996, 7, 20), 'paris',
+        45, 1022.0, 1024.0, 1023.022222, 0.614234,
+    )]
 
     for (
             (
                 expected_timestamp,
                 expected_city,
                 expected_count,
+                expected_min,
+                expected_max,
                 expected_mean,
                 expected_std
             ),
             (actual_timestamp, actual_city),
-            (actual_count, actual_mean, actual_std),
+            (
+                actual_count,
+                actual_min,
+                actual_max,
+                actual_mean,
+                actual_std
+            ),
     ) in zip(expected_pressure_per_day, df.index.values, df.values):
         assert expected_timestamp == actual_timestamp
         assert expected_count == actual_count
+        assert expected_min == actual_min
+        assert expected_max == actual_max
 
         if np.isnan(expected_mean):
             assert np.isnan(actual_mean)
@@ -404,7 +496,7 @@ def test_query_pressure_per_day_groupby_city_is_correct(pressure_collection):
 
 
 @pytest.mark.parametrize('start, end', [
-    (datetime(1996, 7, 10), datetime(1996, 7, 9)),  # end before start
+    (datetime(1996, 7, 10), datetime(1996, 7, 9)),   # end before start
     (datetime(1995, 7, 10), datetime(1995, 8, 10)),  # no data
 ])
 def test_query_pressure_returns_empty_dataframe(
@@ -419,4 +511,5 @@ def test_query_pressure_returns_empty_dataframe(
         groupby=['city'],
     )
 
+    assertDataframeHasExpectedColumns(df)
     assert 0 == len(df)
