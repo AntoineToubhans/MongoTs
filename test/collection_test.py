@@ -14,7 +14,9 @@ class MongoTSCollectionTest(unittest.TestCase):
             mongo_client=mongomock.MongoClient(),
         ).TestDb.temperatures
 
-    def test_insert_one_succeeds(self):
+    @patch('mongots.collection.build_update')
+    def test_insert_one_succeeds(self, build_update):
+        build_update.return_value = {'$inc': {}}
         result = self.mongots_collection.insert_one(
             42.66,
             datetime(2001, 11, 23, 13, 45),
@@ -24,7 +26,9 @@ class MongoTSCollectionTest(unittest.TestCase):
         self.assertEqual(result, True)
 
     @patch('mongots.collection.build_filter')
-    def test_insert_one_call_build_filters(self, build_filter):
+    @patch('mongots.collection.build_update')
+    def test_insert_one_call_build_filters(self, build_update, build_filter):
+        build_update.return_value = {'$inc': {}}
         build_filter.return_value = {}
         self.mongots_collection.insert_one(
             42.66,

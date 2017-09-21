@@ -1,5 +1,6 @@
 import unittest
 from datetime import datetime
+from pandas import np
 from unittest_data_provider import data_provider
 
 from mongots import insert
@@ -163,6 +164,9 @@ class InsertTest(unittest.TestCase):
         self.assertEqual(empty_document['count'], 0)
         self.assertEqual(empty_document['sum'], 0)
         self.assertEqual(empty_document['sum2'], 0)
+        self.assertEqual(empty_document['max'], -np.infty)
+        self.assertEqual(empty_document['min'], np.infty)
+
         self.assertEqual(len(empty_document['months']), 12)
         self.assertEqual(year_timestamp, empty_document['datetime'])
 
@@ -170,10 +174,14 @@ class InsertTest(unittest.TestCase):
             self.assertEqual(month['count'], 0)
             self.assertEqual(month['sum'], 0)
             self.assertEqual(month['sum2'], 0)
+            self.assertEqual(month['max'], -np.infty)
+            self.assertEqual(month['min'], np.infty)
             self.assertEqual(len(month['days']), month_day_count[month_index])
 
             for day in month['days']:
                 self.assertEqual(day['count'], 0)
                 self.assertEqual(day['sum'], 0)
                 self.assertEqual(day['sum2'], 0)
+                self.assertEqual(day['max'], -np.infty)
+                self.assertEqual(day['min'], np.infty)
                 self.assertEqual(len(day['hours']), 24)

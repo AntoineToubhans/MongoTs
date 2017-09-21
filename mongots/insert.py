@@ -1,4 +1,5 @@
 from datetime import datetime
+from pandas import np
 
 from mongots.utils import get_day_count
 from mongots.constants import AGGREGATION_MONTH_KEY
@@ -25,6 +26,8 @@ def _build_empty_aggregate_document():
         COUNT_KEY: 0,
         SUM_KEY: 0,
         SUM2_KEY: 0,
+        MIN_KEY: np.infty,
+        MAX_KEY: -np.infty,
     }
 
 
