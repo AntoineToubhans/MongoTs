@@ -1,8 +1,9 @@
 import unittest
 import mongomock
 import pandas as pd
-from unittest.mock import patch
 from datetime import datetime
+from unittest.mock import patch
+from unittest_data_provider import data_provider
 
 import mongots
 
@@ -124,30 +125,43 @@ class MongoTSCollectionTest(unittest.TestCase):
 
         build_sort.assert_called_with()
 
-    def test_query_returns_a_pandas_dataframe(self):
-        df = self.mongots_collection.query(
+    def query_args():
+        return [(
             datetime(2001, 6, 23, 13, 45),
             datetime(2001, 9, 2),
-            interval='1d',
-        )
+            {'interval': '1d'}
+        ), (
+            datetime(2001, 6, 23, 13, 45),
+            datetime(2001, 9, 2),
+            {'interval': '1d', 'groupby': ['city']},
+        ), (
+            datetime(2001, 6, 23, 13, 45),
+            datetime(2001, 9, 2),
+            {'interval': '1d', 'tags': {'city': 'paris'}},
+        )]
+
+    @data_provider(query_args)
+    def test_query_returns_a_pandas_dataframe_with_the_expected_columns(
+        self,
+        start,
+        end,
+        kwargs,
+    ):
+        df = self.mongots_collection.query(start, end, **kwargs)
 
         self.assertIsInstance(df, pd.DataFrame)
-
-    def test_query_returns_a_pandas_dataframe_with_the_expected_columns(self):
-        df = self.mongots_collection.query(
-            datetime(2001, 6, 23, 13, 45),
-            datetime(2001, 9, 2),
-            interval='1d',
-        )
-
         self.assertDataframeColumns(df)
 
-    def test_query_with_groupby_returns_the_expected_columns(self):
-        df = self.mongots_collection.query(
-            datetime(2001, 6, 23, 13, 45),
-            datetime(2001, 9, 2),
-            interval='1d',
-            groupby=['city'],
-        )
+    def test_query_raises_an_exception_if_no_interval_is_provided(self):
+        with self.assertRaises(NotImplementedError):
+            self.mongots_collection.query(
+                datetime(1987, 5, 8),
+                datetime(2000, 1, 1),
+            )
 
-        self.assertDataframeColumns(df)
+        with self.assertRaises(NotImplementedError):
+            self.mongots_collection.query(
+                datetime(1987, 5, 8),
+                datetime(2000, 1, 1),
+                interval=None,
+            )
