@@ -34,6 +34,38 @@ class QueryTest(unittest.TestCase):
         with self.assertRaises(Exception):
             query._get_keys_from_interval(invalid_interval)
 
+    def valid_intervals_to_be_floored():
+        return [(
+            'months', datetime(1848, 7, 20, 12, 30), datetime(1848, 7, 1),
+        ), (
+            'days', datetime(1848, 7, 20, 12, 30), datetime(1848, 7, 20),
+        ), (
+            'hours', datetime(1848, 7, 20, 12, 30), datetime(1848, 7, 20, 12),
+        )]
+
+    @data_provider(valid_intervals_to_be_floored)
+    def test_get_floor_datetime_returns_correct_datetime(
+        self,
+        interval,
+        dt,
+        floor_dt,
+    ):
+        self.assertEqual(query._get_floor_datetime(interval, dt), floor_dt)
+
+    def invalid_intervals_to_be_floored():
+        return [
+            ('years', datetime(1848, 7, 20, 12, 30)),
+            ('minutes', datetime(1848, 7, 20, 12, 30)),
+            ('seconds', datetime(1848, 7, 20, 12, 30)),
+            ('plop', datetime(1848, 7, 20, 12, 30)),
+            ('1m', datetime(1848, 7, 20, 12, 30)),
+        ]
+
+    @data_provider(invalid_intervals_to_be_floored)
+    def test_get_floor_datetime_fails_for_invalid_interval(self, interval, dt):
+        with self.assertRaises(Exception):
+            query._get_floor_datetime(interval, dt)
+
     def test_build_initial_match_succeeds(self):
         self.assertEqual(query.build_initial_match(
             datetime(2001, 10, 2, 12),
