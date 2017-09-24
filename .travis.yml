@@ -12,4 +12,6 @@ services:
 - mongodb
 script:
 - python -m flake8
-- python -m pytest
+- python -m pytest --cov=mongots
+after_success:
+- coveralls
