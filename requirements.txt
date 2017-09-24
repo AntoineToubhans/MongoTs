@@ -1,5 +1,6 @@
 flake8
-pymongo
 mongomock
-unittest-data-provider
 pandas
+pymongo
+pytest-cov
+unittest-data-provider
