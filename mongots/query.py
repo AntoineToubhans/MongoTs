@@ -44,15 +44,17 @@ def _get_keys_from_interval(interval):
         raise Exception('Bad interval {interval}'.format(interval=interval))
 
 
-def _get_floor_datetime(interval, dt):
-    if interval == AGGREGATION_MONTH_KEY:
+def _get_floor_datetime(aggregation_level, dt):
+    if aggregation_level == AGGREGATION_MONTH_KEY:
         return datetime(dt.year, dt.month, 1)
-    elif interval == AGGREGATION_DAY_KEY:
+    elif aggregation_level == AGGREGATION_DAY_KEY:
         return datetime(dt.year, dt.month, dt.day)
-    elif interval == AGGREGATION_HOUR_KEY:
+    elif aggregation_level == AGGREGATION_HOUR_KEY:
         return datetime(dt.year, dt.month, dt.day, dt.hour)
     else:
-        raise Exception('Bad interval {interval}'.format(interval=interval))
+        raise Exception('Bad aggregation_level {aggregation_level}'.format(
+            aggregation_level=aggregation_level,
+        ))
 
 
 def build_unwind_and_match(start, end, interval):
@@ -77,14 +79,18 @@ def build_unwind_and_match(start, end, interval):
 
 def build_project(interval, groupby):
     interval_keys = _get_keys_from_interval(interval)
+    base_projection_keys = [
+        DATETIME_KEY,
+        COUNT_KEY,
+        SUM_KEY,
+        SUM2_KEY,
+        MIN_KEY,
+        MAX_KEY,
+    ]
 
     projection = {
-        DATETIME_KEY: '${}'.format('.'.join(interval_keys+[DATETIME_KEY])),
-        COUNT_KEY: '${}'.format('.'.join(interval_keys+[COUNT_KEY])),
-        SUM_KEY: '${}'.format('.'.join(interval_keys+[SUM_KEY])),
-        SUM2_KEY: '${}'.format('.'.join(interval_keys+[SUM2_KEY])),
-        MIN_KEY: '${}'.format('.'.join(interval_keys+[MIN_KEY])),
-        MAX_KEY: '${}'.format('.'.join(interval_keys+[MAX_KEY])),
+        key: '${}'.format('.'.join(interval_keys+[key]))
+        for key in base_projection_keys
     }
 
     projection.update({
