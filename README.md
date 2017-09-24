@@ -2,6 +2,7 @@ MongoTS
 ======
 
 [![Build Status](https://travis-ci.org/AntoineToubhans/MongoTs.svg?branch=master)](https://travis-ci.org/AntoineToubhans/MongoTs)
+[![Coverage Status](https://coveralls.io/repos/github/AntoineToubhans/MongoTs/badge.svg?branch=master)](https://coveralls.io/github/AntoineToubhans/MongoTs?branch=master)
 
 A fast python API for storing time series in MongoDb
 
