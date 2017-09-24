@@ -1,7 +1,7 @@
 from datetime import datetime
+from pandas import np
 
 from mongots.utils import get_day_count
-from mongots.constants import AGGREGATION_KEYS
 from mongots.constants import AGGREGATION_MONTH_KEY
 from mongots.constants import AGGREGATION_DAY_KEY
 from mongots.constants import AGGREGATION_HOUR_KEY
@@ -9,6 +9,16 @@ from mongots.constants import COUNT_KEY
 from mongots.constants import DATETIME_KEY
 from mongots.constants import SUM_KEY
 from mongots.constants import SUM2_KEY
+from mongots.constants import MIN_KEY
+from mongots.constants import MAX_KEY
+
+
+UPDATE_KEY_TEMPLATE = [
+    '',
+    '{month_key}.{month}.',
+    '{month_key}.{month}.{day_key}.{day}.',
+    '{month_key}.{month}.{day_key}.{day}.{hour_key}.{hour}.',
+]
 
 
 def _build_empty_aggregate_document():
@@ -16,6 +26,8 @@ def _build_empty_aggregate_document():
         COUNT_KEY: 0,
         SUM_KEY: 0,
         SUM2_KEY: 0,
+        MIN_KEY: np.infty,
+        MAX_KEY: -np.infty,
     }
 
 
@@ -73,14 +85,11 @@ def build_filter(timestamp, tags=None):
     return filters
 
 
-def build_update(value, timestamp):
-    inc_values = {
-        COUNT_KEY: 1,
-        SUM_KEY: value,
-        SUM2_KEY: value**2,
-    }
-
-    datetime_args = {
+def _build_update_keys(timestamp):
+    key_format_kwargs = {
+        'month_key': AGGREGATION_MONTH_KEY,
+        'day_key': AGGREGATION_DAY_KEY,
+        'hour_key': AGGREGATION_HOUR_KEY,
         # Array index: range from 0 to 11
         'month': str(timestamp.month - 1),
         # Array index: range from 0 to 27 / 28 / 29 or 30
@@ -89,17 +98,48 @@ def build_update(value, timestamp):
         'hour': str(timestamp.hour),
     }
 
-    inc_keys = [
-        key.format(**datetime_args)
-        for key in AGGREGATION_KEYS
+    return [
+        key.format(**key_format_kwargs)
+        for key in UPDATE_KEY_TEMPLATE
     ]
 
-    inc_update = {
-        '%s%s' % (inc_key, aggregate_type): inc_values[aggregate_type]
-        for inc_key in inc_keys
-        for aggregate_type in inc_values
+
+def _build_inc_update(value, update_keys):
+    inc_values = {
+        COUNT_KEY: 1,
+        SUM_KEY: value,
+        SUM2_KEY: value**2,
     }
 
     return {
+        '{}{}'.format(inc_key, aggregate_type): inc_values[aggregate_type]
+        for inc_key in update_keys
+        for aggregate_type in inc_values
+    }
+
+
+def _build_min_max_update(value, update_keys):
+    min_update = {
+        '{}{}'.format(update_key, MIN_KEY): value
+        for update_key in update_keys
+    }
+
+    max_update = {
+        '{}{}'.format(update_key, MAX_KEY): value
+        for update_key in update_keys
+    }
+
+    return min_update, max_update
+
+
+def build_update(value, timestamp):
+    update_keys = _build_update_keys(timestamp)
+
+    inc_update = _build_inc_update(value, update_keys)
+    min_update, max_update = _build_min_max_update(value, update_keys)
+
+    return {
         '$inc': inc_update,
+        '$max': max_update,
+        '$min': min_update,
     }
