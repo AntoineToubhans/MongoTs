@@ -22,28 +22,6 @@ def build_initial_match(start, end, tags):
     return {'$match': filters}
 
 
-def _get_keys_from_interval(interval):
-    try:
-        int_interval = {
-            '1y': 0,
-            'year': 0,
-            '1m': 1,
-            'month': 1,
-            '1d': 2,
-            'day': 2,
-            '1h': 3,
-            'hour': 3,
-        }[interval]
-
-        return [
-            AGGREGATION_MONTH_KEY,
-            AGGREGATION_DAY_KEY,
-            AGGREGATION_HOUR_KEY,
-        ][0:int_interval]
-    except Exception:
-        raise Exception('Bad interval {interval}'.format(interval=interval))
-
-
 def _get_floor_datetime(aggregation_level, dt):
     if aggregation_level == AGGREGATION_MONTH_KEY:
         return datetime(dt.year, dt.month, 1)
@@ -58,7 +36,7 @@ def _get_floor_datetime(aggregation_level, dt):
 
 
 def build_unwind_and_match(start, end, interval):
-    interval_keys = _get_keys_from_interval(interval)
+    interval_keys = interval.aggregation_keys
 
     pipeline = []
 
@@ -78,7 +56,7 @@ def build_unwind_and_match(start, end, interval):
 
 
 def build_project(interval, groupby):
-    interval_keys = _get_keys_from_interval(interval)
+    interval_keys = interval.aggregation_keys
     base_projection_keys = [
         DATETIME_KEY,
         COUNT_KEY,

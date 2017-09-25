@@ -2,37 +2,11 @@ import unittest
 from datetime import datetime
 from unittest_data_provider import data_provider
 
+from mongots import interval
 from mongots import query
 
 
 class QueryTest(unittest.TestCase):
-
-    def valid_intervals():
-        return [
-            ('1y', []),
-            ('year', []),
-            ('1m', ['months']),
-            ('month', ['months']),
-            ('1d', ['months', 'days']),
-            ('day', ['months', 'days']),
-            ('1h', ['months', 'days', 'hours']),
-            ('hour', ['months', 'days', 'hours']),
-        ]
-
-    @data_provider(valid_intervals)
-    def test_get_keys_from_interval_returns_correct_keys(self, interval, keys):
-        self.assertEqual(query._get_keys_from_interval(interval), keys)
-
-    def invalid_intervals():
-        return [('t'), ('d'), ('m'), ('1')]
-
-    @data_provider(invalid_intervals)
-    def test_get_keys_from_interval_fails_for_invalid_interval(
-        self,
-        invalid_interval,
-    ):
-        with self.assertRaises(Exception):
-            query._get_keys_from_interval(invalid_interval)
 
     def valid_intervals_to_be_floored():
         return [(
@@ -148,10 +122,10 @@ class QueryTest(unittest.TestCase):
         end = datetime(2001, 4, 2)
 
         return [
-            (start, end, '1y', years_pipeline),
-            (start, end, '1m', months_pipeline),
-            (start, end, '1d', days_pipeline),
-            (start, end, '1h', hours_pipeline),
+            (start, end, interval.Interval(0), years_pipeline),
+            (start, end, interval.Interval(1), months_pipeline),
+            (start, end, interval.Interval(2), days_pipeline),
+            (start, end, interval.Interval(3), hours_pipeline),
         ]
 
     @data_provider(build_unwind_and_match_data)
@@ -213,10 +187,10 @@ class QueryTest(unittest.TestCase):
         }
 
         return [
-            ('1y', years),
-            ('1m', months),
-            ('1d', days),
-            ('1h', hours),
+            (interval.Interval(0), years),
+            (interval.Interval(1), months),
+            (interval.Interval(2), days),
+            (interval.Interval(3), hours),
         ]
 
     @data_provider(build_project_data)

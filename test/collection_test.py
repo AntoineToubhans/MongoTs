@@ -82,9 +82,17 @@ class MongoTSCollectionTest(unittest.TestCase):
             {'city': 'Paris'},
         )
 
+    @patch('mongots.collection.parse_interval')
     @patch('mongots.collection.build_unwind_and_match')
-    def test_query_calls_build_unwind_and_match(self, build_unwind_and_match):
+    def test_query_calls_build_unwind_and_match(
+        self,
+        build_unwind_and_match,
+        parse_interval,
+    ):
+        parsed_interval = mongots.interval.Interval(1)
+        parse_interval.return_value = parsed_interval
         build_unwind_and_match.return_value = []
+
         self.mongots_collection.query(
             datetime(2001, 10, 2, 12),
             datetime(2002, 2, 3),
@@ -93,15 +101,20 @@ class MongoTSCollectionTest(unittest.TestCase):
             groupby=[],
         )
 
+        parse_interval.assert_called_with('1m')
         build_unwind_and_match.assert_called_with(
             datetime(2001, 10, 2, 12),
             datetime(2002, 2, 3),
-            '1m',
+            parsed_interval,
         )
 
+    @patch('mongots.collection.parse_interval')
     @patch('mongots.collection.build_project')
-    def test_query_calls_build_project(self, build_project):
+    def test_query_calls_build_project(self, build_project, parse_interval):
+        parsed_interval = mongots.interval.Interval(1)
+        parse_interval.return_value = parsed_interval
         build_project.return_value = {'$project': {}}
+
         self.mongots_collection.query(
             datetime(2001, 10, 2, 12),
             datetime(2002, 2, 3),
@@ -110,7 +123,8 @@ class MongoTSCollectionTest(unittest.TestCase):
             groupby=[],
         )
 
-        build_project.assert_called_with('1m', [])
+        parse_interval.assert_called_with('1m')
+        build_project.assert_called_with(parsed_interval, [])
 
     @patch('mongots.collection.build_sort')
     def test_query_calls_build_sort(self, build_sort):
