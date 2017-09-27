@@ -12,6 +12,7 @@ from mongots.constants import STD_KEY
 from mongots.insert import build_empty_document
 from mongots.insert import build_filter
 from mongots.insert import build_update
+from mongots.interval import parse_interval
 from mongots.query import build_initial_match
 from mongots.query import build_project
 from mongots.query import build_sort
@@ -77,6 +78,7 @@ class MongoTSCollection():
             raise NotImplementedError(
                 'Queries without interval are not supported yet.',
             )
+        parsed_interval = parse_interval(interval)
 
         if groupby is None:
             groupby = []
@@ -84,8 +86,8 @@ class MongoTSCollection():
         pipeline = []
 
         pipeline.append(build_initial_match(start, end, tags))
-        pipeline.extend(build_unwind_and_match(start, end, interval))
-        pipeline.append(build_project(interval, groupby))
+        pipeline.extend(build_unwind_and_match(start, end, parsed_interval))
+        pipeline.append(build_project(parsed_interval, groupby))
         pipeline.append(build_sort())
 
         raw_result = list(self._collection.aggregate(pipeline))
