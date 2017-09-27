@@ -71,7 +71,7 @@ class MongoTSCollectionTest(unittest.TestCase):
         self.mongots_collection.query(
             datetime(2001, 10, 2, 12),
             datetime(2002, 2, 3),
-            interval='1m',
+            interval='1M',
             tags={'city': 'Paris'},
             groupby=[],
         )
@@ -96,12 +96,12 @@ class MongoTSCollectionTest(unittest.TestCase):
         self.mongots_collection.query(
             datetime(2001, 10, 2, 12),
             datetime(2002, 2, 3),
-            interval='1m',
+            interval='1M',
             tags={'city': 'Paris'},
             groupby=[],
         )
 
-        parse_interval.assert_called_with('1m')
+        parse_interval.assert_called_with('1M')
         build_unwind_and_match.assert_called_with(
             datetime(2001, 10, 2, 12),
             datetime(2002, 2, 3),
@@ -118,12 +118,12 @@ class MongoTSCollectionTest(unittest.TestCase):
         self.mongots_collection.query(
             datetime(2001, 10, 2, 12),
             datetime(2002, 2, 3),
-            interval='1m',
+            interval='1M',
             tags={'city': 'Paris'},
             groupby=[],
         )
 
-        parse_interval.assert_called_with('1m')
+        parse_interval.assert_called_with('1M')
         build_project.assert_called_with(parsed_interval, [])
 
     @patch('mongots.collection.build_sort')
@@ -132,7 +132,7 @@ class MongoTSCollectionTest(unittest.TestCase):
         self.mongots_collection.query(
             datetime(2001, 10, 2, 12),
             datetime(2002, 2, 3),
-            interval='1m',
+            interval='1M',
             tags={'city': 'Paris'},
             groupby=[],
         )

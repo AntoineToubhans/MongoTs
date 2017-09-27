@@ -1,3 +1,5 @@
+from parse import parse
+
 from mongots.constants import AGGREGATION_MONTH_KEY
 from mongots.constants import AGGREGATION_DAY_KEY
 from mongots.constants import AGGREGATION_HOUR_KEY
@@ -21,27 +23,34 @@ AGGREGATION_KEYS = [
 ]
 
 
-def parse_interval(str_interval):
+def parse_interval(str):
     try:
+        coef, str_interval = parse('{:d}{:w}', str)
+
         interval = {
-            '1y': YEAR,
-            'year': YEAR,
-            '1m': MONTH,
-            'month': MONTH,
-            '1d': DAY,
-            'day': DAY,
-            '1h': HOUR,
-            'hour': HOUR,
+            'y': YEAR,
+            'M': MONTH,
+            'd': DAY,
+            'h': HOUR,
+            'm': MINUTE,
+            's': SECOND,
         }[str_interval]
     except Exception:
         raise Exception('Bad interval {}'.format(str_interval))
 
-    return Interval(interval)
+    return Interval(interval, coef=coef)
 
 
 class Interval:
-    def __init__(self, interval, min_interval=HOUR, max_interval=MONTH):
+    def __init__(
+        self,
+        interval,
+        coef=1,
+        min_interval=HOUR,
+        max_interval=MONTH,
+    ):
         self._interval = interval
+        self._coef = coef
         self._min_interval = min_interval
         self._max_interval = max_interval
 
