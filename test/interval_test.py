@@ -8,22 +8,27 @@ class IntervalTest(unittest.TestCase):
 
     def valid_str_intervals():
         return [
-            ('1y', 0),
-            ('year', 0),
-            ('1m', 1),
-            ('month', 1),
-            ('1d', 2),
-            ('day', 2),
-            ('1h', 3),
-            ('hour', 3),
+            ('1y', 0, 1),
+            ('2y', 0, 2),
+            ('1M', 1, 1),
+            ('3M', 1, 3),
+            ('1d', 2, 1),
+            ('4d', 2, 4),
+            ('1h', 3, 1),
+            ('12h', 3, 12),
+            ('1m', 4, 1),
+            ('5m', 4, 5),
+            ('1s', 5, 1),
+            ('30s', 5, 30),
         ]
 
     @data_provider(valid_str_intervals)
-    def test_parse_valid_str_interval(self, str_interval, int_interval):
+    def test_parse_valid_str_interval(self, str_interval, int_interval, coef):
         parsed_interval = interval.parse_interval(str_interval)
 
         self.assertIsInstance(parsed_interval, interval.Interval)
         self.assertEqual(parsed_interval._interval, int_interval)
+        self.assertEqual(parsed_interval._coef, coef)
 
     def invalid_str_intervals():
         return [('t'), ('d'), ('m'), ('1')]
