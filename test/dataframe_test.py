@@ -22,6 +22,24 @@ class DataframeTest(unittest.TestCase):
             # raw data
             [{
                 'datetime': datetime(1987, 5, 8),
+                'count': 0,
+                'sum': 0,
+                'sum2': 0,
+                'min': pd.np.inf,
+                'max': -pd.np.inf,
+            }],
+            # groupby
+            [],
+            # expected df index
+            pd.Index([datetime(1987, 5, 8)], name='datetime'),
+            # expected df data
+            [
+                [0, pd.np.inf, -pd.np.inf, pd.np.nan, pd.np.nan],
+            ],
+        ), (
+            # raw data
+            [{
+                'datetime': datetime(1987, 5, 8),
                 'count': 5,
                 'sum': 8.2,
                 'sum2': 14.32,
