@@ -61,6 +61,39 @@ class DataframeTest(unittest.TestCase):
             [
                 [5, 1.1, 2.3, 1.64, 0.41761226035642196],
             ],
+        ), (
+            # raw data
+            [{
+                'datetime': datetime(1987, 5, 8),
+                'count': 3,
+                'sum': 4.1,
+                'sum2': 5.79,
+                'min': 1.1,
+                'max': 1.7,
+                'plop': 'lol',
+            }, {
+                'datetime': datetime(1987, 5, 8),
+                'count': 2,
+                'sum': 4.1,
+                'sum2': 8.53,
+                'min': 1.8,
+                'max': 2.3,
+                'plop': 'mdr',
+            }],
+            # groupby
+            ['plop'],
+            # expected df index
+            pd.MultiIndex.from_product([[
+                datetime(1987, 5, 8),
+            ], [
+                'lol',
+                'mdr',
+            ]], names=['datetime', 'plop']),
+            # expected df data
+            [
+                [3, 1.1, 1.7, 1.3666666666666667, 0.24944382578492938],
+                [2, 1.8, 2.3, 2.05, 0.25],
+            ],
         )]
 
     @data_provider(raw_data_groupbys_and_expected_outputs)

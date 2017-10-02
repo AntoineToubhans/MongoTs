@@ -397,7 +397,7 @@ def test_insert_pressure_succeeds(pressure_collection, weather_data_pressure):
             datetime(1996, 7, 16, 13),
         ], [
             'london',
-            'paris'
+            'paris',
         ]], names=['datetime', 'city']),
         'data': [
             [1, 1033.2, 1033.2, 1033.2, 0.0],
