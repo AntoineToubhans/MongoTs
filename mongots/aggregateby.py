@@ -23,7 +23,7 @@ AGGREGATION_KEYS = [
 ]
 
 
-def parse_interval(str):
+def parse_aggregateby(str):
     try:
         coef, str_interval = parse('{:d}{:w}', str)
 
@@ -38,10 +38,10 @@ def parse_interval(str):
     except Exception:
         raise Exception('Bad interval {}'.format(str_interval))
 
-    return Interval(interval, coef=coef)
+    return Aggregateby(interval, coef=coef)
 
 
-class Interval:
+class Aggregateby:
     def __init__(
         self,
         interval,

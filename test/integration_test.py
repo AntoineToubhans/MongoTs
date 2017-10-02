@@ -166,7 +166,7 @@ def test_query_retrieve_expected_constant_per_month(big_collection):
     df = big_collection.query(
         datetime(2010, 1, 1),
         datetime(2010, 9, 1),
-        interval='1M',
+        aggregateby='1M',
     )
 
     assert (9, 5) == df.shape
@@ -223,7 +223,7 @@ def test_insert_pressure_succeeds(pressure_collection, weather_data_pressure):
 @pytest.mark.parametrize('args, kwargs, expected', [(
     # 1996 per year
     (datetime(1996, 1, 1), datetime(1996, 12, 31)),
-    {'interval': '1y'},
+    {'aggregateby': '1y'},
     {
         'index': pd.Index([datetime(1996, 1, 1)], name='datetime'),
         'data': [
@@ -233,7 +233,7 @@ def test_insert_pressure_succeeds(pressure_collection, weather_data_pressure):
 ), (
     # 1996 per month
     (datetime(1996, 1, 1), datetime(1996, 12, 31)),
-    {'interval': '1M'},
+    {'aggregateby': '1M'},
     {
         'index': pd.Index([
             datetime(1996, 1, 1),
@@ -267,7 +267,7 @@ def test_insert_pressure_succeeds(pressure_collection, weather_data_pressure):
 ), (
     # 1996 summer per month and per city
     (datetime(1996, 7, 15), datetime(1996, 9, 15)),
-    {'interval': '1M', 'groupby': ['city']},
+    {'aggregateby': '1M', 'groupby': ['city']},
     {
         'index': pd.MultiIndex.from_product([
             [datetime(1996, 7, 1), datetime(1996, 8, 1), datetime(1996, 9, 1)],
@@ -288,7 +288,7 @@ def test_insert_pressure_succeeds(pressure_collection, weather_data_pressure):
 ), (
     # 1996 July per day and per city
     (datetime(1996, 7, 15), datetime(1996, 7, 20)),
-    {'interval': '1d', 'groupby': ['city']},
+    {'aggregateby': '1d', 'groupby': ['city']},
     {
         'index': pd.MultiIndex.from_product([[
             datetime(1996, 7, 15),
@@ -326,7 +326,7 @@ def test_insert_pressure_succeeds(pressure_collection, weather_data_pressure):
 ), (
     # 1996 July 16th, per hours
     (datetime(1996, 7, 16, 11), datetime(1996, 7, 16, 15)),
-    {'interval': '1h'},
+    {'aggregateby': '1h'},
     {
         'index': pd.Index([
             datetime(1996, 7, 16, 11),
@@ -346,7 +346,7 @@ def test_insert_pressure_succeeds(pressure_collection, weather_data_pressure):
 ), (
     # 1996 July 16th, per hours in Paris
     (datetime(1996, 7, 16, 11), datetime(1996, 7, 16, 15)),
-    {'interval': '1h', 'tags': {'city': 'paris'}},
+    {'aggregateby': '1h', 'tags': {'city': 'paris'}},
     {
         'index': pd.Index([
             datetime(1996, 7, 16, 11),
@@ -366,7 +366,7 @@ def test_insert_pressure_succeeds(pressure_collection, weather_data_pressure):
 ), (
     # 1996 July 16th, per hours everywhere but in Paris
     (datetime(1996, 7, 16, 11), datetime(1996, 7, 16, 15)),
-    {'interval': '1h', 'tags': {'city': {'$ne': 'paris'}}},
+    {'aggregateby': '1h', 'tags': {'city': {'$ne': 'paris'}}},
     {
         'index': pd.Index([
             datetime(1996, 7, 16, 11),
@@ -387,7 +387,7 @@ def test_insert_pressure_succeeds(pressure_collection, weather_data_pressure):
     # 1996 July 16th, per hours and per city in Paris and London
     (datetime(1996, 7, 16, 11), datetime(1996, 7, 16, 13)),
     {
-        'interval': '1h',
+        'aggregateby': '1h',
         'groupby': ['city'],
         'tags': {'city': {'$in': ['paris', 'london']}},
     }, {
@@ -411,7 +411,7 @@ def test_insert_pressure_succeeds(pressure_collection, weather_data_pressure):
 ), (
     # no data for the selected range
     (datetime(1995, 7, 10), datetime(1995, 8, 10)),
-    {'interval': '1d'},
+    {'aggregateby': '1d'},
     {
         'index': [],
         'data': [],
@@ -419,7 +419,7 @@ def test_insert_pressure_succeeds(pressure_collection, weather_data_pressure):
 ), (
     # end date before start date
     (datetime(1996, 7, 10), datetime(1996, 7, 9)),
-    {'interval': '1d'},
+    {'aggregateby': '1d'},
     {
         'index': [],
         'data': [],

@@ -9,10 +9,10 @@ from mongots.constants import MAX_KEY
 from mongots.constants import MEAN_KEY
 from mongots.constants import STD_KEY
 
+from mongots.aggregateby import parse_aggregateby
 from mongots.insert import build_empty_document
 from mongots.insert import build_filter
 from mongots.insert import build_update
-from mongots.interval import parse_interval
 from mongots.query import build_initial_match
 from mongots.query import build_project
 from mongots.query import build_sort
@@ -50,7 +50,7 @@ class MongoTSCollection():
 
         return 1 == result.modified_count
 
-    def query(self, start, end, interval=None, tags=None, groupby=None):
+    def query(self, start, end, tags=None, aggregateby=None, groupby=None):
         """Query the MongoDb database for various statistics about values
         after `start` and before `end` timestamps.
         Available statistics are: count / mean / std / min / max.
@@ -58,9 +58,9 @@ class MongoTSCollection():
         Args:
             start (datetime): filters values after the start datetime
             end (datetime): filters values before the end datetime
-            interval (str):
+            aggregateby (str):
                 bucket statistics for each interval in the time range.
-                Interval options are:
+                Aggregateby options are:
                 - '1y', '2y', ... : one year, two years, ...
                 - '1M', '2M', ... : one month, two months, ...
                 - '1d', '2d', ... : one day, two days, ...
@@ -76,11 +76,11 @@ class MongoTSCollection():
             dataframe containing the statistics and indexed by datetimes
             and groupby tags (if any)
         """
-        if interval is None:
+        if aggregateby is None:
             raise NotImplementedError(
-                'Queries without interval are not supported yet.',
+                'Queries without aggregation are not supported yet.',
             )
-        parsed_interval = parse_interval(interval)
+        parsed_aggregateby = parse_aggregateby(aggregateby)
 
         if groupby is None:
             groupby = []
@@ -88,8 +88,8 @@ class MongoTSCollection():
         pipeline = []
 
         pipeline.append(build_initial_match(start, end, tags))
-        pipeline.extend(build_unwind_and_match(start, end, parsed_interval))
-        pipeline.append(build_project(parsed_interval, groupby))
+        pipeline.extend(build_unwind_and_match(start, end, parsed_aggregateby))
+        pipeline.append(build_project(parsed_aggregateby, groupby))
         pipeline.append(build_sort())
 
         raw_result = list(self._collection.aggregate(pipeline))
