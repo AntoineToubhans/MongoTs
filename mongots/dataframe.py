@@ -15,6 +15,7 @@ def build_dataframe(raw_data, groupby):
         return pd.DataFrame(
             data=[],
             columns=[COUNT_KEY, MIN_KEY, MAX_KEY, MEAN_KEY, STD_KEY],
+            index=pd.Index([], name='datetime'),
         )
 
     base_columns = [

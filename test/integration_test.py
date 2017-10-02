@@ -413,7 +413,7 @@ def test_insert_pressure_succeeds(pressure_collection, weather_data_pressure):
     (datetime(1995, 7, 10), datetime(1995, 8, 10)),
     {'aggregateby': '1d'},
     {
-        'index': [],
+        'index': pd.Index([], name='datetime'),
         'data': [],
     },
 ), (
@@ -421,7 +421,7 @@ def test_insert_pressure_succeeds(pressure_collection, weather_data_pressure):
     (datetime(1996, 7, 10), datetime(1996, 7, 9)),
     {'aggregateby': '1d'},
     {
-        'index': [],
+        'index': pd.Index([], name='datetime'),
         'data': [],
     },
 )])
