@@ -1,3 +1,4 @@
+from datetime import datetime
 import pandas as pd
 import unittest
 from unittest_data_provider import data_provider
@@ -17,6 +18,49 @@ class DataframeTest(unittest.TestCase):
             pd.Index([], name='datetime'),
             # expected df data
             [],
+        ), (
+            # raw data
+            [{
+                'datetime': datetime(1987, 5, 8),
+                'count': 5,
+                'sum': 8.2,
+                'sum2': 14.32,
+                'min': 1.1,
+                'max': 2.3,
+            }],
+            # groupby
+            [],
+            # expected df index
+            pd.Index([datetime(1987, 5, 8)], name='datetime'),
+            # expected df data
+            [
+                [5, 1.1, 2.3, 1.64, 0.41761226035642196],
+            ],
+        ), (
+            # raw data
+            [{
+                'datetime': datetime(1987, 5, 8),
+                'count': 3,
+                'sum': 4.1,
+                'sum2': 5.79,
+                'min': 1.1,
+                'max': 1.7,
+            }, {
+                'datetime': datetime(1987, 5, 8),
+                'count': 2,
+                'sum': 4.1,
+                'sum2': 8.53,
+                'min': 1.8,
+                'max': 2.3,
+            }],
+            # groupby
+            [],
+            # expected df index
+            pd.Index([datetime(1987, 5, 8)], name='datetime'),
+            # expected df data
+            [
+                [5, 1.1, 2.3, 1.64, 0.41761226035642196],
+            ],
         )]
 
     @data_provider(raw_data_groupbys_and_expected_outputs)
