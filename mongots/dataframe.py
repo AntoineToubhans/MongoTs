@@ -41,7 +41,9 @@ def build_dataframe(raw_data, groupby):
 
     df[MEAN_KEY] = df[SUM_KEY] / df[COUNT_KEY]
     df[STD_KEY] = pd.np.sqrt(
-        (df[SUM2_KEY] / df[COUNT_KEY]) - df[MEAN_KEY]**2,
+        ((df[SUM2_KEY] / df[COUNT_KEY]) - df[MEAN_KEY]**2).apply(
+            lambda v: max(v, 0.0)
+        ),
     )
 
     return df[[COUNT_KEY, MIN_KEY, MAX_KEY, MEAN_KEY, STD_KEY]]

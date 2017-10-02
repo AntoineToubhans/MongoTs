@@ -112,6 +112,24 @@ class DataframeTest(unittest.TestCase):
                 [3, 1.1, 1.7, 1.3666666666666667, 0.24944382578492938],
                 [2, 1.8, 2.3, 2.05, 0.25],
             ],
+        ), (
+            # raw data
+            [{
+                'datetime': datetime(1987, 5, 8),
+                'count': 3,
+                'sum': 21.6 * 3,
+                'sum2': 21.6**2 * 3,
+                'min': 21.6,
+                'max': 21.6,
+            }],
+            # groupby
+            [],
+            # expected df index
+            pd.Index([datetime(1987, 5, 8)], name='datetime'),
+            # expected df data
+            [
+                [3, 21.6, 21.6, 21.6, 0.0],
+            ],
         )]
 
     @data_provider(raw_data_groupbys_and_expected_outputs)
