@@ -1,15 +1,5 @@
-import pandas as pd
-
-from mongots.constants import DATETIME_KEY
-from mongots.constants import COUNT_KEY
-from mongots.constants import SUM_KEY
-from mongots.constants import SUM2_KEY
-from mongots.constants import MIN_KEY
-from mongots.constants import MAX_KEY
-from mongots.constants import MEAN_KEY
-from mongots.constants import STD_KEY
-
 from mongots.aggregateby import parse_aggregateby
+from mongots.dataframe import build_dataframe
 from mongots.insert import build_empty_document
 from mongots.insert import build_filter
 from mongots.insert import build_update
@@ -92,38 +82,6 @@ class MongoTSCollection():
         pipeline.append(build_project(parsed_aggregateby, groupby))
         pipeline.append(build_sort())
 
-        raw_result = list(self._collection.aggregate(pipeline))
+        raw_data = list(self._collection.aggregate(pipeline))
 
-        if 0 == len(raw_result):
-            return pd.DataFrame(
-                data=[],
-                columns=[COUNT_KEY, MIN_KEY, MAX_KEY, MEAN_KEY, STD_KEY],
-            )
-
-        base_columns = [
-            DATETIME_KEY,
-            COUNT_KEY,
-            SUM_KEY,
-            SUM2_KEY,
-            MIN_KEY,
-            MAX_KEY,
-        ]
-        columns = base_columns + groupby
-
-        df = pd.DataFrame(
-            data=raw_result,
-            columns=columns
-        ).groupby([DATETIME_KEY] + groupby).aggregate({
-            COUNT_KEY: 'sum',
-            SUM_KEY: 'sum',
-            SUM2_KEY: 'sum',
-            MIN_KEY: 'min',
-            MAX_KEY: 'max',
-        })
-
-        df[MEAN_KEY] = df[SUM_KEY] / df[COUNT_KEY]
-        df[STD_KEY] = pd.np.sqrt(
-            (df[SUM2_KEY] / df[COUNT_KEY]) - df[MEAN_KEY]**2,
-        )
-
-        return df[[COUNT_KEY, MIN_KEY, MAX_KEY, MEAN_KEY, STD_KEY]]
+        return build_dataframe(raw_data, groupby)
