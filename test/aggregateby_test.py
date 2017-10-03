@@ -10,14 +10,14 @@ class AggregatebyTest(unittest.TestCase):
         return [
             ('1y', 0, 1),
             ('2y', 0, 2),
-            ('1M', 1, 1),
-            ('3M', 1, 3),
+            ('1m', 1, 1),
+            ('3m', 1, 3),
             ('1d', 2, 1),
             ('4d', 2, 4),
             ('1h', 3, 1),
             ('12h', 3, 12),
-            ('1m', 4, 1),
-            ('5m', 4, 5),
+            ('1min', 4, 1),
+            ('5min', 4, 5),
             ('1s', 5, 1),
             ('30s', 5, 30),
         ]
@@ -64,10 +64,10 @@ class AggregatebyTest(unittest.TestCase):
     def str_per_aggregateby():
         return [
             (0, 1, '1y'),
-            (1, 2, '2M'),
+            (1, 2, '2m'),
             (2, 3, '3d'),
             (3, 4, '4h'),
-            (4, 5, '5m'),
+            (4, 5, '5min'),
             (5, 20, '20s'),
         ]
 

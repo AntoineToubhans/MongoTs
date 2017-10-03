@@ -166,7 +166,7 @@ def test_query_retrieve_expected_constant_per_month(big_collection):
     df = big_collection.query(
         datetime(2010, 1, 1),
         datetime(2010, 9, 1),
-        aggregateby='1M',
+        aggregateby='1m',
     )
 
     assert (9, 5) == df.shape
@@ -233,7 +233,7 @@ def test_insert_pressure_succeeds(pressure_collection, weather_data_pressure):
 ), (
     # 1996 per month
     (datetime(1996, 1, 1), datetime(1996, 12, 31)),
-    {'aggregateby': '1M'},
+    {'aggregateby': '1m'},
     {
         'index': pd.Index([
             datetime(1996, 1, 1),
@@ -267,7 +267,7 @@ def test_insert_pressure_succeeds(pressure_collection, weather_data_pressure):
 ), (
     # 1996 summer per month and per city
     (datetime(1996, 7, 15), datetime(1996, 9, 15)),
-    {'aggregateby': '1M', 'groupby': ['city']},
+    {'aggregateby': '1m', 'groupby': ['city']},
     {
         'index': pd.MultiIndex.from_product([
             [datetime(1996, 7, 1), datetime(1996, 8, 1), datetime(1996, 9, 1)],

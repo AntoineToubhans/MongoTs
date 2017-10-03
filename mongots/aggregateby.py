@@ -22,7 +22,7 @@ AGGREGATION_KEYS = [
     None,  # milisecond
 ]
 
-INTERVAL_STR = ['y', 'M', 'd', 'h', 'm', 's']
+INTERVAL_STR = ['y', 'm', 'd', 'h', 'min', 's']
 STR_INTERVAL = {s: idx for idx, s in enumerate(INTERVAL_STR)}
 
 
