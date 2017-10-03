@@ -3,6 +3,7 @@ import pandas as pd
 import unittest
 from unittest_data_provider import data_provider
 
+from mongots import aggregateby
 from mongots import dataframe
 
 
@@ -12,6 +13,8 @@ class DataframeTest(unittest.TestCase):
         return [(
             # raw data
             [],
+            # aggregateby
+            aggregateby.Aggregateby(3),
             # groupby
             [],
             # expected df index
@@ -28,6 +31,8 @@ class DataframeTest(unittest.TestCase):
                 'min': pd.np.inf,
                 'max': -pd.np.inf,
             }],
+            # aggregateby
+            aggregateby.Aggregateby(2),
             # groupby
             [],
             # expected df index
@@ -46,6 +51,8 @@ class DataframeTest(unittest.TestCase):
                 'min': 1.1,
                 'max': 2.3,
             }],
+            # aggregateby
+            aggregateby.Aggregateby(2),
             # groupby
             [],
             # expected df index
@@ -71,6 +78,8 @@ class DataframeTest(unittest.TestCase):
                 'min': 1.8,
                 'max': 2.3,
             }],
+            # aggregateby
+            aggregateby.Aggregateby(2),
             # groupby
             [],
             # expected df index
@@ -98,6 +107,8 @@ class DataframeTest(unittest.TestCase):
                 'max': 2.3,
                 'plop': 'mdr',
             }],
+            # aggregateby
+            aggregateby.Aggregateby(2),
             # groupby
             ['plop'],
             # expected df index
@@ -122,6 +133,8 @@ class DataframeTest(unittest.TestCase):
                 'min': 21.6,
                 'max': 21.6,
             }],
+            # aggregateby
+            aggregateby.Aggregateby(2),
             # groupby
             [],
             # expected df index
@@ -136,11 +149,12 @@ class DataframeTest(unittest.TestCase):
     def test_build_dataframe(
         self,
         raw_data,
+        aggregateby,
         groupby,
         expected_index,
         expected_data,
     ):
-        actual_df = dataframe.build_dataframe(raw_data, groupby)
+        actual_df = dataframe.build_dataframe(raw_data, aggregateby, groupby)
 
         pd.testing.assert_frame_equal(actual_df, pd.DataFrame(
             data=expected_data,

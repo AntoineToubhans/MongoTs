@@ -82,4 +82,4 @@ class MongoTSCollection():
 
         raw_data = list(self._collection.aggregate(pipeline))
 
-        return build_dataframe(raw_data, groupby)
+        return build_dataframe(raw_data, aggregateby, groupby)

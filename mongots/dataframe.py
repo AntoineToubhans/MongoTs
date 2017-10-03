@@ -10,7 +10,7 @@ from mongots.constants import MEAN_KEY
 from mongots.constants import STD_KEY
 
 
-def build_dataframe(raw_data, groupby):
+def build_dataframe(raw_data, aggregateby, groupby):
     if 0 == len(raw_data):
         return pd.DataFrame(
             data=[],
