@@ -22,26 +22,35 @@ AGGREGATION_KEYS = [
     None,  # milisecond
 ]
 
+INTERVAL_STR = ['y', 'm', 'd', 'h', 'min', 's']
+STR_INTERVAL = {s: idx for idx, s in enumerate(INTERVAL_STR)}
 
-def parse_interval(str):
+# http://pandas.pydata.org/pandas-docs/stable/timeseries.html#offset-aliases
+PANDAS_FREQ_ALIAS = [
+    'AS',  # year start
+    'MS',  # month start
+    'D',   # calendar day
+    'H',   # hourly
+    'T',   # minutely
+    'S',   # secondly
+    'L',   # milliseconds
+    'U',   # microseconds
+    'N',   # nanoseconds
+]
+
+
+def parse_aggregateby(str):
     try:
         coef, str_interval = parse('{:d}{:w}', str)
 
-        interval = {
-            'y': YEAR,
-            'M': MONTH,
-            'd': DAY,
-            'h': HOUR,
-            'm': MINUTE,
-            's': SECOND,
-        }[str_interval]
+        interval = STR_INTERVAL[str_interval]
     except Exception:
         raise Exception('Bad interval {}'.format(str_interval))
 
-    return Interval(interval, coef=coef)
+    return Aggregateby(interval, coef=coef)
 
 
-class Interval:
+class Aggregateby:
     def __init__(
         self,
         interval,
@@ -58,6 +67,15 @@ class Interval:
             self._max_interval:(self._interval+1)
         ]
 
+        self._pandas_freq = '{}{}'.format(
+            self._coef,
+            PANDAS_FREQ_ALIAS[self._interval]
+        )
+
     @property
     def aggregation_keys(self):
         return self._aggregation_keys
+
+    @property
+    def freq(self):
+        return self._pandas_freq

@@ -71,7 +71,7 @@ class MongoTSCollectionTest(unittest.TestCase):
         self.mongots_collection.query(
             datetime(2001, 10, 2, 12),
             datetime(2002, 2, 3),
-            interval='1M',
+            aggregateby='1m',
             tags={'city': 'Paris'},
             groupby=[],
         )
@@ -82,49 +82,49 @@ class MongoTSCollectionTest(unittest.TestCase):
             {'city': 'Paris'},
         )
 
-    @patch('mongots.collection.parse_interval')
+    @patch('mongots.collection.parse_aggregateby')
     @patch('mongots.collection.build_unwind_and_match')
     def test_query_calls_build_unwind_and_match(
         self,
         build_unwind_and_match,
-        parse_interval,
+        parse_aggregateby,
     ):
-        parsed_interval = mongots.interval.Interval(1)
-        parse_interval.return_value = parsed_interval
+        parsed_aggregateby = mongots.aggregateby.Aggregateby(1)
+        parse_aggregateby.return_value = parsed_aggregateby
         build_unwind_and_match.return_value = []
 
         self.mongots_collection.query(
             datetime(2001, 10, 2, 12),
             datetime(2002, 2, 3),
-            interval='1M',
+            aggregateby='1m',
             tags={'city': 'Paris'},
             groupby=[],
         )
 
-        parse_interval.assert_called_with('1M')
+        parse_aggregateby.assert_called_with('1m')
         build_unwind_and_match.assert_called_with(
             datetime(2001, 10, 2, 12),
             datetime(2002, 2, 3),
-            parsed_interval,
+            parsed_aggregateby,
         )
 
-    @patch('mongots.collection.parse_interval')
+    @patch('mongots.collection.parse_aggregateby')
     @patch('mongots.collection.build_project')
-    def test_query_calls_build_project(self, build_project, parse_interval):
-        parsed_interval = mongots.interval.Interval(1)
-        parse_interval.return_value = parsed_interval
+    def test_query_calls_build_project(self, build_project, parse_aggregateby):
+        parsed_aggregateby = mongots.aggregateby.Aggregateby(1)
+        parse_aggregateby.return_value = parsed_aggregateby
         build_project.return_value = {'$project': {}}
 
         self.mongots_collection.query(
             datetime(2001, 10, 2, 12),
             datetime(2002, 2, 3),
-            interval='1M',
+            aggregateby='1m',
             tags={'city': 'Paris'},
             groupby=[],
         )
 
-        parse_interval.assert_called_with('1M')
-        build_project.assert_called_with(parsed_interval, [])
+        parse_aggregateby.assert_called_with('1m')
+        build_project.assert_called_with(parsed_aggregateby, [])
 
     @patch('mongots.collection.build_sort')
     def test_query_calls_build_sort(self, build_sort):
@@ -132,7 +132,7 @@ class MongoTSCollectionTest(unittest.TestCase):
         self.mongots_collection.query(
             datetime(2001, 10, 2, 12),
             datetime(2002, 2, 3),
-            interval='1M',
+            aggregateby='1m',
             tags={'city': 'Paris'},
             groupby=[],
         )
@@ -143,15 +143,15 @@ class MongoTSCollectionTest(unittest.TestCase):
         return [(
             datetime(2001, 6, 23, 13, 45),
             datetime(2001, 9, 2),
-            {'interval': '1d'}
+            {'aggregateby': '1d'}
         ), (
             datetime(2001, 6, 23, 13, 45),
             datetime(2001, 9, 2),
-            {'interval': '1d', 'groupby': ['city']},
+            {'aggregateby': '1d', 'groupby': ['city']},
         ), (
             datetime(2001, 6, 23, 13, 45),
             datetime(2001, 9, 2),
-            {'interval': '1d', 'tags': {'city': 'paris'}},
+            {'aggregateby': '1d', 'tags': {'city': 'paris'}},
         )]
 
     @data_provider(query_args)
@@ -177,5 +177,5 @@ class MongoTSCollectionTest(unittest.TestCase):
             self.mongots_collection.query(
                 datetime(1987, 5, 8),
                 datetime(2000, 1, 1),
-                interval=None,
+                aggregateby=None,
             )

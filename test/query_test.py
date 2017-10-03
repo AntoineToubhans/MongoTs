@@ -2,7 +2,7 @@ import unittest
 from datetime import datetime
 from unittest_data_provider import data_provider
 
-from mongots import interval
+from mongots import aggregateby
 from mongots import query
 
 
@@ -122,10 +122,10 @@ class QueryTest(unittest.TestCase):
         end = datetime(2001, 4, 2)
 
         return [
-            (start, end, interval.Interval(0), years_pipeline),
-            (start, end, interval.Interval(1), months_pipeline),
-            (start, end, interval.Interval(2), days_pipeline),
-            (start, end, interval.Interval(3), hours_pipeline),
+            (start, end, aggregateby.Aggregateby(0), years_pipeline),
+            (start, end, aggregateby.Aggregateby(1), months_pipeline),
+            (start, end, aggregateby.Aggregateby(2), days_pipeline),
+            (start, end, aggregateby.Aggregateby(3), hours_pipeline),
         ]
 
     @data_provider(build_unwind_and_match_data)
@@ -187,10 +187,10 @@ class QueryTest(unittest.TestCase):
         }
 
         return [
-            (interval.Interval(0), years),
-            (interval.Interval(1), months),
-            (interval.Interval(2), days),
-            (interval.Interval(3), hours),
+            (aggregateby.Aggregateby(0), years),
+            (aggregateby.Aggregateby(1), months),
+            (aggregateby.Aggregateby(2), days),
+            (aggregateby.Aggregateby(3), hours),
         ]
 
     @data_provider(build_project_data)
