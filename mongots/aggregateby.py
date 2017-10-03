@@ -25,6 +25,19 @@ AGGREGATION_KEYS = [
 INTERVAL_STR = ['y', 'm', 'd', 'h', 'min', 's']
 STR_INTERVAL = {s: idx for idx, s in enumerate(INTERVAL_STR)}
 
+# http://pandas.pydata.org/pandas-docs/stable/timeseries.html#offset-aliases
+PANDAS_FREQ_ALIAS = [
+    'AS',  # year start
+    'MS',  # month start
+    'D',   # calendar day
+    'H',   # hourly
+    'T',   # minutely
+    'S',   # secondly
+    'L',   # milliseconds
+    'U',   # microseconds
+    'N',   # nanoseconds
+]
+
 
 def parse_aggregateby(str):
     try:
@@ -54,9 +67,9 @@ class Aggregateby:
             self._max_interval:(self._interval+1)
         ]
 
-        self._str__repr = '{}{}'.format(
+        self._pandas_freq = '{}{}'.format(
             self._coef,
-            INTERVAL_STR[self._interval]
+            PANDAS_FREQ_ALIAS[self._interval]
         )
 
     @property
@@ -64,13 +77,5 @@ class Aggregateby:
         return self._aggregation_keys
 
     @property
-    def str(self):
-        return self._str__repr
-
-    @property
-    def is_base(self):
-        """
-        Returns true if the coeficient is one i.e.,
-        the dataframe does not need to be resampled
-        """
-        return 1 == self._coef
+    def freq(self):
+        return self._pandas_freq

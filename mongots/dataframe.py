@@ -18,39 +18,27 @@ def build_dataframe(raw_data, aggregateby, groupby):
             index=pd.Index([], name='datetime'),
         )
 
-    base_columns = [
+    columns = [
         DATETIME_KEY,
         COUNT_KEY,
         SUM_KEY,
         SUM2_KEY,
         MIN_KEY,
         MAX_KEY,
-    ]
-    columns = base_columns + groupby
+    ] + groupby
 
-    raw_df = pd.DataFrame(
+    datetime_grouper = pd.Grouper(key=DATETIME_KEY, freq=aggregateby.freq)
+
+    df = pd.DataFrame(
         data=raw_data,
         columns=columns
-    )
-
-    grouped_df = raw_df.groupby([DATETIME_KEY] + groupby).aggregate({
+    ).groupby([datetime_grouper] + groupby).aggregate({
         COUNT_KEY: 'sum',
         SUM_KEY: 'sum',
         SUM2_KEY: 'sum',
         MIN_KEY: 'min',
         MAX_KEY: 'max',
     })
-
-    if aggregateby.is_base:
-        df = grouped_df
-    else:
-        df = grouped_df.resample(aggregateby.str).aggregate({
-            COUNT_KEY: 'sum',
-            SUM_KEY: 'sum',
-            SUM2_KEY: 'sum',
-            MIN_KEY: 'min',
-            MAX_KEY: 'max',
-        })
 
     df[MEAN_KEY] = df[SUM_KEY] / df[COUNT_KEY]
     df[STD_KEY] = pd.np.sqrt(

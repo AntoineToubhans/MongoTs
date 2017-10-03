@@ -61,27 +61,23 @@ class AggregatebyTest(unittest.TestCase):
 
         self.assertEqual(parsed_aggregateby.aggregation_keys, aggregation_keys)
 
-    def str_per_aggregateby():
+    def freq_per_aggregateby():
         return [
-            (0, 1, '1y'),
-            (1, 2, '2m'),
-            (2, 3, '3d'),
-            (3, 4, '4h'),
-            (4, 5, '5min'),
-            (5, 20, '20s'),
+            (0, 1, '1AS'),
+            (1, 2, '2MS'),
+            (2, 3, '3D'),
+            (3, 4, '4H'),
+            (4, 5, '5T'),
+            (5, 20, '20S'),
         ]
 
-    @data_provider(str_per_aggregateby)
-    def test_aggregateby_can_retrieve_str(
+    @data_provider(freq_per_aggregateby)
+    def test_aggregateby_freq(
         self,
         interval,
         coef,
-        expected_str,
+        expected_freq,
     ):
         parsed_aggregateby = aggregateby.Aggregateby(interval, coef=coef)
 
-        self.assertEqual(parsed_aggregateby.str, expected_str)
-
-    def test_is_base(self):
-        self.assertTrue(aggregateby.Aggregateby(1, coef=1).is_base)
-        self.assertFalse(aggregateby.Aggregateby(1, coef=2).is_base)
+        self.assertEqual(parsed_aggregateby.freq, expected_freq)
