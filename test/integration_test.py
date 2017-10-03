@@ -409,6 +409,22 @@ def test_insert_pressure_succeeds(pressure_collection, weather_data_pressure):
         ],
     },
 ), (
+    # 1996 July 16th, per 2 hours in Paris and London
+    (datetime(1996, 7, 16, 11), datetime(1996, 7, 16, 13)),
+    {
+        'aggregateby': '2h',
+        'tags': {'city': {'$in': ['paris', 'london']}},
+    }, {
+        'index': pd.Index([
+            datetime(1996, 7, 16, 10),
+            datetime(1996, 7, 16, 12),
+        ], name='datetime'),
+        'data': [
+            [3, 1028.1, 1033.2, 1029.8, 2.40416305609],
+            [6, 1027.1, 1033.2, 1030.48333333, 2.73704016938],
+        ],
+    },
+), (
     # no data for the selected range
     (datetime(1995, 7, 10), datetime(1995, 8, 10)),
     {'aggregateby': '1d'},
