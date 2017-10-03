@@ -22,19 +22,15 @@ AGGREGATION_KEYS = [
     None,  # milisecond
 ]
 
+INTERVAL_STR = ['y', 'M', 'd', 'h', 'm', 's']
+STR_INTERVAL = {s: idx for idx, s in enumerate(INTERVAL_STR)}
+
 
 def parse_aggregateby(str):
     try:
         coef, str_interval = parse('{:d}{:w}', str)
 
-        interval = {
-            'y': YEAR,
-            'M': MONTH,
-            'd': DAY,
-            'h': HOUR,
-            'm': MINUTE,
-            's': SECOND,
-        }[str_interval]
+        interval = STR_INTERVAL[str_interval]
     except Exception:
         raise Exception('Bad interval {}'.format(str_interval))
 
@@ -58,6 +54,15 @@ class Aggregateby:
             self._max_interval:(self._interval+1)
         ]
 
+        self._str__repr = '{}{}'.format(
+            self._coef,
+            INTERVAL_STR[self._interval]
+        )
+
     @property
     def aggregation_keys(self):
         return self._aggregation_keys
+
+    @property
+    def str(self):
+        return self._str__repr

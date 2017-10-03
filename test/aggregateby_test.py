@@ -60,3 +60,24 @@ class AggregatebyTest(unittest.TestCase):
         parsed_aggregateby = aggregateby.Aggregateby(int_aggregateby)
 
         self.assertEqual(parsed_aggregateby.aggregation_keys, aggregation_keys)
+
+    def str_per_aggregateby():
+        return [
+            (0, 1, '1y'),
+            (1, 2, '2M'),
+            (2, 3, '3d'),
+            (3, 4, '4h'),
+            (4, 5, '5m'),
+            (5, 20, '20s'),
+        ]
+
+    @data_provider(str_per_aggregateby)
+    def test_aggregateby_can_retrieve_str(
+        self,
+        interval,
+        coef,
+        expected_str,
+    ):
+        parsed_aggregateby = aggregateby.Aggregateby(interval, coef=coef)
+
+        self.assertEqual(parsed_aggregateby.str, expected_str)
