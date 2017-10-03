@@ -425,6 +425,28 @@ def test_insert_pressure_succeeds(pressure_collection, weather_data_pressure):
         ],
     },
 ), (
+    # 1996 July 16th, per 2 hours per city in Paris and London
+    (datetime(1996, 7, 16, 11), datetime(1996, 7, 16, 13)),
+    {
+        'aggregateby': '2h',
+        'groupby': ['city'],
+        'tags': {'city': {'$in': ['paris', 'london']}},
+    }, {
+        'index': pd.MultiIndex.from_product([[
+            datetime(1996, 7, 16, 10),
+            datetime(1996, 7, 16, 12),
+        ], [
+            'london',
+            'paris',
+        ]], names=['datetime', 'city']),
+        'data': [
+            [1, 1033.2, 1033.2, 1033.2, 0.0],
+            [2, 1028.1, 1028.1, 1028.1, 0.0],
+            [3, 1033.2, 1033.2, 1033.2, 0.0],
+            [3, 1027.1, 1028.1, 1027.766666, 0.471404],
+        ],
+    },
+), (
     # no data for the selected range
     (datetime(1995, 7, 10), datetime(1995, 8, 10)),
     {'aggregateby': '1d'},
