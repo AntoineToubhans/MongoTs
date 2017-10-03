@@ -28,16 +28,29 @@ def build_dataframe(raw_data, aggregateby, groupby):
     ]
     columns = base_columns + groupby
 
-    df = pd.DataFrame(
+    raw_df = pd.DataFrame(
         data=raw_data,
         columns=columns
-    ).groupby([DATETIME_KEY] + groupby).aggregate({
+    )
+
+    grouped_df = raw_df.groupby([DATETIME_KEY] + groupby).aggregate({
         COUNT_KEY: 'sum',
         SUM_KEY: 'sum',
         SUM2_KEY: 'sum',
         MIN_KEY: 'min',
         MAX_KEY: 'max',
     })
+
+    if aggregateby.is_base:
+        df = grouped_df
+    else:
+        df = grouped_df.resample(aggregateby.str).aggregate({
+            COUNT_KEY: 'sum',
+            SUM_KEY: 'sum',
+            SUM2_KEY: 'sum',
+            MIN_KEY: 'min',
+            MAX_KEY: 'max',
+        })
 
     df[MEAN_KEY] = df[SUM_KEY] / df[COUNT_KEY]
     df[STD_KEY] = pd.np.sqrt(

@@ -143,6 +143,44 @@ class DataframeTest(unittest.TestCase):
             [
                 [3, 21.6, 21.6, 21.6, 0.0],
             ],
+        ), (
+            # raw data
+            [{
+                'datetime': datetime(1987, 5, 8),
+                'count': 3,
+                'sum': 4.1,
+                'sum2': 5.79,
+                'min': 1.1,
+                'max': 1.7,
+            }, {
+                'datetime': datetime(1987, 5, 9),
+                'count': 2,
+                'sum': 4.1,
+                'sum2': 8.53,
+                'min': 1.8,
+                'max': 2.3,
+            }, {
+                'datetime': datetime(1987, 5, 11),
+                'count': 1,
+                'sum': 2.3,
+                'sum2': 2.3**2,
+                'min': 2.3,
+                'max': 2.3,
+            }],
+            # aggregateby
+            aggregateby.Aggregateby(2, coef=2),
+            # groupby
+            [],
+            # expected df index
+            pd.Index([
+                datetime(1987, 5, 8),
+                datetime(1987, 5, 10),
+            ], name='datetime'),
+            # expected df data
+            [
+                [5, 1.1, 2.3, 1.64, 0.41761226035642196],
+                [1, 2.3, 2.3, 2.3, 0.0],
+            ],
         )]
 
     @data_provider(raw_data_groupbys_and_expected_outputs)

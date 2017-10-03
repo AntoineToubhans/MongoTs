@@ -81,3 +81,7 @@ class AggregatebyTest(unittest.TestCase):
         parsed_aggregateby = aggregateby.Aggregateby(interval, coef=coef)
 
         self.assertEqual(parsed_aggregateby.str, expected_str)
+
+    def test_is_base(self):
+        self.assertTrue(aggregateby.Aggregateby(1, coef=1).is_base)
+        self.assertFalse(aggregateby.Aggregateby(1, coef=2).is_base)

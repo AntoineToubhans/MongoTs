@@ -66,3 +66,11 @@ class Aggregateby:
     @property
     def str(self):
         return self._str__repr
+
+    @property
+    def is_base(self):
+        """
+        Returns true if the coeficient is one i.e.,
+        the dataframe does not need to be resampled
+        """
+        return 1 == self._coef
