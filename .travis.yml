@@ -15,3 +15,25 @@ script:
 - python -m pytest --cov=mongots
 after_success:
 - coveralls
+deploy:
+  provider: pypi
+  distributions: sdist bdist_wheel
+  user: toubi
+  password:
+    secure: !!binary |
+      bkVxWitwMTVMSzQ5SXhBcE9rUGg2Yld4aThMdDFoM0VIc1F2WHV2SW9rMkFjaEcyR21ueDZqdUUw
+      SzdpT2RhZjdxMHFuWGw5emVSUGU1TU1iOEFHQklsbEJJRkQ2ZGpTZkpQS3RzNWVJNjAyaFdNVFpW
+      K1QyaGJFS2VMc05IUnJEWlV0MzhDWXo5NG1FVHQwUU1TcnhyVlFmOWpwSnBHTjh1TXZ4NnI0Yzgr
+      WVErb0lJc25uU2dibExhQUlnVTEvWTdGYU03VzR5QUhURHduYWw1NU94aWt2OGlaUm4veHhtT005
+      aVZHVjR0Y3NncVBCNVZlOFlyVUwvN3FPMktUQWplaGw2QXlpSTIyOTRkMllpWE1RQllpQzFjdFg2
+      VWw5NmFwak0vVWpzcFpsN2dIRTF6NXlSYnJ4eGNza2d1MFpGd25PeVJhQUlEdEs1eUsyeEdCVkNC
+      dE9CWEJiVlNLQ0M3TjlPVGxTZVVvSDkwb3BiOGJrMllhQy9ZT1NLZ0YwK3lwTVdYM0QyZFpFamp1
+      OHBxSmRVRzVJOTVud0lZWWRqcFlaRWEyYzg3WC9uVFpXY2ZVZWJtRHdpWHZyaVNzRGZ0QkJ1dXFm
+      Z1F2WURUdWpJUTU1blc0QXB4bndBU0kyYlltK2NHeUFndlFCbGo0RUNYWWY2TzhCTmZ1OGM3bGgz
+      dkN1L3RwVzBqT3c2NEx6cGNyNit3UVZSN1MrT0s0YU1FTnRuYVFQMDZDbmNaZHhmZ1hkQ05WajJa
+      Y0NSRWZadUYwSi9GSXZTZkRVREtreVdWbGp0ZnJndTM5OE9qN2lmelpPRWhSL2JTYk45WFBNREhK
+      ZGJpeDJUSXhRY1U2eWo0ODM1V1J4dUZKN0hCZm94eW4zRDNzNllSWFFZR0ZKZm1jenVKd2puL3M9
+  on:
+    python: 3.6
+    repo: AntoineToubhans/MongoTs
+    tags: true
