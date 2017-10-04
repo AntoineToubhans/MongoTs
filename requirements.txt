@@ -1,3 +1,4 @@
+bumpversion
 coveralls
 flake8
 mongomock
