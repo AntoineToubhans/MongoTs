@@ -17,7 +17,7 @@ after_success:
 - coveralls
 deploy:
   provider: pypi
-  distributions: sdist
+  distributions: sdist bdist_wheel
   user: toubi
   password:
     secure: !!binary |
@@ -37,3 +37,4 @@ deploy:
     python: 3.6
     repo: AntoineToubhans/MongoTs
     tags: true
+    branch: master
