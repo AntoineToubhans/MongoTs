@@ -5,3 +5,5 @@ demo/node_modules
 .ipynb_checkpoints
 .cache
 .coverage
+dist/
+MANIFEST
