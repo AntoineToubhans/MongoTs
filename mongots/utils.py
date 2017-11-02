@@ -1,8 +1,8 @@
-def is_name_valid(name):
+def is_name_valid(name: str) -> bool:
     return str == type(name) and not name.startswith('_')
 
 
-def get_day_count(year, month):
+def get_day_count(year: int, month: int) -> int:
     return {
         1: 31,
         2: 29 if year % 4 == 0 and year % 400 != 0 else 28,
