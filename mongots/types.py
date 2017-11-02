@@ -11,5 +11,10 @@ Tags = Dict[str, Any]
 
 PipelineStageMatch = Dict[str, Filters]
 PipelineStageProject = Dict[str, Any]
-PipelineStage = Union[PipelineStageMatch, PipelineStageProject]
+PipelineStageUnwind = Dict[str, Any]
+PipelineStage = Union[
+    PipelineStageMatch,
+    PipelineStageProject,
+    PipelineStageUnwind,
+]
 Pipeline = List[PipelineStage]

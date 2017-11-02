@@ -14,6 +14,7 @@ from mongots.constants import MAX_KEY
 from mongots.types import Groupby
 from mongots.types import PipelineStageMatch
 from mongots.types import PipelineStageProject
+from mongots.types import PipelineStageUnwind
 from mongots.types import Pipeline
 from mongots.types import Tags
 
@@ -46,6 +47,32 @@ def _get_floor_datetime(aggregation_level: str, dt: datetime) -> datetime:
         ))
 
 
+def _build_unwind(
+    aggregate_by_keys,
+    end_index: int,
+) -> PipelineStageUnwind:
+    return {
+        '$unwind': '${}'.format('.'.join(aggregate_by_keys[:end_index+1])),
+    }
+
+
+def _build_intermediate_match(
+    aggregate_by_keys,
+    aggregation_key: str,
+    end_index: int,
+    start: datetime,
+    end: datetime,
+) -> PipelineStageMatch:
+    return {
+        '$match': {
+            '.'.join(aggregate_by_keys[:end_index+1]+[DATETIME_KEY]): {
+                '$gte': _get_floor_datetime(aggregation_key, start),
+                '$lte': _get_floor_datetime(aggregation_key, end),
+            }
+        }
+    }
+
+
 def build_unwind_and_match(
     start: datetime,
     end: datetime,
@@ -53,19 +80,19 @@ def build_unwind_and_match(
 ) -> Pipeline:
     aggregate_by_keys = aggregate_by.aggregation_keys
 
-    pipeline: Pipeline = []
+    pipeline = []
 
     for end_index, aggregation_key in enumerate(aggregate_by_keys):
-        pipeline.extend([{
-          '$unwind': '${}'.format('.'.join(aggregate_by_keys[:end_index+1])),
-        }, {
-          '$match': {
-            '.'.join(aggregate_by_keys[:end_index+1]+[DATETIME_KEY]): {
-              '$gte': _get_floor_datetime(aggregation_key, start),
-              '$lte': _get_floor_datetime(aggregation_key, end),
-            }
-          }
-        }])
+        pipeline.extend([
+            _build_unwind(aggregate_by_keys, end_index),
+            _build_intermediate_match(
+                aggregate_by_keys,
+                aggregation_key,
+                end_index,
+                start,
+                end,
+            ),
+        ])
 
     return pipeline
 
