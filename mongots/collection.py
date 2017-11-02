@@ -1,3 +1,7 @@
+import pandas as pd
+from datetime import datetime
+from pymongo.collection import Collection
+
 from mongots.aggregateby import parse_aggregateby
 from mongots.dataframe import build_dataframe
 from mongots.insert import build_empty_document
@@ -8,12 +12,21 @@ from mongots.query import build_project
 from mongots.query import build_sort
 from mongots.query import build_unwind_and_match
 
+from mongots.types import Groupby
+from mongots.types import Number
+from mongots.types import Tags
+
 
 class MongoTSCollection():
-    def __init__(self, mongo_collection):
+    def __init__(self, mongo_collection: Collection) -> None:
         self._collection = mongo_collection
 
-    def insert_one(self, value, timestamp, tags=None):
+    def insert_one(
+        self,
+        value: Number,
+        timestamp: datetime,
+        tags: Tags = None,
+    ) -> bool:
         """Insert one timestamped value into the MongoDb collection.
 
         Args:
@@ -40,7 +53,14 @@ class MongoTSCollection():
 
         return 1 == result.modified_count
 
-    def query(self, start, end, tags=None, aggregateby=None, groupby=None):
+    def query(
+        self,
+        start: datetime,
+        end: datetime,
+        tags: Tags = None,
+        aggregateby: str = None,
+        groupby: Groupby = None
+    ) -> pd.DataFrame:
         """Query the MongoDb database for various statistics about values
         after `start` and before `end` timestamps.
         Available statistics are: count / mean / std / min / max.

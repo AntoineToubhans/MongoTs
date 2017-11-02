@@ -18,6 +18,10 @@ MongoTs
         :target: https://mongots.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
+.. image:: https://api.codeclimate.com/v1/badges/86bcfbb432f84462a594/maintainability
+        :target: https://codeclimate.com/github/AntoineToubhans/MongoTs/maintainability
+        :alt: Maintainability
+
 A fast python API for storing and querying time series in MongoDb.
 
 

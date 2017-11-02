@@ -12,6 +12,7 @@ services:
 - mongodb
 script:
 - python -m flake8
+- mypy mongots --ignore-missing-imports
 - python -m pytest --cov=mongots
 after_success:
 - coveralls

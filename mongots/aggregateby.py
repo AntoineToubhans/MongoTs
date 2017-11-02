@@ -39,25 +39,14 @@ PANDAS_FREQ_ALIAS = [
 ]
 
 
-def parse_aggregateby(str):
-    try:
-        coef, str_interval = parse('{:d}{:w}', str)
-
-        interval = STR_INTERVAL[str_interval]
-    except Exception:
-        raise Exception('Bad interval {}'.format(str_interval))
-
-    return Aggregateby(interval, coef=coef)
-
-
 class Aggregateby:
     def __init__(
         self,
-        interval,
-        coef=1,
-        min_interval=HOUR,
-        max_interval=MONTH,
-    ):
+        interval: int,
+        coef: int = 1,
+        min_interval: int = HOUR,
+        max_interval: int = MONTH,
+    ) -> None:
         self._interval = interval
         self._coef = coef
         self._min_interval = min_interval
@@ -77,5 +66,16 @@ class Aggregateby:
         return self._aggregation_keys
 
     @property
-    def freq(self):
+    def freq(self) -> str:
         return self._pandas_freq
+
+
+def parse_aggregateby(raw_aggregateby: str) -> Aggregateby:
+    try:
+        coef, str_interval = parse('{:d}{:w}', raw_aggregateby)
+
+        interval = STR_INTERVAL[str_interval]
+    except Exception:
+        raise Exception('Bad interval {}'.format(raw_aggregateby))
+
+    return Aggregateby(interval, coef=coef)

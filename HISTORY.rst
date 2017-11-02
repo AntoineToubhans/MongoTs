@@ -3,6 +3,13 @@
 History
 -------
 
+Current
+~~~~~~~~~~~~~~~~~~
+
+* Add types and mypy_ type cheking.
+
+.. _mypy: http://mypy-lang.org/
+
 0.1.3 (2017-10-04) Claudius
 ~~~~~~~~~~~~~~~~~~
 
