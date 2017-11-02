@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from mongots.aggregateby import Aggregateby
 from mongots.constants import AGGREGATION_MONTH_KEY
 from mongots.constants import AGGREGATION_DAY_KEY
 from mongots.constants import AGGREGATION_HOUR_KEY
@@ -10,8 +11,18 @@ from mongots.constants import SUM2_KEY
 from mongots.constants import MIN_KEY
 from mongots.constants import MAX_KEY
 
+from mongots.types import Groupby
+from mongots.types import PipelineStageMatch
+from mongots.types import PipelineStageProject
+from mongots.types import Pipeline
+from mongots.types import Tags
 
-def build_initial_match(start, end, tags):
+
+def build_initial_match(
+    start: datetime,
+    end: datetime,
+    tags: Tags,
+) -> PipelineStageMatch:
     filters = tags or {}
 
     filters[DATETIME_KEY] = {
@@ -22,7 +33,7 @@ def build_initial_match(start, end, tags):
     return {'$match': filters}
 
 
-def _get_floor_datetime(aggregation_level, dt):
+def _get_floor_datetime(aggregation_level: str, dt: datetime) -> datetime:
     if aggregation_level == AGGREGATION_MONTH_KEY:
         return datetime(dt.year, dt.month, 1)
     elif aggregation_level == AGGREGATION_DAY_KEY:
@@ -35,17 +46,21 @@ def _get_floor_datetime(aggregation_level, dt):
         ))
 
 
-def build_unwind_and_match(start, end, interval):
-    interval_keys = interval.aggregation_keys
+def build_unwind_and_match(
+    start: datetime,
+    end: datetime,
+    aggregate_by: Aggregateby,
+) -> Pipeline:
+    aggregate_by_keys = aggregate_by.aggregation_keys
 
-    pipeline = []
+    pipeline: Pipeline = []
 
-    for end_index, aggregation_key in enumerate(interval_keys):
+    for end_index, aggregation_key in enumerate(aggregate_by_keys):
         pipeline.extend([{
-          '$unwind': '${}'.format('.'.join(interval_keys[:end_index+1])),
+          '$unwind': '${}'.format('.'.join(aggregate_by_keys[:end_index+1])),
         }, {
           '$match': {
-            '.'.join(interval_keys[:end_index+1]+[DATETIME_KEY]): {
+            '.'.join(aggregate_by_keys[:end_index+1]+[DATETIME_KEY]): {
               '$gte': _get_floor_datetime(aggregation_key, start),
               '$lte': _get_floor_datetime(aggregation_key, end),
             }
@@ -55,7 +70,10 @@ def build_unwind_and_match(start, end, interval):
     return pipeline
 
 
-def build_project(interval, groupby):
+def build_project(
+    interval: Aggregateby,
+    groupby: Groupby,
+) -> PipelineStageProject:
     interval_keys = interval.aggregation_keys
     base_projection_keys = [
         DATETIME_KEY,
