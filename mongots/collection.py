@@ -18,8 +18,13 @@ from mongots.types import Tags
 
 
 class MongoTSCollection():
-    def __init__(self, mongo_collection: Collection) -> None:
+    def __init__(
+        self,
+        mongo_collection: Collection,
+        metadata_collection: Collection,
+    ) -> None:
         self._collection = mongo_collection
+        self._metadata_collection = metadata_collection
 
     def insert_one(
         self,
@@ -59,7 +64,7 @@ class MongoTSCollection():
         end: datetime,
         tags: Tags = None,
         aggregateby: str = None,
-        groupby: Groupby = None
+        groupby: Groupby = None,
     ) -> pd.DataFrame:
         """Query the MongoDb database for various statistics about values
         after `start` and before `end` timestamps.
