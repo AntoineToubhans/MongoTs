@@ -14,7 +14,12 @@ class MetadataTest(unittest.TestCase):
         result = metadata.update_metadata(
             self.metadata_collection,
             datetime(1987, 5, 8, 15),
-            tags={'sex': 'Male', 'type': 1, 'is_ok': True }
+            tags={'sex': 'Male', 'type': 1, 'is_ok': True},
         )
 
-        self.assertEqual(result, 1)
+        self.assertEqual(result, True)
+
+    def test_metadata_retrieves_tags(self):
+        tags = metadata.get_tags('test_collection')
+
+        self.assertEqual(tags, {})

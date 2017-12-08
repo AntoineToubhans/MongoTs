@@ -1,6 +1,7 @@
 from datetime import datetime
 from pymongo.collection import Collection
 
+from mongots.types import MetadataTags
 from mongots.types import Tags
 
 
@@ -10,4 +11,11 @@ def update_metadata(
     tags: Tags = None,
 ) -> bool:
 
-    return 1
+    return True
+
+
+def get_tags(
+    collection_name: str,
+) -> MetadataTags:
+
+    return {}

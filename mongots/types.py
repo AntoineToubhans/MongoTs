@@ -9,6 +9,8 @@ Groupby = List[str]
 Number = Union[int, float]
 Tags = Dict[str, Any]
 
+MetadataTags = Dict[str, List[Any]]
+
 PipelineStageMatch = Dict[str, Filters]
 PipelineStageProject = Dict[str, Any]
 PipelineStageUnwind = Dict[str, Any]
