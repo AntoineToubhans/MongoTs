@@ -2,17 +2,19 @@ import unittest
 import mongomock
 from datetime import datetime
 
-from mongots import metadata
+from mongots.metadata import MongoTSMetadata
 
 
 class MetadataTest(unittest.TestCase):
     def setUp(self):
         client = mongomock.MongoClient()
-        self.metadata_collection = client.testDb.metadata
+        metadata_collection = client.testDb.metadata
+
+        self.metadata = MongoTSMetadata(metadata_collection)
 
     def test_metadata_acknowledge(self):
-        result = metadata.update_metadata(
-            self.metadata_collection,
+        result = self.metadata.update_metadata(
+            'test_collection',
             datetime(1987, 5, 8, 15),
             tags={'sex': 'Male', 'type': 1, 'is_ok': True},
         )
@@ -20,6 +22,6 @@ class MetadataTest(unittest.TestCase):
         self.assertEqual(result, True)
 
     def test_metadata_retrieves_tags(self):
-        tags = metadata.get_tags('test_collection')
+        tags = self.metadata.get_tags('test_collection')
 
         self.assertEqual(tags, {})

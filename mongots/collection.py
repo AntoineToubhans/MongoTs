@@ -7,6 +7,7 @@ from mongots.dataframe import build_dataframe
 from mongots.insert import build_empty_document
 from mongots.insert import build_filter
 from mongots.insert import build_update
+from mongots.metadata import MongoTSMetadata
 from mongots.query import build_initial_match
 from mongots.query import build_project
 from mongots.query import build_sort
@@ -24,7 +25,7 @@ class MongoTSCollection():
         metadata_collection: Collection,
     ) -> None:
         self._collection = mongo_collection
-        self._metadata_collection = metadata_collection
+        self._metadata = MongoTSMetadata(metadata_collection)
 
     def insert_one(
         self,

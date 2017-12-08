@@ -5,17 +5,27 @@ from mongots.types import MetadataTags
 from mongots.types import Tags
 
 
-def update_metadata(
-    metadata_collection: Collection,
-    timestamp: datetime,
-    tags: Tags = None,
-) -> bool:
+class MongoTSMetadata():
+    def __init__(
+        self,
+        metadata_collection: Collection,
+    ) -> None:
+        self._metadata_collection = metadata_collection
 
-    return True
+
+    def update_metadata(
+        self,
+        collection_name: str,
+        timestamp: datetime,
+        tags: Tags = None,
+    ) -> bool:
+
+        return True
 
 
-def get_tags(
-    collection_name: str,
-) -> MetadataTags:
+    def get_tags(
+        self,
+        collection_name: str,
+    ) -> MetadataTags:
 
-    return {}
+        return {}
