@@ -12,8 +12,7 @@ class MongoTSMetadata():
     ) -> None:
         self._metadata_collection = metadata_collection
 
-
-    def update_metadata(
+    def update(
         self,
         collection_name: str,
         timestamp: datetime,
@@ -21,7 +20,6 @@ class MongoTSMetadata():
     ) -> bool:
 
         return True
-
 
     def get_tags(
         self,

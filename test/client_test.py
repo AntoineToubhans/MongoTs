@@ -103,3 +103,7 @@ class MongoTSClientTest(unittest.TestCase):
             mongots_collection._metadata,
             mongots.metadata.MongoTSMetadata,
         )
+        self.assertEqual(
+            mongots_collection._metadata._metadata_collection.name,
+            'mongots__metadata',
+        )
