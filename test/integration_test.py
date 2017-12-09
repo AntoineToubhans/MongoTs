@@ -479,3 +479,10 @@ def test_get_tags(pressure_collection):
     assert pressure_collection.get_tags() == {
         'city': ['paris', 'london', 'istanbul'],
     }
+
+
+def test_get_timerange(pressure_collection):
+    min_datetime, max_datetime = pressure_collection.get_timerange()
+
+    assert min_datetime == datetime(1996, 7, 1, 1)
+    assert max_datetime == datetime(1996, 8, 26, 21, 30)

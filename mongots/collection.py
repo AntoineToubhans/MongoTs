@@ -127,3 +127,14 @@ class MongoTSCollection():
             The tags contained in the collection.
         """
         return self._metadata.get_tags(self._collection.name,)
+
+    def get_timerange(self):
+        """
+        Get min and max timestamps contained in the collection.
+
+        Return (None | tuple):
+            None if the collection is empty.
+            Otherwise, a tuple containing two datetime object representing
+            the minimum and maximum timestamps in the collection.
+        """
+        return self._metadata.get_timerange(self._collection.name,)

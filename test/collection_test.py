@@ -212,3 +212,21 @@ class MongoTSCollectionTest(unittest.TestCase):
         self.assertEqual(tags, {
             'city': ['Paris'],
         })
+
+    def test_get_timerange_returns_no_timerange(self):
+        timerange = self.mongots_collection.get_timerange()
+
+        self.assertEqual(timerange, None)
+
+    def test_get_timerange_returns_timerange(self):
+        self.mongots_collection.insert_one(42.66, datetime(2001, 11, 23))
+        self.mongots_collection.insert_one(42.66, datetime(2001, 11, 20))
+        self.mongots_collection.insert_one(42.66, datetime(2001, 11, 22))
+        self.mongots_collection.insert_one(42.66, datetime(2001, 10, 22))
+
+        timerange = self.mongots_collection.get_timerange()
+
+        self.assertEqual(timerange, (
+            datetime(2001, 10, 22),
+            datetime(2001, 11, 23),
+        ))

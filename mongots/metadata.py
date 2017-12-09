@@ -20,16 +20,20 @@ class MongoTSMetadata():
         tags: Tags = None,
     ) -> bool:
 
-        result = self._metadata_collection.update_one({
-            'collection_name': collection_name,
-        }, {
-            '$addToSet': {
-                'tags.{}'.format(tag): tags[tag]
-                for tag in (tags or {})
-            },
+        update_query = {
             '$min': {'timerange.min': timestamp},
             '$max': {'timerange.max': timestamp},
-        }, upsert=True)
+        }
+
+        if tags is not None and tags != {}:
+            update_query['$addToSet'] = {
+                'tags.{}'.format(tag): tags[tag]
+                for tag in tags
+            }
+
+        result = self._metadata_collection.update_one({
+            'collection_name': collection_name,
+        }, update_query, upsert=True)
 
         return result.acknowledged \
             and (1 == result.matched_count or result.upserted_id is not None)

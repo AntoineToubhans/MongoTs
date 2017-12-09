@@ -35,7 +35,17 @@ class MetadataTest(unittest.TestCase):
 
         self.assertEqual(result, True)
 
+    def test_metadata_retrieves_no_tags(self):
+        tags = self.metadata.get_tags('test_collection')
+
+        self.assertEqual(tags, {})
+
     def test_metadata_retrieves_empty_tags(self):
+        self.metadata.update(
+            'test_collection',
+            datetime(1987, 5, 8, 15),
+        )
+
         tags = self.metadata.get_tags('test_collection')
 
         self.assertEqual(tags, {})
