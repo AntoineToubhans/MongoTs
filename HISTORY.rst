@@ -6,6 +6,7 @@ History
 Current
 ~~~~~~~~~~~~~~~~~~
 
+* Add get_tags and get_timerange function to collection.
 * Add types and mypy_ type cheking.
 
 .. _mypy: http://mypy-lang.org/

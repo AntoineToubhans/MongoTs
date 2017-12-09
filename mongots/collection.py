@@ -134,7 +134,7 @@ class MongoTSCollection():
 
         Return (None | tuple):
             None if the collection is empty.
-            Otherwise, a tuple containing two datetime object representing
+            Otherwise, a tuple containing two datetime objects representing
             the minimum and maximum timestamps in the collection.
         """
         return self._metadata.get_timerange(self._collection.name,)
