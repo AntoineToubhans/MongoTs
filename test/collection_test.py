@@ -2,6 +2,7 @@ import unittest
 import mongomock
 import pandas as pd
 from datetime import datetime
+from unittest.mock import MagicMock
 from unittest.mock import patch
 from unittest_data_provider import data_provider
 
@@ -179,3 +180,17 @@ class MongoTSCollectionTest(unittest.TestCase):
                 datetime(2000, 1, 1),
                 aggregateby=None,
             )
+
+    def test_metadata_is_updated_when_inserting(self):
+        self.mongots_collection._metadata = MagicMock()
+        self.mongots_collection.insert_one(
+            42.66,
+            datetime(2001, 11, 23, 13, 45),
+            tags={'city': 'Paris'},
+        )
+
+        self.mongots_collection._metadata.update.assert_called_once_with(
+            'temperatures',
+            datetime(2001, 11, 23, 13, 45),
+            tags={'city': 'Paris'},
+        )

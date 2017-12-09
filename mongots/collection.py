@@ -60,7 +60,11 @@ class MongoTSCollection():
 
             result = self._collection.update_one(filters, update, upsert=False)
 
-        return 1 == result.modified_count
+        return 1 == result.modified_count and self._metadata.update(
+            self._collection.name,
+            timestamp,
+            tags=tags,
+        )
 
     def query(
         self,

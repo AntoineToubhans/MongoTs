@@ -19,22 +19,16 @@ class MongoTSMetadata():
         tags: Tags = None,
     ) -> bool:
 
-        tags_updated = self.update_tags(collection_name, tags)
-
-        return tags_updated
-
-    def update_tags(
-        self,
-        collection_name: str,
-        tags: Tags = None,
-    ) -> bool:
         if tags is None:
             return True
 
         result = self._metadata_collection.update_one({
             'collection_name': collection_name,
         }, {
-            '$addToSet': tags,
+            '$addToSet': {
+                'tags.{}'.format(tag): tags[tag]
+                for tag in tags
+            },
         }, upsert=True)
 
         return result.acknowledged \
@@ -45,9 +39,10 @@ class MongoTSMetadata():
         collection_name: str,
     ) -> MetadataTags:
 
-        return self._metadata_collection.find_one({
+        mongo_tags = self._metadata_collection.find_one({
             'collection_name': collection_name,
         }, {
-            '_id': 0,
-            'collection_name': 0,
+            'tags': 1,
         }) or {}
+
+        return mongo_tags.get('tags', {})
