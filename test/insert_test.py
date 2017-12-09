@@ -29,6 +29,15 @@ class InsertTest(unittest.TestCase):
             insert.DATETIME_KEY: datetime(2003, 1, 1, 0, 0)},
         )
 
+    def test_build_filter_do_not_modify_the_tag_object(self):
+        tags = {'city': 'Paris', 'station': 2}
+        insert.build_filter(
+            datetime(2003, 12, 31, 12, 33, 15),
+            tags=tags,
+        )
+
+        self.assertEqual(tags, {'city': 'Paris', 'station': 2})
+
     def test_build_update_succeeds(self):
         update = insert.build_update(42.666, datetime(2019, 7, 2, 15, 12))
 
