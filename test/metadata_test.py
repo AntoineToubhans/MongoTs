@@ -18,7 +18,15 @@ class MetadataTest(unittest.TestCase):
             'mongots__metadata',
         )
 
-    def test_metadata_acknowledge(self):
+    def test_metadata_acknowledge_no_edge_update(self):
+        result = self.metadata.update(
+            'test_collection',
+            datetime(1987, 5, 8, 15),
+        )
+
+        self.assertEqual(result, True)
+
+    def test_metadata_acknowledge_tag_update(self):
         result = self.metadata.update(
             'test_collection',
             datetime(1987, 5, 8, 15),
@@ -31,3 +39,40 @@ class MetadataTest(unittest.TestCase):
         tags = self.metadata.get_tags('test_collection')
 
         self.assertEqual(tags, {})
+
+    def test_metadata_retrieves_one_tag(self):
+        self.metadata.update(
+            'test_collection',
+            datetime(1987, 5, 8, 15),
+            tags={'sex': 'Male', 'type': 1, 'is_ok': True},
+        )
+
+        tags = self.metadata.get_tags('test_collection')
+
+        self.assertEqual(tags, {
+            'sex': ['Male'],
+            'type': [1],
+            'is_ok': [True],
+        })
+
+    def test_metadata_retrieves_two_tags(self):
+        self.metadata.update(
+            'test_collection',
+            datetime(1987, 5, 8, 15),
+            tags={'sex': 'Male', 'type': 1, 'is_ok': True},
+        )
+
+        self.metadata.update(
+            'test_collection',
+            datetime(1987, 5, 11, 2),
+            tags={'sex': 'Female', 'is_ok': False, 'aaa': 'yok'},
+        )
+
+        tags = self.metadata.get_tags('test_collection')
+
+        self.assertEqual(tags, {
+            'aaa': ['yok'],
+            'sex': ['Male', 'Female'],
+            'type': [1],
+            'is_ok': [True, False],
+        })
