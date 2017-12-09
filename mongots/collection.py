@@ -36,7 +36,8 @@ class MongoTSCollection():
         timestamp: datetime,
         tags: Tags = None,
     ) -> bool:
-        """Insert one timestamped value into the MongoDb collection.
+        """
+        Insert one timestamped value into the MongoDb collection.
 
         Args:
             value (float): the value to be inserted
@@ -74,7 +75,8 @@ class MongoTSCollection():
         aggregateby: str = None,
         groupby: Groupby = None,
     ) -> pd.DataFrame:
-        """Query the MongoDb database for various statistics about values
+        """
+        Query the MongoDb database for various statistics about values
         after `start` and before `end` timestamps.
         Available statistics are: count / mean / std / min / max.
 
@@ -116,3 +118,12 @@ class MongoTSCollection():
         raw_data = list(self._collection.aggregate(pipeline))
 
         return build_dataframe(raw_data, parsed_aggregateby, groupby)
+
+    def get_tags(self):
+        """
+        Get all tags that can be used to filter the data in queries.
+
+        Return (dict):
+            The tags contained in the collection.
+        """
+        return self._metadata.get_tags(self._collection.name,)

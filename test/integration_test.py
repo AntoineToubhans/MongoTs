@@ -473,3 +473,9 @@ def test_pressure_queries(pressure_collection, args, kwargs, expected):
     )
 
     pd.testing.assert_frame_equal(actual_df, expected_df)
+
+
+def test_get_tags(pressure_collection):
+    assert pressure_collection.get_tags() == {
+        'city': ['paris', 'london', 'istanbul'],
+    }

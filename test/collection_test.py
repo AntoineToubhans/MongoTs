@@ -194,3 +194,21 @@ class MongoTSCollectionTest(unittest.TestCase):
             datetime(2001, 11, 23, 13, 45),
             tags={'city': 'Paris'},
         )
+
+    def test_get_tags_returns_no_tag(self):
+        tags = self.mongots_collection.get_tags()
+
+        self.assertEqual(tags, {})
+
+    def test_get_tags_returns_tags(self):
+        self.mongots_collection.insert_one(
+            42.66,
+            datetime(2001, 11, 23, 13, 45),
+            tags={'city': 'Paris'},
+        )
+
+        tags = self.mongots_collection.get_tags()
+
+        self.assertEqual(tags, {
+            'city': ['Paris'],
+        })
