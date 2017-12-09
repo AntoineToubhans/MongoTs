@@ -76,3 +76,22 @@ class MetadataTest(unittest.TestCase):
             'type': [1],
             'is_ok': [True, False],
         })
+
+    def test_metadata_retrieves_empty_timestamp_statistics(self):
+        self.assertEqual(self.metadata.get_timerange('test_collection'), None)
+
+    def test_metadata_retrieves_timestamp_statistics(self):
+        self.metadata.update(
+            'test_collection',
+            datetime(1987, 5, 8, 15),
+        )
+
+        self.metadata.update(
+            'test_collection',
+            datetime(1987, 5, 11, 2),
+        )
+
+        self.assertEqual(self.metadata.get_timerange('test_collection'), (
+            datetime(1987, 5, 8, 15),
+            datetime(1987, 5, 11, 2),
+        ))

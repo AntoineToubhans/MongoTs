@@ -2,6 +2,7 @@ from datetime import datetime
 from pymongo.collection import Collection
 
 from mongots.types import MetadataTags
+from mongots.types import MetadataTimeRange
 from mongots.types import Tags
 
 
@@ -19,16 +20,15 @@ class MongoTSMetadata():
         tags: Tags = None,
     ) -> bool:
 
-        if tags is None:
-            return True
-
         result = self._metadata_collection.update_one({
             'collection_name': collection_name,
         }, {
             '$addToSet': {
                 'tags.{}'.format(tag): tags[tag]
-                for tag in tags
+                for tag in (tags or {})
             },
+            '$min': {'timerange.min': timestamp},
+            '$max': {'timerange.max': timestamp},
         }, upsert=True)
 
         return result.acknowledged \
@@ -46,3 +46,22 @@ class MongoTSMetadata():
         }) or {}
 
         return mongo_tags.get('tags', {})
+
+    def get_timerange(
+        self,
+        collection_name: str,
+    ) -> MetadataTimeRange:
+
+        mongo_timerange = self._metadata_collection.find_one({
+            'collection_name': collection_name,
+        }, {
+            'timerange': 1,
+        })
+
+        if mongo_timerange is None:
+            return None
+
+        return (
+            mongo_timerange['timerange']['min'],
+            mongo_timerange['timerange']['max'],
+        )
