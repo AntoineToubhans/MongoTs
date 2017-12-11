@@ -486,3 +486,38 @@ def test_get_timerange(pressure_collection):
 
     assert min_datetime == datetime(1996, 7, 1, 1)
     assert max_datetime == datetime(1996, 8, 26, 21, 30)
+
+
+def test_get_collections(db):
+    collections = db.get_collections()
+
+    assert 3 == len(collections)
+
+    assert collections[0] == {
+        'collection_name': 'temperatures',
+        'timerange': (
+            datetime(2010, 7, 23, 13, 45),
+            datetime(2010, 7, 25, 20),
+        ),
+        'tags': {'city': ['Paris']},
+    }
+
+    assert collections[1] == {
+        'collection_name': 'lotOfValues',
+        'timerange': (
+            datetime(2010, 1, 1),
+            datetime(2010, 8, 31),
+        ),
+        'tags': {},
+    }
+
+    assert collections[2] == {
+        'collection_name': 'atmosphericPressure',
+        'timerange': (
+            datetime(1996, 7, 1, 1),
+            datetime(1996, 8, 26, 21, 30),
+        ),
+        'tags': {
+            'city': ['paris', 'london', 'istanbul'],
+        },
+    }

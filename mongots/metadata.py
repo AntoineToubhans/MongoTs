@@ -69,3 +69,19 @@ class MongoTSMetadata():
             mongo_timerange['timerange']['min'],
             mongo_timerange['timerange']['max'],
         )
+
+    def _format_collection(self, collection):
+        return {
+            'collection_name': collection['collection_name'],
+            'tags': collection.get('tags', {}),
+            'timerange': (
+                collection['timerange']['min'],
+                collection['timerange']['max'],
+            ),
+        }
+
+    def get_collections(self):
+        return [
+            self._format_collection(collection)
+            for collection in self._metadata_collection.find({}, {'_id': 0})
+        ]

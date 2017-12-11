@@ -2,8 +2,6 @@ import pandas as pd
 from datetime import datetime
 from pymongo.collection import Collection
 
-from mongots.constants import METADATA_COLLECTION_NAME
-
 from mongots.aggregateby import parse_aggregateby
 from mongots.dataframe import build_dataframe
 from mongots.insert import build_empty_document
@@ -24,11 +22,10 @@ class MongoTSCollection():
     def __init__(
         self,
         mongo_collection: Collection,
+        metadata: MongoTSMetadata,
     ) -> None:
         self._collection = mongo_collection
-        self._metadata = MongoTSMetadata(
-            mongo_collection.database.get_collection(METADATA_COLLECTION_NAME),
-        )
+        self._metadata = metadata
 
     def insert_one(
         self,

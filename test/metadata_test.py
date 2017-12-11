@@ -105,3 +105,28 @@ class MetadataTest(unittest.TestCase):
             datetime(1987, 5, 8, 15),
             datetime(1987, 5, 11, 2),
         ))
+
+    def test_get_collections_returns_empty(self):
+        self.assertEqual(self.metadata.get_collections(), [])
+
+    def test_get_collections_returns_two_collection(self):
+        self.metadata.update(
+            'test1_collection',
+            datetime(1987, 5, 8, 15),
+        )
+
+        self.metadata.update(
+            'test2_collection',
+            datetime(1988, 12, 30),
+            tags={'city': 'Vendôme'},
+        )
+
+        self.assertEqual(self.metadata.get_collections(), [{
+            'collection_name': 'test1_collection',
+            'timerange': (datetime(1987, 5, 8, 15), datetime(1987, 5, 8, 15)),
+            'tags': {},
+        }, {
+            'collection_name': 'test2_collection',
+            'timerange': (datetime(1988, 12, 30), datetime(1988, 12, 30)),
+            'tags': {'city': ['Vendôme']},
+        }])
