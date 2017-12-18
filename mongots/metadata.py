@@ -21,6 +21,7 @@ class MongoTSMetadata():
     ) -> bool:
 
         update_query = {
+            '$inc': {'count': 1},
             '$min': {'timerange.min': timestamp},
             '$max': {'timerange.max': timestamp},
         }
@@ -73,6 +74,7 @@ class MongoTSMetadata():
     def _format_collection(self, collection):
         return {
             'collection_name': collection['collection_name'],
+            'count': collection.get('count', 0),
             'tags': collection.get('tags', {}),
             'timerange': (
                 collection['timerange']['min'],

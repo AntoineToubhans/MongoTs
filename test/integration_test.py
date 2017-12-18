@@ -8,9 +8,7 @@ from datetime import datetime, timedelta
 import mongots
 
 mongo_client = pymongo.MongoClient()
-mongo_client.TestDb.temperatures.remove({})
-mongo_client.TestDb.lotOfValues.remove({})
-mongo_client.TestDb.atmosphericPressure.remove({})
+mongo_client.drop_database('TestDb')
 
 
 @pytest.fixture
@@ -495,6 +493,7 @@ def test_get_collections(db):
 
     assert collections[0] == {
         'collection_name': 'temperatures',
+        'count': 4,
         'timerange': (
             datetime(2010, 7, 23, 13, 45),
             datetime(2010, 7, 25, 20),
@@ -504,6 +503,7 @@ def test_get_collections(db):
 
     assert collections[1] == {
         'collection_name': 'lotOfValues',
+        'count': 243,
         'timerange': (
             datetime(2010, 1, 1),
             datetime(2010, 8, 31),
@@ -513,6 +513,7 @@ def test_get_collections(db):
 
     assert collections[2] == {
         'collection_name': 'atmosphericPressure',
+        'count': 6348,
         'timerange': (
             datetime(1996, 7, 1, 1),
             datetime(1996, 8, 26, 21, 30),

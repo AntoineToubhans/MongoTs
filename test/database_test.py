@@ -34,10 +34,12 @@ class MongoTSDatabaseTest(unittest.TestCase):
 
         self.assertEqual(self.database.get_collections(), [{
             'collection_name': 'test1_collection',
+            'count': 1,
             'timerange': (datetime(1987, 5, 8, 15), datetime(1987, 5, 8, 15)),
             'tags': {},
         }, {
             'collection_name': 'test2_collection',
+            'count': 1,
             'timerange': (datetime(1988, 12, 30), datetime(1988, 12, 30)),
             'tags': {'city': ['Vendôme']},
         }])
