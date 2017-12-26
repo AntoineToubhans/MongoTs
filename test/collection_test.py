@@ -2,6 +2,7 @@ import unittest
 import mongomock
 import pandas as pd
 from datetime import datetime
+from unittest.mock import MagicMock
 from unittest.mock import patch
 from unittest_data_provider import data_provider
 
@@ -179,3 +180,53 @@ class MongoTSCollectionTest(unittest.TestCase):
                 datetime(2000, 1, 1),
                 aggregateby=None,
             )
+
+    def test_metadata_is_updated_when_inserting(self):
+        self.mongots_collection._metadata = MagicMock()
+        self.mongots_collection.insert_one(
+            42.66,
+            datetime(2001, 11, 23, 13, 45),
+            tags={'city': 'Paris'},
+        )
+
+        self.mongots_collection._metadata.update.assert_called_once_with(
+            'temperatures',
+            datetime(2001, 11, 23, 13, 45),
+            tags={'city': 'Paris'},
+        )
+
+    def test_get_tags_returns_no_tag(self):
+        tags = self.mongots_collection.get_tags()
+
+        self.assertEqual(tags, {})
+
+    def test_get_tags_returns_tags(self):
+        self.mongots_collection.insert_one(
+            42.66,
+            datetime(2001, 11, 23, 13, 45),
+            tags={'city': 'Paris'},
+        )
+
+        tags = self.mongots_collection.get_tags()
+
+        self.assertEqual(tags, {
+            'city': ['Paris'],
+        })
+
+    def test_get_timerange_returns_no_timerange(self):
+        timerange = self.mongots_collection.get_timerange()
+
+        self.assertEqual(timerange, None)
+
+    def test_get_timerange_returns_timerange(self):
+        self.mongots_collection.insert_one(42.66, datetime(2001, 11, 23))
+        self.mongots_collection.insert_one(42.66, datetime(2001, 11, 20))
+        self.mongots_collection.insert_one(42.66, datetime(2001, 11, 22))
+        self.mongots_collection.insert_one(42.66, datetime(2001, 10, 22))
+
+        timerange = self.mongots_collection.get_timerange()
+
+        self.assertEqual(timerange, (
+            datetime(2001, 10, 22),
+            datetime(2001, 11, 23),
+        ))

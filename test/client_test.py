@@ -92,3 +92,18 @@ class MongoTSClientTest(unittest.TestCase):
             mongots.MongoTSClient(
                 mongo_client=mongomock.MongoClient(),
             ).TestDb._temperature
+
+    def test_mongots_collection_has_a_metadata_collection(self):
+        mongots_collection = mongots.MongoTSClient(
+            mongo_client=mongomock.MongoClient(),
+        ).TestDb.temperature
+
+        self.assertIsNotNone(mongots_collection)
+        self.assertIsInstance(
+            mongots_collection._metadata,
+            mongots.metadata.MongoTSMetadata,
+        )
+        self.assertEqual(
+            mongots_collection._metadata._metadata_collection.name,
+            'mongots__metadata',
+        )

@@ -11,3 +11,5 @@ MIN_KEY = 'min'
 MAX_KEY = 'max'
 MEAN_KEY = 'mean'
 STD_KEY = 'std'
+
+METADATA_COLLECTION_NAME = 'mongots__metadata'

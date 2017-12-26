@@ -78,7 +78,10 @@ def build_empty_document(timestamp):
 
 
 def build_filter(timestamp, tags=None):
-    filters = tags or {}
+    if tags is None:
+        filters = {}
+    else:
+        filters = tags.copy()
 
     filters[DATETIME_KEY] = datetime(timestamp.year, 1, 1)
 

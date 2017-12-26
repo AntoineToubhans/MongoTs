@@ -75,7 +75,7 @@ Return (bool): ``True`` if the insertion succeeded, ``False`` otherwise.
 Query
 ~~~~~
 
-    query(self, start, end, tags=tags, aggregateby=aggregateby, groupby=groupby)
+    collection.query(start, end, tags=tags, aggregateby=aggregateby, groupby=groupby)
 
 Arguments:
 
@@ -92,6 +92,22 @@ Arguments:
 
 Return (pandas.DataFrame): dataframe containing the statistics and indexed by datetimes.
 
+Get tags
+~~~~~
+
+    collection.get_tags()
+
+Return (dict): The tags contained in the collection.
+
+Get timerange
+~~~~~
+
+    collection.get_timerange():
+
+Return (None | tuple):
+    None if the collection is empty.
+    Otherwise, a tuple containing two datetime object representing
+    the minimum and maximum timestamps in the collection.
 
 Run tests
 ---------

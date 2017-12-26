@@ -7,6 +7,7 @@ from mongots.dataframe import build_dataframe
 from mongots.insert import build_empty_document
 from mongots.insert import build_filter
 from mongots.insert import build_update
+from mongots.metadata import MongoTSMetadata
 from mongots.query import build_initial_match
 from mongots.query import build_project
 from mongots.query import build_sort
@@ -18,8 +19,13 @@ from mongots.types import Tags
 
 
 class MongoTSCollection():
-    def __init__(self, mongo_collection: Collection) -> None:
+    def __init__(
+        self,
+        mongo_collection: Collection,
+        metadata: MongoTSMetadata,
+    ) -> None:
         self._collection = mongo_collection
+        self._metadata = metadata
 
     def insert_one(
         self,
@@ -27,7 +33,8 @@ class MongoTSCollection():
         timestamp: datetime,
         tags: Tags = None,
     ) -> bool:
-        """Insert one timestamped value into the MongoDb collection.
+        """
+        Insert one timestamped value into the MongoDb collection.
 
         Args:
             value (float): the value to be inserted
@@ -51,7 +58,11 @@ class MongoTSCollection():
 
             result = self._collection.update_one(filters, update, upsert=False)
 
-        return 1 == result.modified_count
+        return 1 == result.modified_count and self._metadata.update(
+            self._collection.name,
+            timestamp,
+            tags=tags,
+        )
 
     def query(
         self,
@@ -59,9 +70,10 @@ class MongoTSCollection():
         end: datetime,
         tags: Tags = None,
         aggregateby: str = None,
-        groupby: Groupby = None
+        groupby: Groupby = None,
     ) -> pd.DataFrame:
-        """Query the MongoDb database for various statistics about values
+        """
+        Query the MongoDb database for various statistics about values
         after `start` and before `end` timestamps.
         Available statistics are: count / mean / std / min / max.
 
@@ -103,3 +115,23 @@ class MongoTSCollection():
         raw_data = list(self._collection.aggregate(pipeline))
 
         return build_dataframe(raw_data, parsed_aggregateby, groupby)
+
+    def get_tags(self):
+        """
+        Get all tags that can be used to filter the data in queries.
+
+        Return (dict):
+            The tags contained in the collection.
+        """
+        return self._metadata.get_tags(self._collection.name,)
+
+    def get_timerange(self):
+        """
+        Get min and max timestamps contained in the collection.
+
+        Return (None | tuple):
+            None if the collection is empty.
+            Otherwise, a tuple containing two datetime objects representing
+            the minimum and maximum timestamps in the collection.
+        """
+        return self._metadata.get_timerange(self._collection.name,)
