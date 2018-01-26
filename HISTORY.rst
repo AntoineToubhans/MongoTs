@@ -3,9 +3,10 @@
 History
 -------
 
-Current
+0.1.4 (2017-12-10) Nero
 ~~~~~~~~~~~~~~~~~~
 
+* Add demo dashboard using Plotly and Dash
 * Add get_tags and get_timerange function to collection.
 * Add types and mypy_ type cheking.
 
