@@ -3,7 +3,7 @@
 History
 -------
 
-0.1.4 (2017-12-10) Nero
+0.2.0 (2018-01-26) Nero
 ~~~~~~~~~~~~~~~~~~
 
 * Add demo dashboard using Plotly and Dash
