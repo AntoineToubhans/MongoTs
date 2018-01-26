@@ -1,0 +1,7 @@
+bumpversion==0.5.3
+coveralls==1.2.0
+flake8==3.4.1
+mongomock==3.8.0
+mypy==0.540
+pytest-cov==2.5.1
+unittest-data-provider==1.0.1

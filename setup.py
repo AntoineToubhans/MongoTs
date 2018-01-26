@@ -14,6 +14,7 @@ setup_requirements = [
 test_requirements = [
     'flake8',
     'mongomock',
+    'mypy'
     'pytest',
     'unittest-data-provider',
 ]
