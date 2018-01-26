@@ -1,12 +1,13 @@
 sudo: false
 language: python
 python:
-- "3.3"
-- "3.4"
-- "3.5"
-- "3.6"
+- '3.3'
+- '3.4'
+- '3.5'
+- '3.6'
 install:
 - pip install -r requirements.txt
+- pip install -r requirements-dev.txt
 cache: pip
 services:
 - mongodb
@@ -21,19 +22,7 @@ deploy:
   distributions: sdist bdist_wheel
   user: toubi
   password:
-    secure: !!binary |
-      bkVxWitwMTVMSzQ5SXhBcE9rUGg2Yld4aThMdDFoM0VIc1F2WHV2SW9rMkFjaEcyR21ueDZqdUUw
-      SzdpT2RhZjdxMHFuWGw5emVSUGU1TU1iOEFHQklsbEJJRkQ2ZGpTZkpQS3RzNWVJNjAyaFdNVFpW
-      K1QyaGJFS2VMc05IUnJEWlV0MzhDWXo5NG1FVHQwUU1TcnhyVlFmOWpwSnBHTjh1TXZ4NnI0Yzgr
-      WVErb0lJc25uU2dibExhQUlnVTEvWTdGYU03VzR5QUhURHduYWw1NU94aWt2OGlaUm4veHhtT005
-      aVZHVjR0Y3NncVBCNVZlOFlyVUwvN3FPMktUQWplaGw2QXlpSTIyOTRkMllpWE1RQllpQzFjdFg2
-      VWw5NmFwak0vVWpzcFpsN2dIRTF6NXlSYnJ4eGNza2d1MFpGd25PeVJhQUlEdEs1eUsyeEdCVkNC
-      dE9CWEJiVlNLQ0M3TjlPVGxTZVVvSDkwb3BiOGJrMllhQy9ZT1NLZ0YwK3lwTVdYM0QyZFpFamp1
-      OHBxSmRVRzVJOTVud0lZWWRqcFlaRWEyYzg3WC9uVFpXY2ZVZWJtRHdpWHZyaVNzRGZ0QkJ1dXFm
-      Z1F2WURUdWpJUTU1blc0QXB4bndBU0kyYlltK2NHeUFndlFCbGo0RUNYWWY2TzhCTmZ1OGM3bGgz
-      dkN1L3RwVzBqT3c2NEx6cGNyNit3UVZSN1MrT0s0YU1FTnRuYVFQMDZDbmNaZHhmZ1hkQ05WajJa
-      Y0NSRWZadUYwSi9GSXZTZkRVREtreVdWbGp0ZnJndTM5OE9qN2lmelpPRWhSL2JTYk45WFBNREhK
-      ZGJpeDJUSXhRY1U2eWo0ODM1V1J4dUZKN0hCZm94eW4zRDNzNllSWFFZR0ZKZm1jenVKd2puL3M9
+    secure: QoxmfWbnj+kVUJVyRjN4UVfK9mRQGq5+UeDjqe3L5IotOgzZtky6I3dpKk2vDThKUjyH0fvZizyszxM7wOtmogIIG8YCrsUQecv+GoSM+qmbrApg2ggtE0eNH19yOtHf2nPH8FP3B+YIu2rRtxAJKrka3w0R7KHk3D+TeKBuwGQYloj2vQXaxD04JZRwQwN0Od8xBwdNtVSlu3qcSyfSQPqsWWuDaufMRuqKShTI1VpNHr29Lchi+CucD7B2i91TgklzmWUdvZmF2Nz4lcs/b8I2Fb65TsMHMTLrP4qQ+uX92yITolm7i5w+lGG8UfUEu+fCcdPbCu/Z8fgBB7vu422NM5A1j1BQYoA7yQ3nHUs70upduyHoOAhQoW/mFXB6kbBjSwAhhsBTx7j54Q7QzKYI4POpy07hPZOcP9fb1ofOdmVsxSpqsl0d+Jc/hZZOcXbg6mtY1/N5mafBhILABddejq02xPPvxl4EBVCWCin+UIbn77IxheymUrnbXGNdIN6ysnslxGXQjSORIFF/ELthZKaKhS7ptitARBQ52FiM/NCHLQht68JpagQoEG73yXP6qDl2Z+m6EEwXlgfCPttFFltzHalm9+pcEJg7nOkKaRbEDfyEduGzOiWuyCVm71LfYkQohyIUNwBoR/C4KCja8v+JBY7+2QuQOhOchdI=
   on:
     python: 3.6
     repo: AntoineToubhans/MongoTs

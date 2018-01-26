@@ -14,6 +14,7 @@ setup_requirements = [
 test_requirements = [
     'flake8',
     'mongomock',
+    'mypy'
     'pytest',
     'unittest-data-provider',
 ]
@@ -23,7 +24,7 @@ description = 'A fast API for storing and querying time series in MongoDb'
 setup(
     name='mongots',
     packages=find_packages(include=['mongots']),
-    version='0.1.3',
+    version='0.1.4',
     description=description,
     long_description=description,
     author='Antoine Toubhans',
